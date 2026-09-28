@@ -4302,6 +4302,7 @@
   },
   "login": {
     "login": "登录",
+    "login-title": "中国中铁物联网平台",
     "request-password-reset": "请求重置密码",
     "reset-password": "重置密码",
     "create-password": "创建密码",

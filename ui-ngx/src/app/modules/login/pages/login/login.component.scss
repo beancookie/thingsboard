@@ -7,10 +7,22 @@
   display: flex;
   flex: 1 1 0;
   .tb-login-content {
-    margin-top: 36px;
-    margin-bottom: 76px;
-    background-color: #eef2f7;
+    margin: 0;
+    padding: 24px;
+    background:
+      linear-gradient(rgba(15, 35, 70, 0.18), rgba(15, 35, 70, 0.18)),
+      url('/assets/login-background.png') center / cover no-repeat;
     --mat-card-elevated-container-elevation: none;
+
+    .login-title {
+      margin-top: 12px;
+      font-size: 20px;
+      font-weight: 500;
+      line-height: 28px;
+      letter-spacing: 0.5px;
+      color: #195DA2;
+      text-align: center;
+    }
 
     mat-card {
       --mat-card-elevated-container-color: #ffffff;
@@ -18,6 +30,12 @@
       box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
       border-radius: 12px;
     }
+
+    .mat-mdc-progress-bar {
+      --mat-progress-bar-active-indicator-color: #195DA2;
+      --mat-progress-bar-track-color: rgba(25, 93, 162, 0.12);
+    }
+
     .tb-login-form {
       @media #{$mat-gt-xs} {
         width: 480px !important;
@@ -28,8 +46,31 @@
         --mat-button-text-container-height: 20px;
       }
 
-      .tb-action-button{
+      .tb-action-button {
         margin: 20px 0 16px;
+        --mat-button-filled-container-color: #195DA2;
+        --mat-button-filled-label-text-color: #ffffff;
+        --mat-button-filled-state-layer-color: #ffffff;
+        --mat-button-filled-ripple-color: rgba(255, 255, 255, 0.24);
+        --mat-button-filled-hover-state-layer-opacity: 0.12;
+        --mat-button-filled-pressed-state-layer-opacity: 0.18;
+      }
+
+      .tb-reset-password {
+        --mat-button-text-label-text-color: #195DA2;
+        --mat-button-text-state-layer-color: #195DA2;
+        --mat-button-text-ripple-color: rgba(25, 93, 162, 0.24);
+      }
+
+      .mat-mdc-form-field {
+        --mat-form-field-outlined-focus-outline-color: #195DA2;
+        --mat-form-field-outlined-focus-label-text-color: #195DA2;
+        --mat-form-field-outlined-hover-outline-color: #195DA2;
+        --mat-form-field-outlined-caret-color: #195DA2;
+      }
+
+      .mat-icon {
+        --mat-icon-color: #195DA2;
       }
     }
 
@@ -42,7 +83,7 @@
       margin-bottom: 16px;
 
       .mat-divider-horizontal{
-        --mat-divider-color: var(--mat-form-field-outlined-outline-color);
+        --mat-divider-color: rgba(25, 93, 162, 0.24);
       }
 
       .text {
@@ -50,6 +91,7 @@
         padding-left: 8px;
         font-size: 16px;
         line-height: 24px;
+        color: #195DA2;
       }
     }
 
@@ -60,6 +102,7 @@
         letter-spacing: .1px;
         text-align: center;
         margin-bottom: 4px;
+        color: #195DA2;
       }
 
       .material-icons{
@@ -68,8 +111,12 @@
       }
 
       a.login-with-button {
-        color: rgba(black, 0.87);
+        color: #195DA2;
         background-color: #ffffff;
+        --mat-button-outlined-label-text-color: #195DA2;
+        --mat-button-outlined-outline-color: #195DA2;
+        --mat-button-outlined-state-layer-color: #195DA2;
+        --mat-button-outlined-ripple-color: rgba(25, 93, 162, 0.24);
       }
 
       .login-button-container {

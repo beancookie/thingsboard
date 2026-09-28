@@ -4558,6 +4558,7 @@
     },
     "login": {
         "login": "Login",
+        "login-title": "China Railway IoT Platform",
         "request-password-reset": "Request password reset",
         "reset-password": "Reset password",
         "create-password": "Create password",

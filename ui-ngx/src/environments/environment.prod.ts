@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: Copyright The Thingsboard Authors
 // SPDX-License-Identifier: Apache-2.0
 export const environment = {
-  appTitle: 'ThingsBoard',
+  appTitle: '中国中铁物联网平台',
   production: true,
 // @ts-ignore
   tbVersion: TB_VERSION,

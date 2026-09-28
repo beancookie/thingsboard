@@ -10,9 +10,10 @@
       <form class="tb-login-form flex flex-col" [formGroup]="loginFormGroup" (ngSubmit)="login()">
         <div class="flex flex-col items-center justify-start" style="padding: 16px 0;">
           <tb-logo class="login-logo"></tb-logo>
+          <div class="login-title" translate>login.login-title</div>
         </div>
         @if (isLoading || (isLoading$ | async)) {
-          <mat-progress-bar color="warn" mode="indeterminate">
+          <mat-progress-bar mode="indeterminate">
           </mat-progress-bar>
         }
         @if (!isLoading && !(isLoading$ | async)) {
@@ -65,7 +66,7 @@
             <tb-toggle-password matSuffix></tb-toggle-password>
             <mat-icon matPrefix>lock</mat-icon>
           </mat-form-field>
-          <button mat-flat-button color="accent" [disabled]="isLoading || (isLoading$ | async)"
+          <button mat-flat-button color="primary" [disabled]="isLoading || (isLoading$ | async)"
           class="tb-action-button" type="submit">{{ 'login.sign-in' | translate }}</button>
           <div class="forgot-password flex items-center justify-end gap-5">
             <button class="tb-reset-password" mat-button type="button" routerLink="/login/resetPasswordRequest">
