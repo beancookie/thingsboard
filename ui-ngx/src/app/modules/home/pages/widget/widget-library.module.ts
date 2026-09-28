@@ -16,7 +16,6 @@ import { WidgetsBundleWidgetsComponent } from '@home/pages/widget/widgets-bundle
 import { WidgetTypeAutocompleteComponent } from '@home/pages/widget/widget-type-autocomplete.component';
 import { WidgetsBundleDialogComponent } from '@home/pages/widget/widgets-bundle-dialog.component';
 import { WidgetConfigComponentsModule } from '@home/components/widget/config/widget-config-components.module';
-import { GithubBadgeModule } from '@home/components/github-badge/github-badge.module';
 import { NotificationBellModule } from '@home/components/notification/notification-bell.module';
 
 @NgModule({
@@ -36,7 +35,6 @@ import { NotificationBellModule } from '@home/components/notification/notificati
     CommonModule,
     SharedModule,
     HomeComponentsModule,
-    GithubBadgeModule,
     NotificationBellModule,
     WidgetConfigComponentsModule,
     WidgetLibraryRoutingModule

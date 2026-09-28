@@ -26,22 +26,22 @@ const defaultDocLinksMap = new Map<Authority, DocumentationLinks>(
         {
           icon: 'rocket',
           name: 'Getting started',
-          link: 'https://thingsboard.io/docs/getting-started/'
+          link: ''
         },
         {
           icon: 'title',
           name: 'Tenant profiles',
-          link: 'https://thingsboard.io/docs/user-guide/tenant-profiles/'
+          link: ''
         },
         {
           icon: 'insert_chart',
           name: 'API',
-          link: 'https://thingsboard.io/docs/apis-and-sdks/'
+          link: ''
         },
         {
           icon: 'now_widgets',
           name: 'Widgets Library',
-          link: 'https://thingsboard.io/docs/reference/widgets/widget-library/'
+          link: ''
         }
       ]
     }],
@@ -50,22 +50,22 @@ const defaultDocLinksMap = new Map<Authority, DocumentationLinks>(
         {
           icon: 'rocket',
           name: 'Getting started',
-          link: 'https://thingsboard.io/docs/getting-started/'
+          link: ''
         },
         {
           icon: 'settings_ethernet',
           name: 'Rule engine',
-          link: 'https://thingsboard.io/docs/user-guide/rule-engine/'
+          link: ''
         },
         {
           icon: 'insert_chart',
           name: 'API',
-          link: 'https://thingsboard.io/docs/apis-and-sdks/'
+          link: ''
         },
         {
           icon: 'devices',
           name: 'Device profiles',
-          link: 'https://thingsboard.io/docs/user-guide/device-profiles/'
+          link: ''
         }
       ]
     }],
@@ -74,7 +74,7 @@ const defaultDocLinksMap = new Map<Authority, DocumentationLinks>(
         {
           icon: 'rocket',
           name: 'Getting started',
-          link: 'https://thingsboard.io/docs/getting-started/'
+          link: ''
         }
       ]
     }]

@@ -441,7 +441,7 @@
     "authentication-settings": "認証設定",
     "auth-method": "認証方式",
     "auth-method-username-password": "パスワード / アクセストークン",
-    "auth-method-username-password-hint": "GitHubユーザーは、リポジトリへの書き込み権限を持つアクセス<a href='https://github.com/settings/tokens' target='_blank'>トークン</a>を<b>必ず</b>使用する必要があります。",
+    "auth-method-username-password-hint": "GitHubユーザーは、リポジトリへの書き込み権限を持つアクセストークンを<b>必ず</b>使用する必要があります。",
     "auth-method-private-key": "秘密鍵",
     "password-access-token": "パスワード / アクセストークン",
     "change-password-access-token": "パスワード / アクセストークンを変更",

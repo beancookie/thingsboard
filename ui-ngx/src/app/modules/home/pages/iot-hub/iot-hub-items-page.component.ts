@@ -109,7 +109,6 @@ export class TbIotHubItemsPageComponent implements OnInit {
   }
 
   openSignup(): void {
-    window.open(this.iotHubApiService.baseUrl + '/signup', '_blank');
   }
 
   loadInstalledCount(): void {

@@ -441,7 +441,7 @@
     "authentication-settings": "Authenticatie-instellingen",
     "auth-method": "Authenticatiemethode",
     "auth-method-username-password": "Wachtwoord / access token",
-    "auth-method-username-password-hint": "GitHub-gebruikers <b>moeten</b> gebruik maken van <a href='https://github.com/settings/tokens' target='_blank'>tokens</a> met schrijfrechten op de repository.",
+    "auth-method-username-password-hint": "GitHub-gebruikers <b>moeten</b> gebruik maken van tokens met schrijfrechten op de repository.",
     "auth-method-private-key": "Privésleutel",
     "password-access-token": "Wachtwoord / access token",
     "change-password-access-token": "Wachtwoord / access token wijzigen",

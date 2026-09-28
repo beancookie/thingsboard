@@ -39,7 +39,6 @@
       <div class="flex flex-1 flex-row items-center overflow-hidden">
         <tb-breadcrumb class="mat-toolbar-tools" [componentBreadcrumbsTpl]="widgetTitleTpl"></tb-breadcrumb>
       </div>
-      <tb-github-badge class="lt-lg:!hidden"></tb-github-badge>
       <button mat-button class="lt-lg:!hidden" [disabled]="!iframeWidgetEditModeInited"
               (click)="applyWidgetScript()"
               matTooltip="{{ 'widget.run' | translate }} (CTRL + Return)"

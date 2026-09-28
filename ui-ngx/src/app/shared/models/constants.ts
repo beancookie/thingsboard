@@ -76,7 +76,7 @@ export const resolveBreakpoint = (breakpoint: string): string => {
   return breakpoint;
 };
 
-export const helpBaseUrl = 'https://thingsboard.io';
+export const helpBaseUrl = '';
 
 export const docPlatformPrefix = '';
 
@@ -88,10 +88,10 @@ export const HelpLinks = {
     slackSettings: `${helpBaseUrl}/docs${docPlatformPrefix}/user-guide/ui/slack-settings/`,
     securitySettings: `${helpBaseUrl}/docs${docPlatformPrefix}/user-guide/security/`,
     oauth2Settings: `${helpBaseUrl}/docs${docPlatformPrefix}/user-guide/security/oauth-2-support/`,
-    oauth2Apple: 'https://developer.apple.com/sign-in-with-apple/get-started/',
-    oauth2Facebook: 'https://developers.facebook.com/docs/facebook-login/web#logindialog',
-    oauth2Github: 'https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app',
-    oauth2Google: 'https://developers.google.com/identity/protocols/oauth2',
+    oauth2Apple: '',
+    oauth2Facebook: '',
+    oauth2Github: '',
+    oauth2Google: '',
     ruleEngine: `${helpBaseUrl}/docs${docPlatformPrefix}/user-guide/rule-engine/`,
     ruleNodeCheckRelation: `${helpBaseUrl}/docs/reference/rule-engine/nodes/filter/check-relation-presence/`,
     ruleNodeCheckExistenceFields: `${helpBaseUrl}/docs/reference/rule-engine/nodes/filter/check-fields-presence/`,

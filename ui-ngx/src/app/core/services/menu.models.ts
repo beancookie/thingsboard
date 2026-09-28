@@ -888,14 +888,6 @@ const defaultUserMenuMap = new Map<Authority, MenuReference[]>([
           {id: MenuId.notification_settings},
           {id: MenuId.queues}
         ]
-      },
-      {
-        id: MenuId.mobile_center,
-        pages: [
-          {id: MenuId.mobile_bundles},
-          {id: MenuId.mobile_apps},
-          {id: MenuId.mobile_qr_code_widget}
-        ]
       }
     ]
   ],
@@ -903,7 +895,6 @@ const defaultUserMenuMap = new Map<Authority, MenuReference[]>([
     Authority.TENANT_ADMIN,
     [
       {id: MenuId.home},
-      {id: MenuId.iot_hub},
       {id: MenuId.divider},
       {
         id: MenuId.monitor,
@@ -999,13 +990,6 @@ const defaultUserMenuMap = new Map<Authority, MenuReference[]>([
         pages: [
           {id: MenuId.edges},
           {id: MenuId.rulechain_templates}
-        ]
-      },
-      {
-        id: MenuId.mobile_center,
-        pages: [
-          {id: MenuId.mobile_bundles},
-          {id: MenuId.mobile_apps}
         ]
       }
     ]

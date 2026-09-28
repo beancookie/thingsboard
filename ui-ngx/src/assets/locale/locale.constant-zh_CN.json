@@ -83,7 +83,8 @@
     "upload": "上传",
     "delete-anyway": "仍然删除",
     "delete-selected": "删除所选",
-    "set": "设置"
+    "set": "设置",
+    "retry": "重试"
   },
   "aggregation": {
     "aggregation": "聚合",
@@ -441,7 +442,7 @@
     "authentication-settings": "认证设置",
     "auth-method": "认证方法",
     "auth-method-username-password": "密码/访问 Token",
-    "auth-method-username-password-hint": "GitHub 用户<b>必须</b>使用具有仓库写权限的访问 <a href='https://github.com/settings/tokens' target='_blank'>Token</a>。",
+    "auth-method-username-password-hint": "GitHub 用户<b>必须</b>使用具有仓库写权限的访问 Token。",
     "auth-method-private-key": "私钥",
     "password-access-token": "密码/访问 Token",
     "change-password-access-token": "修改密码/访问 Token",
@@ -549,7 +550,14 @@
     "slack-settings": "Slack 设置",
     "mobile-settings": "移动端设置",
     "firebase-service-account-file": "Firebase 服务账户凭证 JSON 文件",
-    "select-firebase-service-account-file": "拖放您的 Firebase 服务账户凭证文件或"
+    "select-firebase-service-account-file": "拖放您的 Firebase 服务账户凭证文件或",
+    "platform": "平台",
+    "trendz": "Trendz",
+    "trendz-settings": "Trendz 设置",
+    "trendz-url": "Trendz 地址",
+    "trendz-url-required": "请输入 Trendz 地址",
+    "trendz-api-key": "Trendz API 密钥",
+    "trendz-enable": "启用 Trendz"
   },
   "alarm": {
     "alarm": "告警",
@@ -814,7 +822,8 @@
     "unassign-asset-from-edge-text": "确认后，该资产将被取消分配，Edge 将无法访问。",
     "unassign-assets-from-edge-title": "确定要取消分配 { count, plural, =1 {1 个资产} other {# 个资产} }吗？",
     "unassign-assets-from-edge-text": "确认后，所有选中的资产将被取消分配，Edge 将无法访问。",
-    "selected-assets": "{ count, plural, =1 {1 个资产} other {# 个资产} }已选择"
+    "selected-assets": "{ count, plural, =1 {1 个资产} other {# 个资产} }已选择",
+    "unassign-assets-from-edge": "从边缘取消分配资产"
   },
   "attribute": {
     "attributes": "属性",
@@ -1776,7 +1785,10 @@
     "search": "搜索客户",
     "selected-customers": "已选择{ count, plural, =1 {1 个客户} other {# 个客户} }",
     "edges": "客户 Edge 实例",
-    "manage-edges": "管理 Edge"
+    "manage-edges": "管理 Edge",
+    "customers-and-users": "客户和用户",
+    "public-edges": "公共边缘",
+    "manage-public-edges": "管理客户边缘"
   },
   "css-size": {
     "size-value-required": "尺寸值为必填项",
@@ -2019,7 +2031,8 @@
     },
     "view-format-type-grid": "网格",
     "view-format-type-list": "列表",
-    "view-format": "视图格式"
+    "view-format": "视图格式",
+    "assign-dashboard-to-edge-title": "分配仪表盘到边缘"
   },
   "datakey": {
     "settings": "设置",
@@ -2292,7 +2305,9 @@
       "snmp-command": "使用以下文档通过 SNMP 连接设备。",
       "sparkplug-command": "使用以下文档通过 MQTT Sparkplug 连接设备。",
       "lwm2m-command": "使用以下文档通过 LWM2M 连接设备。"
-    }
+    },
+    "assign-device-to-edge-title": "分配设备到边缘",
+    "assign-device-to-edge-text": "请选择要分配到边缘的设备"
   },
   "dynamic-form": {
     "property": {
@@ -3197,7 +3212,9 @@
     "login-here": "在此登录",
     "to-increase-limit": "以增加上限。",
     "increase-limit-request-sent-title": "我们已向您的系统管理员发送了自动请求以增加上限",
-    "increase-limit-request-sent-text": "请等待他们审核请求并更新设置。您可能需要刷新此页面以查看更改。"
+    "increase-limit-request-sent-text": "请等待他们审核请求并更新设置。您可能需要刷新此页面以查看更改。",
+    "devices-and-assets": "设备与资产",
+    "data-processing": "数据处理"
   },
   "entity-field": {
     "created-time": "创建时间",
@@ -3329,7 +3346,8 @@
     "unassign-entity-views-from-edge-action-title": "取消分配 { count, plural, =1 {1 个实体视图} other {# 个实体视图} }",
     "unassign-entity-view-from-edge": "取消分配实体视图",
     "unassign-entity-views-from-edge-title": "确定要取消分配 { count, plural, =1 {1 个实体视图} other {# 个实体视图} } 吗？",
-    "unassign-entity-views-from-edge-text": "确认后，所有选中的实体视图将被取消分配，Edge 将无法访问。"
+    "unassign-entity-views-from-edge-text": "确认后，所有选中的实体视图将被取消分配，Edge 将无法访问。",
+    "assign-entity-view-to-edge-title": "分配实体视图到边缘"
   },
   "event": {
     "event-type": "事件类型",
@@ -3642,7 +3660,8 @@
     "switch-to-default-value": "切换到默认值",
     "inherit-owner": "从所有者继承",
     "source-attribute-not-set": "如果源属性未设置",
-    "unit": "单位"
+    "unit": "单位",
+    "or-conditions-disabled": "键过滤器之间的 OR 条件已被系统管理员禁用。"
   },
   "fullscreen": {
     "expand": "展开为全屏",
@@ -3656,7 +3675,7 @@
   "gateway": {
     "gateway-name": "Gateway 名称",
     "gateway-name-required": "Gateway 名称为必填项。",
-    "gateways": "Gateways",
+    "gateways": "网关",
     "create-new-gateway": "创建新 Gateway",
     "create-new-gateway-text": "确定要创建名为“{{gatewayName}}”的新 Gateway 吗？",
     "launch-command": "启动命令",
@@ -3743,7 +3762,8 @@
     "embed-to-html-hint": "此功能将使链接对任何未授权用户可用。",
     "embed-to-html-text": "使用以下代码片段，您可以将图片嵌入到基于纯 HTML 的组件中。<br/>此类组件包括 HTML 卡片部件、单元格内容函数等。",
     "embed-to-angular-template": "嵌入到 Angular HTML 模板",
-    "embed-to-angular-template-text": "使用以下代码片段，您可以将图片嵌入到用于组件的 Angular HTML 模板中。<br/>此类组件包括 Markdown 部件、部件编辑器中的 HTML 部分、自定义操作等。"
+    "embed-to-angular-template-text": "使用以下代码片段，您可以将图片嵌入到用于组件的 Angular HTML 模板中。<br/>此类组件包括 Markdown 部件、部件编辑器中的 HTML 部分、自定义操作等。",
+    "images": "图像"
   },
   "image-input": {
     "drop-images-or": "拖放图片或",
@@ -4164,7 +4184,21 @@
     }
   },
   "item": {
-    "selected": "已选择"
+    "selected": "已选择",
+    "type-widget": "部件",
+    "type-widget-plural": "部件",
+    "type-dashboard": "仪表盘",
+    "type-dashboard-plural": "仪表盘",
+    "type-solution-template": "解决方案模板",
+    "type-solution-template-plural": "解决方案模板",
+    "type-calculated-field": "计算字段",
+    "type-calculated-field-plural": "计算字段",
+    "type-alarm-rule": "告警规则",
+    "type-alarm-rule-plural": "告警规则",
+    "type-rule-chain": "规则链",
+    "type-rule-chain-plural": "规则链",
+    "type-device": "设备",
+    "type-device-plural": "设备"
   },
   "js-func": {
     "no-return-error": "函数必须返回值！",
@@ -4481,7 +4515,8 @@
       "run-app-text": "按照 IDE 中的说明运行应用。\n如果使用终端，请使用以下命令运行应用：",
       "more-information": "详细信息请参阅我们的入门文档。",
       "getting-started": "入门指南"
-    }
+    },
+    "mobile-apps": "移动应用"
   },
   "notification": {
     "action-button": "操作按钮",
@@ -4778,7 +4813,8 @@
       "enable-all": "全部启用",
       "disable-all": "全部禁用",
       "delivery-not-configured": "发送方式未配置"
-    }
+    },
+    "notifications": "通知"
   },
   "ota-update": {
     "add": "添加软件包",
@@ -5051,7 +5087,8 @@
     "resources-are-in-use": "资源正被其他实体使用",
     "resource-is-in-use-text": "资源 <b>'{{title}}'</b> 未被删除，因为它正被以下实体使用：",
     "resources-are-in-use-text": "并非所有资源都已被删除，因为它们正被其他实体使用。</br>您可以通过点击相应资源行中的<b>引用</b>按钮查看引用的实体。</br>如果仍要删除这些资源，请在下方表格中选择它们并点击<b>删除所选</b>按钮。",
-    "delete-resource-in-use-text": "如果仍要删除该资源，请点击<b>仍然删除</b>按钮。"
+    "delete-resource-in-use-text": "如果仍要删除该资源，请点击<b>仍然删除</b>按钮。",
+    "files": "文件"
   },
   "javascript": {
     "add": "添加 JavaScript 资源",
@@ -5078,7 +5115,9 @@
     "selected-javascript-resources": "已选择 { count, plural, =1 {1 个 JavaScript 资源} other {# 个 JavaScript 资源} }",
     "no-javascript-resource-text": "未找到 JavaScript 资源",
     "all-types": "全部",
-    "module-script": "模块脚本"
+    "module-script": "模块脚本",
+    "scripts": "脚本",
+    "script-type": "脚本类型"
   },
   "rpc": {
     "error": {
@@ -5149,7 +5188,18 @@
     "unset-auto-assign-to-edge-title": "确定不在创建时将 Edge 规则链“{{ruleChainName}}”分配到 Edge 吗？",
     "unset-auto-assign-to-edge-text": "确认后，该 Edge 规则链将不再在创建时自动分配到 Edge。",
     "unassign-rulechain-title": "确定要取消分配规则链“{{ruleChainName}}”吗？",
-    "unassign-rulechains": "取消分配规则链"
+    "unassign-rulechains": "取消分配规则链",
+    "rulechain-not-found-warning": "未找到默认规则链。配置文件已在不含规则链的情况下保存——您可以在配置文件设置中为其指定。",
+    "add-note": "添加注释",
+    "paste-note": "粘贴注释",
+    "note": "注释",
+    "edit-note": "编辑注释",
+    "note-content": "Markdown/HTML 内容",
+    "note-details": "注释详情",
+    "note-background-color": "背景色",
+    "note-border": "边框",
+    "note-apply-default-markdown-style": "应用默认 Markdown 样式",
+    "note-custom-css": "注释内容 CSS"
   },
   "rulenode": {
     "rule-node-events": "规则节点事件",
@@ -6024,7 +6074,23 @@
       "force-acknowledgement": "强制确认",
       "force-acknowledgement-hint": "如果启用，传入消息将立即被确认。然后模型的响应将作为单独的新消息入队。",
       "ai-resources": "AI 资源"
-    }
+    },
+    "request-body-template": "请求体模板",
+    "request-body-template-hint": "使用 <code><span style=\"color: #000;\">$&#123;</span>metadataKey<span style=\"color: #000;\">&#125;</span></code> 表示元数据，使用 <code><span style=\"color: #000;\">$[</span>messageKey<span style=\"color: #000;\">]</span></code> 表示消息值。若为空，则将消息负载用作请求体。对于非 JSON 负载，请启用“解析为纯文本”。",
+    "other-properties-empty": "未配置其它属性",
+    "client-properties-empty": "未配置客户端属性",
+    "message-attributes-empty": "未配置消息属性",
+    "url-hint": "输入请求 URL。请确保特殊字符已进行百分号编码。",
+    "query-params": "查询参数",
+    "query-params-hint": "要包含在请求 URL 中的其它查询参数。名称和值均支持模板化，并在模板解析后严格按 RFC 3986 编码。",
+    "query-params-empty": "未配置查询参数",
+    "query-params-name": "名称",
+    "query-params-value": "值",
+    "query-params-name-required": "名称不能为空",
+    "query-params-value-required": "值不能为空",
+    "headers-empty": "未配置请求头",
+    "request-url": "请求 URL",
+    "url": "URL"
   },
   "timezone": {
     "timezone": "时区",
@@ -7134,7 +7200,8 @@
     "degrees-brix": "白利度",
     "katal": "开特",
     "katal-per-cubic-metre": "开特每立方米",
-    "paris-inch": "巴黎英寸"
+    "paris-inch": "巴黎英寸",
+    "cubic-meters-per-minute": "立方米/分钟"
   },
   "user": {
     "user": "用户",
@@ -7391,7 +7458,13 @@
     "filter": "部件过滤器类型",
     "loading-widgets": "正在加载部件...",
     "widget-template-error": "无效的部件 HTML 模板。",
-    "reference": "引用"
+    "reference": "引用",
+    "installed": "已安装",
+    "type-timeseries": "时序",
+    "type-latest": "最新值",
+    "type-rpc": "控制",
+    "type-alarm": "告警",
+    "type-static": "静态"
   },
   "widget-action": {
     "header-button": "部件标题栏按钮",
@@ -8897,13 +8970,30 @@
           },
           "custom": {
             "title": "自定义",
-            "tile-url": "瓦片 URL"
+            "tile-url": "瓦片 URL",
+            "style-url": "样式 URL",
+            "vector-tiles": "矢量瓦片",
+            "vector-tiles-hint": "当使用来自 OpenFreeMap 或 MapTiler 等提供商的样式 URL 时启用。",
+            "attribution": "版权文字",
+            "attribution-hint": "显示在地图底部。大多数瓦片提供商要求显示。"
+          },
+          "carto": {
+            "title": "CARTO",
+            "positron": "Positron",
+            "dark-matter": "DarkMatter"
+          },
+          "openfreemap": {
+            "title": "OpenFreeMap",
+            "liberty": "Liberty",
+            "bright": "Bright",
+            "positron": "Positron"
           }
         },
         "credentials": {
           "credentials": "凭据",
           "api-key": "API 密钥"
-        }
+        },
+        "webgl-not-available": "所选地图图层需要图形加速才能显示。请在浏览器设置中启用“硬件加速”，或切换到其它图层。"
       },
       "overlays": {
         "overlays": "覆盖层",
@@ -9810,7 +9900,9 @@
           "point-shape": "数据点形状",
           "point-size": "数据点大小"
         }
-      }
+      },
+      "data-zoom-update-timewindow": "缩放时更新时间窗口",
+      "reset-timewindow": "返回原始时间窗口"
     },
     "wind-speed-direction": {
       "layout": "布局",
@@ -10069,15 +10161,18 @@
         },
         "step4": {
           "title": "配置功能：白标",
-          "content": "<p>无需编写代码，无需重启服务，即可轻松自定义您公司或产品的徽标和配色方案。</p><p>请参考以下文档了解操作方法：</p>"
+          "content": "<p>无需编写代码，无需重启服务，即可轻松自定义您公司或产品的徽标和配色方案。</p><p>请参考以下文档了解操作方法：</p>",
+          "how-to-configure-2fa": "如何配置双重验证"
         },
         "step5": {
           "title": "配置功能：双因素认证",
-          "content": "<p>通过双因素认证提高平台账户的安全性。</p><p>请参考以下文档了解操作方法：</p>"
+          "content": "<p>通过双因素认证提高平台账户的安全性。</p><p>请参考以下文档了解操作方法：</p>",
+          "how-to-configure-oauth2": "如何配置 OAuth 2"
         },
         "step6": {
           "title": "配置功能：OAuth 2",
-          "content": "<p>通过 OAuth 2.0 单点登录功能简化租户和客户用户的登录流程。</p><p>请参考以下文档了解操作方法：</p>"
+          "content": "<p>通过 OAuth 2.0 单点登录功能简化租户和客户用户的登录流程。</p><p>请参考以下文档了解操作方法：</p>",
+          "how-to-configure-notifications": "如何配置 Slack"
         }
       },
       "tenant-admin": {
@@ -10122,7 +10217,8 @@
         },
         "step6": {
           "title": "创建客户并共享仪表板",
-          "content": "<p>通过创建终端用户仪表板，客户用户只能查看自己的设备，其他客户的数据将被隐藏。</p><p>请参考以下文档了解操作方法：</p>"
+          "content": "<p>通过创建终端用户仪表板，客户用户只能查看自己的设备，其他客户的数据将被隐藏。</p><p>请参考以下文档了解操作方法：</p>",
+          "how-to-create-customer-and-assign-dashboard": "如何创建客户并分配仪表盘"
         }
       }
     },
@@ -10141,6 +10237,21 @@
       "delete-key": "删除键",
       "target-dashboard-state": "目标仪表板状态",
       "go-to-main-state": "前往默认视图"
+    },
+    "iot-hub": {
+      "title-text": "借助社区验证的资源更快构建，来自"
+    },
+    "html-container": {
+      "java-script": "JavaScript",
+      "js-function": "JavaScript 函数",
+      "html": "HTML",
+      "angular-html-template": "Angular HTML 模板",
+      "css": "CSS",
+      "container-type": "容器类型",
+      "type-plain": "纯 HTML",
+      "type-angular": "Angular",
+      "resources": "资源",
+      "no-resources": "未配置资源"
     }
   },
   "icon": {
@@ -10188,6 +10299,299 @@
   },
   "language": {
     "auto": "自动",
-    "language": "语言"
+    "language": "语言",
+    "locales": {
+      "ar_AE": "العربية (الإمارات العربية المتحدة)",
+      "ca_ES": "català (Espanya)",
+      "cs_CZ": "čeština (Česko)",
+      "da_DK": "dansk (Danmark)",
+      "de_DE": "Deutsch (Deutschland)",
+      "el_GR": "Ελληνικά (Ελλάδα)",
+      "en_US": "English (United States)",
+      "es_ES": "español (España)",
+      "fa_IR": "فارسی (ایران)",
+      "fr_FR": "français (France)",
+      "hi_IN": "हिन्दी (भारत)",
+      "it_IT": "italiano (Italia)",
+      "ja_JP": "日本語 (日本)",
+      "ka_GE": "ქართული (საქართველო)",
+      "ko_KR": "한국어 (대한민국)",
+      "lt_LT": "lietuvių (Lietuva)",
+      "lv_LV": "latviešu (Latvija)",
+      "nl_BE": "Nederlands (België)",
+      "nl_NL": "Nederlands (Nederland)",
+      "no_NO": "norsk (Norge)",
+      "pl_PL": "polski (Polska)",
+      "pt_BR": "português (Brasil)",
+      "ro_RO": "română (România)",
+      "sl_SI": "slovenščina (Slovenija)",
+      "tr_TR": "Türkçe (Türkiye)",
+      "uk_UA": "українська (Україна)",
+      "zh_CN": "中文 (中国)",
+      "zh_TW": "中文 (台灣)"
+    }
+  },
+  "iot-hub": {
+    "iot-hub": "IoT Hub",
+    "generate-random-value": "生成随机值",
+    "home-title": "ThingsBoard IoT Hub",
+    "home-subtitle-prefix": "探索开箱即用的",
+    "and-devices": "和设备",
+    "search-placeholder": "在 IoT Hub 中搜索...",
+    "search": "搜索...",
+    "search-published-items": "搜索已发布的项...",
+    "see-all-results": "查看全部结果",
+    "no-search-results": "未找到与“{{ search }}”匹配的结果",
+    "no-items-available": "暂无可用项",
+    "search-results": "搜索结果",
+    "search-results-for": "搜索结果：",
+    "try-adjusting-search": "请尝试调整搜索条件",
+    "add-widget-from-iot-hub": "从 IoT Hub 添加部件",
+    "all-widgets": "所有部件",
+    "all-iot-hub-widgets": "所有 IoT Hub 部件",
+    "installed-from-iot-hub": "从 IoT Hub 安装",
+    "item-link-unavailable": "项不可用",
+    "include-deprecated": "包含已弃用项",
+    "widget-category-value": "{{ category }} 部件",
+    "search-categories": "搜索分类...",
+    "search-in-category": "搜索部件...",
+    "search-bundles": "搜索部件包...",
+    "search-widgets": "搜索部件...",
+    "add-item-from-iot-hub": "从 IoT Hub 添加 {{ type }}",
+    "add-from-iot-hub": "从 IoT Hub 添加",
+    "filters": "过滤器",
+    "type": "类型",
+    "items-per-page": "每页项数",
+    "filter": "过滤",
+    "available": "可用",
+    "items-page-desc-widgets": "使用为您的行业预配置的部件，快速开启 IoT 之旅。立即部署经过验证的架构，专注于真正重要的事情：您独特的业务逻辑。",
+    "items-page-desc-dashboards": "浏览仪表盘，查找预构建的可视化模板和交互式 UI 布局，几分钟内即可部署，让您的 IoT 数据焕发生机。",
+    "items-page-desc-solution-templates": "包含仪表盘、规则链和设备配置的完整 IoT 解决方案包。从经过验证的架构开始。",
+    "items-page-desc-calculated-fields": "使用预配置的计算字段自动计算燃油效率、功率因数等复杂指标。无需手动编写逻辑，让仪表盘保持简洁且可操作。",
+    "items-page-desc-alarm-rules": "使用预构建的告警规则模板检测低电量、阈值越限或设备离线等关键情况。无需编写规则逻辑，即可在事件发生时立即响应。",
+    "items-page-desc-rule-chains": "从复杂的数据处理到无缝的 API 集成，规则链模板为您提供所需的架构基础，无需从零构建即可扩展。",
+    "items-page-desc-devices": "浏览设备库，查找预配置的连接模板，几分钟内即可部署并立即连接您的硬件。",
+    "device-library": "设备库",
+    "most-popular-in-iot-hub": "IoT Hub 中最受欢迎",
+    "pe-required-title": "需要专业版",
+    "pe-required-message": "此项仅适用于 ThingsBoard <b>专业版</b>。您当前运行的是 <b>社区版</b>。如需安装，请升级到专业版。",
+    "upgrade-required-title": "需要升级 ThingsBoard",
+    "upgrade-required-message": "此项需要 ThingsBoard <b>{{minVersion}}</b> 或更高版本。您当前运行的是 <b>{{currentVersion}}</b>。请升级您的实例后再安装。",
+    "upgrade-instance": "升级实例",
+    "become-creator-text": "将您的模板提交到 ThingsBoard IoT Hub，获得推荐并向全球社区展示您的解决方案。",
+    "contribute": "贡献",
+    "creator-profile": "创建者资料",
+    "title-widgets": "部件",
+    "title-dashboards": "仪表盘",
+    "title-calculated-fields": "计算字段",
+    "title-alarm-rules": "告警规则",
+    "title-rule-chains": "规则链",
+    "title-devices": "设备",
+    "title-solution-templates": "解决方案模板",
+    "subtitle-widgets": "为您的仪表盘浏览社区部件",
+    "subtitle-dashboards": "浏览开箱即用的仪表盘",
+    "subtitle-solution-templates": "浏览完整的 IoT 解决方案包",
+    "subtitle-calculated-fields": "浏览计算字段模板",
+    "subtitle-alarm-rules": "浏览告警规则模板",
+    "subtitle-rule-chains": "浏览规则链模板",
+    "subtitle-devices": "浏览设备配置",
+    "search-dashboards": "搜索仪表盘...",
+    "search-solution-templates": "搜索解决方案模板...",
+    "search-calculated-fields": "搜索计算字段...",
+    "search-alarm-rules": "搜索告警规则...",
+    "search-rule-chains": "搜索规则链...",
+    "search-devices": "搜索设备...",
+    "sort-most-installed": "安装最多",
+    "sort-newest": "最新",
+    "sort-name": "名称（A-Z）",
+    "type-filter-label": "类型",
+    "category": "分类",
+    "use-case": "使用场景",
+    "vendor": "厂商",
+    "view-setup-guide": "查看设置指南",
+    "hardware-type": "硬件类型",
+    "connectivity": "连接方式",
+    "clear-all-filters": "清除所有过滤条件",
+    "clear-all": "全部清除",
+    "results-count": "{{count}} 个结果",
+    "unable-to-load": "无法加载",
+    "unable-to-load-text": "加载项时出现问题，请重试。",
+    "network-server-unavailable": "网络或服务器不可用",
+    "network-server-unavailable-text": "无法访问目录，请稍后重试。",
+    "try-again": "重试",
+    "retry": "重试",
+    "no-items-found": "未找到任何项",
+    "no-items-found-text": "请尝试调整搜索或过滤条件。",
+    "no-widgets-found": "未找到任何部件",
+    "browse-tip-prefix": "找不到需要的？",
+    "browse-tip-link": "浏览 IoT Hub",
+    "browse-tip-suffix": "获取更多部件。",
+    "creator": "创建者",
+    "manage": "管理",
+    "details": "详情",
+    "become-a-creator": "成为创建者",
+    "back-to-iot-hub": "返回 IoT Hub",
+    "verified-creator": "认证创建者",
+    "published-items": "已发布的项",
+    "by-creator": "由 {{name}} 创建",
+    "installs": "次安装",
+    "more": "更多",
+    "categories": "分类",
+    "use-cases": "使用场景",
+    "changelog": "更新日志",
+    "created-by": "由 {{name}} 创建",
+    "install-confirm": "安装 {{name}} v{{version}}？",
+    "install-confirm-title": "安装“{{name}}”？",
+    "install-desc": "安装后将自动在您的租户中创建并配置所需资源",
+    "install-success-desc": "“{{name}}”已成功安装",
+    "remove": "移除",
+    "remove-confirm-title": "移除“{{name}}”？",
+    "remove-desc": "移除后还将删除已安装的实体及其在您租户中的关联资源",
+    "remove-desc-solution-template": "移除此解决方案模板还将删除所有已创建的实体，包括仪表盘、规则链、设备及您租户中的其它关联资源",
+    "remove-anyway": "仍要移除",
+    "select-entity-for-cf": "为计算字段“{{name}}”选择实体",
+    "select-entity-for-alarm-rule": "为告警规则“{{name}}”选择实体",
+    "rule-chain-install-subtitle": "安装后将自动在您的租户中创建规则链。可选择将其设为某个配置文件的默认规则链，使该配置文件的实体都通过它路由消息。",
+    "rule-chain-set-as-profile-default-toggle": "设为配置文件的默认规则链",
+    "rule-chain-set-as-profile-default-tooltip": "启用后，所选配置文件的所有实体都将通过此规则链路由消息。",
+    "rule-chain-overwrite-title": "替换现有的默认规则链？",
+    "rule-chain-overwrite-body": "配置文件 <b>{{profile}}</b> 当前使用 <b>{{existing}}</b> 作为默认规则链。安装后将用此规则链替换它。",
+    "rule-chain-overwrite-replace": "替换",
+    "install": "安装",
+    "open": "打开",
+    "built-in": "内置",
+    "built-in-lookup-failed-title": "无法检查此组件",
+    "built-in-lookup-failed-text": "无法检查“{{name}}”是否已存在于当前实例中。未安装任何内容，请重试。",
+    "built-in-missing-title": "当前实例中不可用",
+    "built-in-missing-text": "“{{name}}”通常随 ThingsBoard 一起提供，但当前实例中不存在——可能已被系统管理员删除。您可以改为从 IoT Hub 安装。",
+    "connect": "连接",
+    "connect-device": "连接设备",
+    "installing": "安装中...",
+    "installing-title": "正在安装“{{name}}”",
+    "installed": "已安装",
+    "install-success": "{{name}} 安装成功",
+    "install-success-title": "安装成功",
+    "install-success-message": "“{{name}}” v{{version}} 已成功安装。",
+    "install-error": "安装 {{name}} 失败",
+    "solution-install-title": "解决方案模板安装成功",
+    "solution-instructions": "解决方案说明",
+    "goto-main-dashboard": "转到主仪表盘",
+    "install-error-title": "安装失败",
+    "install-error-message": "安装“{{name}}”失败。",
+    "install-dependency-error": "安装依赖项“{{name}}”失败：{{error}}",
+    "install-plan-title": "安装“{{name}}”及其依赖项",
+    "install-plan-will-install": "将安装 {{count}} 个项。",
+    "install-plan-will-update": "{{count}} 个项已安装，将跳过。",
+    "install-plan-missing-warning": "在市场中有 {{count}} 个必需项无法找到。缺少它们，“{{ name }}”可能无法完全正常工作。",
+    "install-plan-status-will": "安装",
+    "install-plan-status-installed": "已安装",
+    "install-plan-status-missing": "缺失",
+    "install-plan-confirm": "安装",
+    "install-partial-title": "安装完成但有警告",
+    "install-partial-desc": "“{{name}}”已安装，但部分必需项缺失。",
+    "install-rollback-partial": "失败前安装的部分项无法自动移除，可能需要手动删除。",
+    "check-for-updates": "检查更新",
+    "updates": "更新",
+    "up-to-date": "已是最新",
+    "update": "更新",
+    "update-to-version": "更新到 v {{ version }}",
+    "update-item-title": "更新项",
+    "update-confirm": "将“{{name}}”更新到版本 {{version}}？",
+    "update-confirm-title": "更新“{{name}}”？",
+    "update-desc": "更新后将用最新版本替换当前版本，并重新配置您租户中的关联资源",
+    "update-success-desc": "“{{name}}”已成功更新",
+    "updating": "更新中...",
+    "update-success-title": "更新成功",
+    "update-success-message": "“{{name}}”已更新到版本 {{version}}。",
+    "entity-modified-title": "实体已修改",
+    "entity-modified-text": "{{type}} 已在本地修改。仍要更新吗？",
+    "update-error-title": "更新失败",
+    "update-error-message": "更新“{{name}}”失败。",
+    "update-error": "更新 {{name}} 失败",
+    "most-popular": "最受欢迎",
+    "all": "全部",
+    "installed-items": "已安装项",
+    "installed-items-for": "“{{name}}”的已安装项",
+    "search-installed-items": "搜索已安装项...",
+    "item-name": "名称",
+    "item-type": "类型",
+    "item-version": "版本",
+    "installed-date": "安装时间",
+    "no-installed-items": "未找到已安装项",
+    "no-installed-items-text": "请尝试调整搜索或过滤条件。",
+    "remove-installed-item-title": "移除已安装项",
+    "remove-installed-item-text": "确定要移除“{{name}}”吗？已安装的实体也将被移除。",
+    "installed-item-removed": "“{{name}}”已移除",
+    "installed-item-remove-error": "移除“{{name}}”失败",
+    "open-installed-entity": "打开已安装实体",
+    "view-item-details": "查看项详情",
+    "review-device-instructions": "查看设备说明",
+    "open-item-type": "打开{{type}}",
+    "back-to-marketplace": "返回市场",
+    "device-install-select-connectivity": "为您的设备选择连接方式",
+    "pe-only": "仅专业版",
+    "pe-connectivity-prompt-title-suffix": "仅在 ThingsBoard 专业版中可用",
+    "pe-connectivity-prompt-try-pe": "试用专业版",
+    "connection-method": "连接方式",
+    "step-prerequisites": "前提条件",
+    "step-configuration": "配置",
+    "step-provisioning": "预配",
+    "device-install-step-error": "失败",
+    "device-install-step-pending": "待处理",
+    "device-install-step-running": "创建中...",
+    "device-install-step-success": "已创建",
+    "device-install-step-type-DASHBOARD": "仪表盘",
+    "device-install-step-type-DEVICE": "设备",
+    "device-install-step-type-DEVICE_PROFILE": "设备配置文件",
+    "device-install-step-type-GATEWAY": "网关",
+    "device-install-step-type-GATEWAY_CONNECTOR": "网关连接器",
+    "device-install-step-type-RULE_CHAIN": "规则链",
+    "device-install-conflict-exists": "已存在同名{{type}}",
+    "device-install-use-existing": "使用现有",
+    "device-install-overwrite": "覆盖",
+    "device-install-create-copy": "创建副本",
+    "device-install-resolution-created": "已创建",
+    "device-install-resolution-use-existing": "使用了现有",
+    "device-install-resolution-overwrite": "已覆盖",
+    "device-install-resolution-create-copy": "已创建副本",
+    "device-install-title": "连接“{{name}}”",
+    "device-installing-title": "正在安装“{{name}}”",
+    "done": "完成",
+    "in-progress": "进行中",
+    "item-detail": "IoT Hub 项",
+    "unpublished-warning-title": "未发布的内容",
+    "unpublished-warning-text": "这是未发布内容的预览，尚未经过 IoT Hub 审核。安装未经核实的内容可能带来安全和稳定性风险——仅在您信任创建者时才继续。",
+    "unpublished-warning-confirm": "我已了解风险，继续",
+    "unpublished-preview": "未发布预览",
+    "deep-link-invalid-id": "无效的 IoT Hub 项链接。",
+    "deep-link-not-found": "此 IoT Hub 项不存在或已被移除。",
+    "deep-link-fetch-failed": "无法加载 IoT Hub 项，请重试。"
+  },
+  "item-data": {
+    "widget-type-timeseries": "时序",
+    "widget-type-latest": "最新值",
+    "widget-type-rpc": "控制",
+    "widget-type-alarm": "告警",
+    "widget-type-static": "静态",
+    "cf-type-simple": "简单",
+    "cf-type-script": "脚本",
+    "cf-type-geofencing": "地理围栏",
+    "cf-type-alarm": "告警",
+    "cf-type-propagation": "传播",
+    "cf-type-related-entities-aggregation": "关联实体聚合",
+    "cf-type-entity-aggregation": "实体聚合",
+    "rule-chain-type-core": "核心",
+    "rule-chain-type-edge": "边缘",
+    "node-type-enrichment": "数据丰富",
+    "node-type-filter": "过滤",
+    "node-type-transformation": "转换",
+    "node-type-action": "动作",
+    "node-type-analytics": "分析",
+    "node-type-external": "外部",
+    "node-type-flow": "流程",
+    "node-type-unknown": "未知"
+  },
+  "monitor": {
+    "monitor": "监控"
   }
 }

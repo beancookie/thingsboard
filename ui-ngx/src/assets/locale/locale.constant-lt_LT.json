@@ -440,7 +440,7 @@
     "authentication-settings": "Autentifikavimo nustatymai",
     "auth-method": "Autentifikavimo metodas",
     "auth-method-username-password": "Slaptažodis / prieigos raktas",
-    "auth-method-username-password-hint": "GitHub naudotojai <b>privalo</b> naudoti prieigos <a href='https://github.com/settings/tokens' target='_blank'>raktus</a> su rašymo teisėmis į repozitoriją.",
+    "auth-method-username-password-hint": "GitHub naudotojai <b>privalo</b> naudoti prieigos raktus su rašymo teisėmis į repozitoriją.",
     "auth-method-private-key": "Privatus raktas",
     "password-access-token": "Slaptažodis / prieigos raktas",
     "change-password-access-token": "Pakeisti slaptažodį / prieigos raktą",

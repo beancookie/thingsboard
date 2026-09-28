@@ -441,7 +441,7 @@
     "authentication-settings": "Paramètres d'authentification",
     "auth-method": "Méthode d'authentification",
     "auth-method-username-password": "Mot de passe / jeton d'accès",
-    "auth-method-username-password-hint": "Les utilisateurs GitHub <b>doivent</b> utiliser des <a href='https://github.com/settings/tokens' target='_blank'>jetons</a> avec des permissions d'écriture pour le dépôt.",
+    "auth-method-username-password-hint": "Les utilisateurs GitHub <b>doivent</b> utiliser des jetons avec des permissions d'écriture pour le dépôt.",
     "auth-method-private-key": "Clé privée",
     "password-access-token": "Mot de passe / jeton d'accès",
     "change-password-access-token": "Modifier le mot de passe / jeton d'accès",

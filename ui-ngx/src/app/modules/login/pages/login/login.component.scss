@@ -9,8 +9,15 @@
   .tb-login-content {
     margin-top: 36px;
     margin-bottom: 76px;
-    background-color: #eee;
+    background-color: #eef2f7;
     --mat-card-elevated-container-elevation: none;
+
+    mat-card {
+      --mat-card-elevated-container-color: #ffffff;
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+      border-radius: 12px;
+    }
     .tb-login-form {
       @media #{$mat-gt-xs} {
         width: 480px !important;

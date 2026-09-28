@@ -38,8 +38,4 @@ export class TbIotHubUpgradeRequiredDialogComponent extends DialogComponent<TbIo
   close(): void {
     this.dialogRef.close();
   }
-
-  upgradeInstance(): void {
-    window.open('https://thingsboard.io/docs/installation/upgrade-instructions/', '_blank');
-  }
 }

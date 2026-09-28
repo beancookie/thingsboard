@@ -441,7 +441,7 @@
     "authentication-settings": "Autentiseringsinnstillinger",
     "auth-method": "Autentiseringsmetode",
     "auth-method-username-password": "Passord / tilgangstoken",
-    "auth-method-username-password-hint": "GitHub-brukere <b>må</b> bruke tilgangs<a href='https://github.com/settings/tokens' target='_blank'>token</a> med skrive-tilgang til depotet.",
+    "auth-method-username-password-hint": "GitHub-brukere <b>må</b> bruke tilgangstoken med skrive-tilgang til depotet.",
     "auth-method-private-key": "Privat nøkkel",
     "password-access-token": "Passord / tilgangstoken",
     "change-password-access-token": "Endre passord / tilgangstoken",

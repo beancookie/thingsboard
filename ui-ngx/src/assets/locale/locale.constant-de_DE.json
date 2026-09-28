@@ -441,7 +441,7 @@
     "authentication-settings": "Authentifizierungseinstellungen",
     "auth-method": "Authentifizierungsmethode",
     "auth-method-username-password": "Passwort / Zugriffstoken",
-    "auth-method-username-password-hint": "GitHub-Nutzer <b>müssen</b> <a href='https://github.com/settings/tokens' target='_blank'>Tokens</a> mit Schreibrechten zum Repository verwenden.",
+    "auth-method-username-password-hint": "GitHub-Nutzer <b>müssen</b> Tokens mit Schreibrechten zum Repository verwenden.",
     "auth-method-private-key": "Privater Schlüssel",
     "password-access-token": "Passwort / Zugriffstoken",
     "change-password-access-token": "Passwort / Zugriffstoken ändern",

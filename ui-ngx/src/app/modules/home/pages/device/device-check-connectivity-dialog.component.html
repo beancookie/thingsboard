@@ -127,7 +127,7 @@
               <div class="tb-form-panel stroked">
                 <ng-container
               *ngTemplateOutlet="seeDocumentation; context:
-              {doc: {text: 'device.connectivity.sparkplug-command', href: 'https://thingsboard.io/docs/reference/sparkplug-api/'}}">
+              {doc: {text: 'device.connectivity.sparkplug-command'}}">
                 </ng-container>
               </div>
             } @else {
@@ -144,8 +144,7 @@
                         <div class="tb-form-panel-title" translate>device.connectivity.install-necessary-client-tools</div>
                         <div class="tb-install-instruction-text">
                         <ng-container *ngTemplateOutlet="seeDocumentation; context:
-                        {doc: {text: 'device.connectivity.install-mqtt-windows',
-                        href: 'https://thingsboard.io/docs/reference/mqtt-api/getting-connected/?connectdevice=mqtt-windows'}}">
+                        {doc: {text: 'device.connectivity.install-mqtt-windows'}}">
                           </ng-container>
                         </div>
                       </div>
@@ -153,7 +152,7 @@
                       *ngTemplateOutlet="executeCommand; context: {cmd: {
                               noSecLabel: 'MQTT', noSec: commands.mqtt.mqtt,
                               secLabel: 'MQTTs', sec: commands.mqtt.mqtts,
-                              doc: {text: 'device.connectivity.mqtts-x509-command', href: 'https://thingsboard.io/docs/reference/mqtt-api/getting-connected/#mqtt-over-tls'}}}">
+                              doc: {text: 'device.connectivity.mqtts-x509-command'}}}">
                       </ng-container>
                     </div>
                   </ng-template>
@@ -174,7 +173,7 @@
                       *ngTemplateOutlet="executeCommand; context: {cmd: {
                               noSecLabel: 'MQTT', noSec: commands.mqtt.mqtt,
                               secLabel: 'MQTTs', sec: commands.mqtt.mqtts,
-                              doc: {text: 'device.connectivity.mqtts-x509-command', href: 'https://thingsboard.io/docs/reference/mqtt-api/getting-connected/#mqtt-over-tls'}}}">
+                              doc: {text: 'device.connectivity.mqtts-x509-command'}}}">
                       </ng-container>
                     </div>
                   </ng-template>
@@ -195,7 +194,7 @@
                       *ngTemplateOutlet="executeCommand; context: {cmd: {
                               noSecLabel: 'MQTT', noSec: commands.mqtt.mqtt,
                               secLabel: 'MQTTs', sec: commands.mqtt.mqtts,
-                              doc: {text: 'device.connectivity.mqtts-x509-command', href: 'https://thingsboard.io/docs/reference/mqtt-api/getting-connected/#mqtt-over-tls'}}}">
+                              doc: {text: 'device.connectivity.mqtts-x509-command'}}}">
                       </ng-container>
                     </div>
                   </ng-template>
@@ -212,7 +211,7 @@
                       *ngTemplateOutlet="executeCommand; context: {cmd: {
                               noSecLabel: 'MQTT', noSec: commands.mqtt.docker.mqtt,
                               secLabel: 'MQTTs', sec: commands.mqtt.docker.mqtts,
-                              doc: {text: 'device.connectivity.mqtts-x509-command', href: 'https://thingsboard.io/docs/reference/mqtt-api/getting-connected/#mqtt-over-tls'}}}">
+                              doc: {text: 'device.connectivity.mqtts-x509-command'}}}">
                         </ng-container>
                       </div>
                     </ng-template>
@@ -236,8 +235,7 @@
                         <div class="tb-form-panel-title" translate>device.connectivity.install-necessary-client-tools</div>
                         <div class="tb-install-instruction-text">
                       <ng-container *ngTemplateOutlet="seeDocumentation; context:
-                                    {doc: {text: 'device.connectivity.install-coap-client',
-                                    href: 'https://thingsboard.io/docs/reference/coap-api/getting-connected/#access-token'}}">
+                                    {doc: {text: 'device.connectivity.install-coap-client'}}">
                           </ng-container>
                         </div>
                       </div>
@@ -246,7 +244,7 @@
                     *ngTemplateOutlet="executeCommand; context: {cmd: {
                               noSecLabel: 'CoAP', noSec: commands.coap.coap,
                               secLabel: 'CoAPs', sec: commands.coap.coaps,
-                              doc: {text: 'device.connectivity.coaps-x509-command', href: 'https://thingsboard.io/docs/reference/coap-api/getting-connected/#x509-certificate'}}}">
+                              doc: {text: 'device.connectivity.coaps-x509-command'}}}">
                     </ng-container>
                   </div>
                 </ng-template>
@@ -263,7 +261,7 @@
                     *ngTemplateOutlet="executeCommand; context: {cmd: {
                               noSecLabel: 'CoAP', noSec: commands.coap.docker.coap,
                               secLabel: 'CoAPs', sec: commands.coap.docker.coaps,
-                              doc: {text: 'device.connectivity.coaps-x509-command', href: 'https://thingsboard.io/docs/reference/coap-api/getting-connected/#x509-certificate'}}}">
+                              doc: {text: 'device.connectivity.coaps-x509-command'}}}">
                       </ng-container>
                     </div>
                   </ng-template>
@@ -275,7 +273,7 @@
             <div class="tb-form-panel stroked">
               <ng-container
               *ngTemplateOutlet="seeDocumentation; context:
-                {doc: {text: 'device.connectivity.snmp-command', href: 'https://thingsboard.io/docs/reference/snmp-api/getting-connected/'}}">
+                {doc: {text: 'device.connectivity.snmp-command'}}">
               </ng-container>
             </div>
           }
@@ -283,7 +281,7 @@
             <div class="tb-form-panel stroked">
               <ng-container
               *ngTemplateOutlet="seeDocumentation; context:
-                {doc: {text: 'device.connectivity.lwm2m-command', href: 'https://thingsboard.io/docs/reference/lwm2m-api/getting-started/'}}">
+                {doc: {text: 'device.connectivity.lwm2m-command'}}">
               </ng-container>
             </div>
           }
@@ -374,9 +372,6 @@
 <ng-template #seeDocumentation let-doc="doc">
   <div class="tb-form-row no-border no-padding space-between">
     <div class="tb-font-14 tb-flex-1">{{ doc.text | translate }}</div>
-    <a mat-stroked-button color="primary" href="{{doc.href }}" target="_blank">
-      <mat-icon>description</mat-icon>
-      {{ 'common.documentation' | translate }}
-    </a>
+    
   </div>
 </ng-template>

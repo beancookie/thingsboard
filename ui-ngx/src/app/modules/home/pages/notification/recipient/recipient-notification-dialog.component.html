@@ -135,14 +135,6 @@
             <mat-slide-toggle class="mat-slide margin" formControlName="useOldApi">
               {{ "notification.use-old-api" | translate }}
             </mat-slide-toggle>
-            <a mat-icon-button
-               href="https://devblogs.microsoft.com/microsoft365dev/retirement-of-office-365-connectors-within-microsoft-teams/"
-               target="_blank"
-               matTooltip="{{ 'notification.use-deprecated-webhook-connectors' | translate }}"
-               matTooltipPosition="above"
-               class="tb-mat-20">
-              <mat-icon>open_in_new</mat-icon>
-            </a>
           </section>
           <mat-form-field class="mat-block" appearance="outline">
             <mat-label>{{ (targetNotificationForm.get('configuration.useOldApi').value ?

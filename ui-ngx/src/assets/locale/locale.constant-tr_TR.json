@@ -441,7 +441,7 @@
     "authentication-settings": "Kimlik doğrulama ayarları",
     "auth-method": "Kimlik doğrulama yöntemi",
     "auth-method-username-password": "Şifre / erişim belirteci",
-    "auth-method-username-password-hint": "GitHub kullanıcıları <b>mutlaka</b> depo üzerinde yazma yetkisi olan <a href='https://github.com/settings/tokens' target='_blank'>erişim belirteçlerini</a> kullanmalıdır.",
+    "auth-method-username-password-hint": "GitHub kullanıcıları <b>mutlaka</b> depo üzerinde yazma yetkisi olan erişim belirteçlerini kullanmalıdır.",
     "auth-method-private-key": "Özel anahtar",
     "password-access-token": "Şifre / erişim belirteci",
     "change-password-access-token": "Şifre / erişim belirtecini değiştir",

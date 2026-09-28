@@ -410,7 +410,6 @@ export class TbIotHubHomeComponent implements OnInit, OnDestroy {
   }
 
   openSignup(): void {
-    window.open(this.iotHubApiService.baseUrl + '/signup', '_blank');
   }
 
   private updateCardCounts(): void {

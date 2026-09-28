@@ -441,7 +441,7 @@
     "authentication-settings": "प्रमाणीकरण सेटिंग्स",
     "auth-method": "प्रमाणीकरण विधि",
     "auth-method-username-password": "पासवर्ड / एक्सेस टोकन",
-    "auth-method-username-password-hint": "GitHub उपयोगकर्ताओं को रिपॉज़िटरी पर लिखने की अनुमति वाले एक्सेस <a href='https://github.com/settings/tokens' target='_blank'>tokens</a> का उपयोग करना <b>आवश्यक</b> है।",
+    "auth-method-username-password-hint": "GitHub उपयोगकर्ताओं को रिपॉज़िटरी पर लिखने की अनुमति वाले एक्सेस tokens का उपयोग करना <b>आवश्यक</b> है।",
     "auth-method-private-key": "प्राइवेट की",
     "password-access-token": "पासवर्ड / एक्सेस टोकन",
     "change-password-access-token": "पासवर्ड / एक्सेस टोकन बदलें",

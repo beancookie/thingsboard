@@ -52,7 +52,7 @@
             }
             <div class="flex flex-col gap-1">
               @if (creator.website) {
-                <a class="tb-creator-link tb-creator-link-primary" [href]="creator.website" target="_blank">
+                <a class="tb-creator-link tb-creator-link-primary">
                   <mat-icon>language</mat-icon>
                   <span>{{ getWebsiteLabel() }}</span>
                 </a>
@@ -64,25 +64,25 @@
               </span>
               }
               @if (creator.githubUrl) {
-                <a class="tb-creator-link" [href]="creator.githubUrl" target="_blank">
+                <a class="tb-creator-link">
                   <tb-icon>mdi:github</tb-icon>
                   <span>GitHub</span>
                 </a>
               }
               @if (creator.linkedinUrl) {
-                <a class="tb-creator-link" [href]="creator.linkedinUrl" target="_blank">
+                <a class="tb-creator-link">
                   <tb-icon>mdi:linkedin</tb-icon>
                   <span>LinkedIn</span>
                 </a>
               }
               @if (creator.twitterUrl) {
-                <a class="tb-creator-link" [href]="creator.twitterUrl" target="_blank">
+                <a class="tb-creator-link">
                   <tb-icon>mdi:twitter</tb-icon>
                   <span>X</span>
                 </a>
               }
               @if (creator.youtubeUrl) {
-                <a class="tb-creator-link" [href]="creator.youtubeUrl" target="_blank">
+                <a class="tb-creator-link">
                   <tb-icon>mdi:youtube</tb-icon>
                   <span>YouTube</span>
                 </a>

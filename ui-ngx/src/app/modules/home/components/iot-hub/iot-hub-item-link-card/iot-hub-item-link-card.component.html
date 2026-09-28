@@ -15,10 +15,7 @@
     </div>
   }
   @case ('loaded') {
-    <a [href]="getHref()"
-       target="_blank"
-       rel="noopener noreferrer"
-       class="tb-iot-hub-item-link-card">
+    <a class="tb-iot-hub-item-link-card">
       @if (isCompact()) {
         <div class="tb-iot-hub-item-link-thumb tb-iot-hub-item-link-thumb--compact"
              [style.background]="getCompactColor()">

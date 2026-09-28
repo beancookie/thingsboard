@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: Copyright The Thingsboard Authors
 // SPDX-License-Identifier: Apache-2.0
-const forwardUrl = "http://localhost:8080";
-const wsForwardUrl = "ws://localhost:8080";
+const forwardUrl = "http://localhost:18080";
+const wsForwardUrl = "ws://localhost:18080";
 const ruleNodeUiforwardUrl = forwardUrl;
 
 const PROXY_CONFIG = {

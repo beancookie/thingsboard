@@ -294,11 +294,6 @@
                                  [dashboardsScope]="currentDashboardScope">
             </tb-dashboard-select>
           }
-          @if (!isEdit && !widgetEditMode) {
-            <div class="-mr-1.5 md-lg:!hidden lt-md:!hidden" [class.!hidden]="githubBadge.hideGithubBadge">
-              <tb-github-badge #githubBadge ></tb-github-badge>
-            </div>
-          }
         </div>
       </div>
     </tb-dashboard-toolbar>
@@ -416,7 +411,7 @@
         }
         @if (!embedded) {
           <section data-html2canvas-ignore class="tb-powered-by-footer" [style.color]="dashboard.configuration.settings.titleColor">
-            <span>Powered by <a href="https://thingsboard.io" target="_blank">ThingsBoard v.{{ thingsboardVersion }}</a></span>
+            <span>Powered by ThingsBoard v.{{ thingsboardVersion }}</span>
           </section>
         }
       </mat-drawer-content>

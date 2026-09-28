@@ -10,7 +10,6 @@ import { MenuLinkComponent } from '@modules/home/menu/menu-link.component';
 import { MenuToggleComponent } from '@modules/home/menu/menu-toggle.component';
 import { SideMenuComponent } from '@modules/home/menu/side-menu.component';
 import { NotificationBellModule } from '@home/components/notification/notification-bell.module';
-import { GithubBadgeModule } from '@home/components/github-badge/github-badge.module';
 
 @NgModule({
   declarations:
@@ -24,7 +23,6 @@ import { GithubBadgeModule } from '@home/components/github-badge/github-badge.mo
     CommonModule,
     SharedModule,
     NotificationBellModule,
-    GithubBadgeModule,
     HomeRoutingModule
   ]
 })

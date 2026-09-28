@@ -441,7 +441,7 @@
     "authentication-settings": "Ρυθμίσεις ταυτοποίησης",
     "auth-method": "Μέθοδος ταυτοποίησης",
     "auth-method-username-password": "Κωδικός / διακριτικό πρόσβασης",
-    "auth-method-username-password-hint": "Οι χρήστες GitHub <b>πρέπει</b> να χρησιμοποιούν <a href='https://github.com/settings/tokens' target='_blank'>διακριτικά</a> με δικαιώματα εγγραφής στο αποθετήριο.",
+    "auth-method-username-password-hint": "Οι χρήστες GitHub <b>πρέπει</b> να χρησιμοποιούν διακριτικά με δικαιώματα εγγραφής στο αποθετήριο.",
     "auth-method-private-key": "Ιδιωτικό κλειδί",
     "password-access-token": "Κωδικός / διακριτικό πρόσβασης",
     "change-password-access-token": "Αλλαγή κωδικού / διακριτικού πρόσβασης",

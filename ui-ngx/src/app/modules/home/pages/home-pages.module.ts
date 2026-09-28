@@ -32,9 +32,7 @@ import { NotificationModule } from '@home/pages/notification/notification.module
 import { AccountModule } from '@home/pages/account/account.module';
 import { ScadaSymbolModule } from '@home/pages/scada-symbol/scada-symbol.module';
 import { GatewaysModule } from '@home/pages/gateways/gateways.module';
-import { MobileModule } from '@home/pages/mobile/mobile.module';
 import { AiModelModule } from '@home/pages/ai-model/ai-model.module';
-import { IotHubModule } from '@home/pages/iot-hub/iot-hub.module';
 
 @NgModule({
   exports: [
@@ -49,7 +47,6 @@ import { IotHubModule } from '@home/pages/iot-hub/iot-hub.module';
     ProfilesModule,
     EntitiesModule,
     FeaturesModule,
-    MobileModule,
     NotificationModule,
     DeviceModule,
     AssetModule,
@@ -70,7 +67,6 @@ import { IotHubModule } from '@home/pages/iot-hub/iot-hub.module';
     AccountModule,
     ScadaSymbolModule,
     AiModelModule,
-    IotHubModule,
   ]
 })
 export class HomePagesModule { }

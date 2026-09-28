@@ -441,7 +441,7 @@
     "authentication-settings": "Configurações de autenticação",
     "auth-method": "Método de autenticação",
     "auth-method-username-password": "Senha / token de acesso",
-    "auth-method-username-password-hint": "Usuários do GitHub <b>devem</b> usar <a href='https://github.com/settings/tokens' target='_blank'>tokens</a> de acesso com permissões de gravação no repositório.",
+    "auth-method-username-password-hint": "Usuários do GitHub <b>devem</b> usar tokens de acesso com permissões de gravação no repositório.",
     "auth-method-private-key": "Chave privada",
     "password-access-token": "Senha / token de acesso",
     "change-password-access-token": "Alterar senha / token de acesso",

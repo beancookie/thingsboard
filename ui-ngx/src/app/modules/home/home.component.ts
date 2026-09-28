@@ -52,8 +52,8 @@ export class HomeComponent extends PageComponent implements AfterViewInit, OnIni
   sidenavCollapsed = signal(false);
   menuCollapsed= computed(() => this.sidenavDesktop() && this.sidenavCollapsed());
 
-  logo = 'assets/logo_title_black.svg';
-  collapsedLogo =  'assets/small_logo_title_black.svg';
+  logo = 'assets/crecg_logo_title_blue.svg';
+  collapsedLogo =  'assets/crecg_logo_blue.svg';
 
   @ViewChild('sidenav')
   sidenav: MatSidenav;

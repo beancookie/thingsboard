@@ -441,7 +441,7 @@
     "authentication-settings": "Налаштування автентифікації",
     "auth-method": "Метод автентифікації",
     "auth-method-username-password": "Пароль / токен доступу",
-    "auth-method-username-password-hint": "Користувачі GitHub <b>мають</b> використовувати <a href='https://github.com/settings/tokens' target='_blank'>токени</a> з правами запису до репозиторію.",
+    "auth-method-username-password-hint": "Користувачі GitHub <b>мають</b> використовувати токени з правами запису до репозиторію.",
     "auth-method-private-key": "Приватний ключ",
     "password-access-token": "Пароль / токен доступу",
     "change-password-access-token": "Змінити пароль / токен доступу",

@@ -26,8 +26,4 @@ export class TbIotHubPeRequiredDialogComponent extends DialogComponent<TbIotHubP
   close(): void {
     this.dialogRef.close();
   }
-
-  upgradeInstance(): void {
-    window.open('https://thingsboard.io/docs/pe/installation/upgrade-from-ce/', '_blank');
-  }
 }

@@ -12,12 +12,17 @@
 }
 
 :host-context(.login-logo) {
-  width: 280px;
-  height: 60px;
+  width: 220px;
+  height: auto;
   a {
     text-decoration: none;
     border: none;
     transform: none;
+
+    img {
+      width: 100%;
+      height: auto;
+    }
 
     &:focus {
       outline: 0;
