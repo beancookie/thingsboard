@@ -79,6 +79,11 @@ python thing-model/scripts/simulate_telemetry.py --mode mixed --count 10
 | `THINGMODEL_TB_URL` | `http://localhost:18080` | ThingsBoard 地址 |
 | `THINGMODEL_SECRET_KEY` | 空 | AES-GCM 密钥，Base64 编码，16/24/32 字节 |
 | `THINGMODEL_KAFKA_BOOTSTRAP` | `kafka-test1:9095,kafka-test2:9095,kafka-test3:9095` | 规则链 Kafka bootstrap servers |
+| `THINGMODEL_CORS_ALLOWED_ORIGINS` | `*` | 允许的跨域来源，逗号分隔，支持 `*` 与通配模式 |
+| `THINGMODEL_CORS_ALLOW_CREDENTIALS` | `false` | 是否允许跨域携带 Cookie；JWT 走 `X-Authorization`，一般无需开启 |
+| `THINGMODEL_CORS_MAX_AGE` | `3600` | 预检结果缓存秒数 |
+
+默认允许所有来源；生产环境建议通过 `THINGMODEL_CORS_ALLOWED_ORIGINS=https://a.com,https://b.com` 收紧白名单。
 
 ### 数据库拓扑
 

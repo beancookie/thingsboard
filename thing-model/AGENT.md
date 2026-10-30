@@ -178,6 +178,9 @@ PostgreSQL:5432
 | `THINGMODEL_SECRET_KEY` | 空，厂商账号加密必需 |
 | `THINGMODEL_KAFKA_BOOTSTRAP` | `kafka-test1:9095,kafka-test2:9095,kafka-test3:9095` |
 | `THINGMODEL_RULECHAIN_ENABLED` | `true` |
+| `THINGMODEL_CORS_ALLOWED_ORIGINS` | `*` |
+| `THINGMODEL_CORS_ALLOW_CREDENTIALS` | `false` |
+| `THINGMODEL_CORS_MAX_AGE` | `3600` |
 
 `THINGMODEL_SECRET_KEY` 必须是 Base64 编码的 16/24/32 字节 AES 密钥。更换该密钥后，必须在 ThingsBoard 租户下重新注册厂商服务账号，否则同步会因无法解密密码而失败。
 

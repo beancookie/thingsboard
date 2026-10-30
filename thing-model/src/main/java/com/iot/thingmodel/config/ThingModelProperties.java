@@ -1,6 +1,7 @@
 package com.iot.thingmodel.config;
 
 import com.iot.thingmodel.common.Constants;
+import java.util.List;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "thingmodel")
@@ -11,6 +12,7 @@ public class ThingModelProperties {
     private final Security security = new Security();
     private final Database database = new Database();
     private final RuleChain ruleChain = new RuleChain();
+    private final Cors cors = new Cors();
 
     public Tb getTb() {
         return tb;
@@ -30,6 +32,10 @@ public class ThingModelProperties {
 
     public RuleChain getRuleChain() {
         return ruleChain;
+    }
+
+    public Cors getCors() {
+        return cors;
     }
 
     public static class Tb {
@@ -175,6 +181,37 @@ public class ThingModelProperties {
 
         public void setKeyPattern(String keyPattern) {
             this.keyPattern = keyPattern;
+        }
+    }
+
+    public static class Cors {
+
+        private List<String> allowedOrigins = Constants.Defaults.CORS_ALLOWED_ORIGINS;
+        private boolean allowCredentials = false;
+        private long maxAge = Constants.Defaults.CORS_MAX_AGE;
+
+        public List<String> getAllowedOrigins() {
+            return allowedOrigins;
+        }
+
+        public void setAllowedOrigins(List<String> allowedOrigins) {
+            this.allowedOrigins = allowedOrigins;
+        }
+
+        public boolean isAllowCredentials() {
+            return allowCredentials;
+        }
+
+        public void setAllowCredentials(boolean allowCredentials) {
+            this.allowCredentials = allowCredentials;
+        }
+
+        public long getMaxAge() {
+            return maxAge;
+        }
+
+        public void setMaxAge(long maxAge) {
+            this.maxAge = maxAge;
         }
     }
 }

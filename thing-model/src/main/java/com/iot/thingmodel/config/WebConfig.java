@@ -2,8 +2,12 @@ package com.iot.thingmodel.config;
 
 import com.iot.thingmodel.auth.AuthInterceptor;
 import com.iot.thingmodel.common.Constants;
+import java.util.List;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -11,9 +15,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebConfig implements WebMvcConfigurer {
 
     private final AuthInterceptor authInterceptor;
+    private final ThingModelProperties properties;
 
-    public WebConfig(AuthInterceptor authInterceptor) {
+    public WebConfig(AuthInterceptor authInterceptor, ThingModelProperties properties) {
         this.authInterceptor = authInterceptor;
+        this.properties = properties;
     }
 
     @Override
@@ -23,11 +29,17 @@ public class WebConfig implements WebMvcConfigurer {
                 .excludePathPatterns(Constants.Api.ERROR_PATH);
     }
 
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping(Constants.Api.API_PATTERN)
-                .allowedOrigins(Constants.Api.CORS_ORIGIN)
-                .allowedMethods(Constants.Api.CORS_METHODS.toArray(String[]::new))
-                .allowedHeaders(Constants.Api.CORS_ALL_HEADERS);
+    @Bean
+    public CorsFilter corsFilter() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOriginPatterns(properties.getCors().getAllowedOrigins());
+        configuration.setAllowedMethods(Constants.Api.CORS_METHODS);
+        configuration.setAllowedHeaders(List.of(Constants.Api.CORS_ALL_HEADERS));
+        configuration.setAllowCredentials(properties.getCors().isAllowCredentials());
+        configuration.setMaxAge(properties.getCors().getMaxAge());
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration(Constants.Api.API_PATTERN, configuration);
+        return new CorsFilter(source);
     }
 }
