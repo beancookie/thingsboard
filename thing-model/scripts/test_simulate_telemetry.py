@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import json
 import random
 import sys
 import unittest
@@ -92,6 +93,26 @@ class EventGenerationTest(unittest.TestCase):
 
         self.assertIsInstance(payload, dict)
         self.assertIn("speed", payload)
+
+    def test_telemetry_includes_all_structs_from_tsl(self) -> None:
+        tsl_path = (
+            Path(__file__).parent.parent / "migrate" / "4DZDCQUA2D.tsl.json"
+        )
+        with tsl_path.open(encoding="utf-8") as stream:
+            tsl = json.load(stream)
+
+        generator = TelemetryGenerator(
+            tsl["properties"], tsl["events"], random.Random(1))
+        values = generator.telemetry()
+
+        self.assertTrue(values["deviceInfo"])
+        self.assertIn("company", values["deviceInfo"])
+        self.assertTrue(values["locationInfo"])
+        self.assertIn("longitude", values["locationInfo"])
+        self.assertIn("latitude", values["locationInfo"])
+        self.assertTrue(values["realStateInfo"])
+        self.assertIn("machineState", values["realStateInfo"])
+        self.assertIn("speed", values["realStateInfo"])
 
 
 if __name__ == "__main__":

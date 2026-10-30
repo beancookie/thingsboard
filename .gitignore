@@ -41,3 +41,6 @@ rebuild-docker.sh
 .claude
 .planning
 docs/superpowers/
+device-credentials*.csv
+gateway-credentials*.csv
+sub-devices*.csv

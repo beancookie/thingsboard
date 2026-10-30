@@ -46,6 +46,15 @@ class ThingsBoardClient:
         self._check(response)
         return response.json()
 
+    def get_thing_model(self, token: str, product_id: str) -> Dict[str, Any]:
+        response = self.session.get(
+            f"{self.thingmodel_url}/api/products/{product_id}/thing-model",
+            headers=self._auth_headers(token),
+            timeout=self.timeout,
+        )
+        self._check(response)
+        return response.json()
+
     def get_asset_attributes(self, token: str, asset_id: str) -> List[Dict[str, Any]]:
         response = self.session.get(
             f"{self.tb_url}/api/plugins/telemetry/ASSET/{asset_id}/values/attributes/SERVER_SCOPE",
@@ -329,6 +338,19 @@ class TelemetryGenerator:
         return self.rng.choice(["info", "alert", "fault"])
 
 
+def parse_tsl(value: Any) -> Dict[str, Any]:
+    if isinstance(value, dict):
+        return value
+    if isinstance(value, str):
+        try:
+            parsed = json.loads(value)
+        except json.JSONDecodeError as exc:
+            raise ApiError(f"invalid TSL JSON: {exc}") from exc
+        if isinstance(parsed, dict):
+            return parsed
+    raise ApiError("TSL must be a JSON object")
+
+
 def load_tsl(path: str) -> Dict[str, Any]:
     tsl_path = Path(path)
     if not tsl_path.is_file():
@@ -594,10 +616,31 @@ def main() -> int:
             tsl_version = tsl.get("version") or product_info.get("tslVersion") or "1.0"
             source = f"tsl={args.tsl}"
         else:
-            properties = catalog.get("properties") or []
-            events = catalog.get("events") or []
-            tsl_version = product_info.get("tslVersion") or "1.0"
-            source = "catalog"
+            tsl = None
+            thing_model = None
+            try:
+                thing_model = client.get_thing_model(token, args.product_id)
+                tsl = parse_tsl(thing_model.get("tsl"))
+                source = "thing-model"
+            except Exception as exc:
+                print(
+                    f"warning: failed to load product TSL, falling back to catalog: {exc}",
+                    file=sys.stderr,
+                )
+            if tsl is not None:
+                properties = tsl.get("properties") or []
+                events = tsl.get("events") or []
+                tsl_version = (
+                    (thing_model.get("version") if thing_model else None)
+                    or tsl.get("version")
+                    or product_info.get("tslVersion")
+                    or "1.0"
+                )
+            else:
+                properties = catalog.get("properties") or []
+                events = catalog.get("events") or []
+                tsl_version = product_info.get("tslVersion") or "1.0"
+                source = "catalog"
 
         if not properties:
             raise ApiError(f"no properties found for product {args.product_id}")

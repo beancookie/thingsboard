@@ -120,6 +120,15 @@ assert.strictEqual(validTelemetry.envelope.deviceName, 'sim-device');
 assert.strictEqual(validTelemetry.envelope.values.online, true);
 assert.strictEqual(validTelemetry.envelope.values.ntp, 1700000000000);
 assert.strictEqual(validTelemetry.envelope.ts, 1699999999000);
+assert.strictEqual(validTelemetry.envelope.tenantId, undefined);
+assert.strictEqual(validTelemetry.envelope.deviceId, undefined);
+assert.strictEqual(validTelemetry.envelope.siteCode, 'SIM');
+
+const noSiteMetadata = Object.assign({}, telemetryMetadata);
+delete noSiteMetadata.ss_site_code;
+const noSite = runValidation({speed: 1}, noSiteMetadata);
+assert.strictEqual(noSite.envelope.kind, 'telemetry');
+assert.strictEqual(noSite.envelope.siteCode, undefined);
 
 expectInvalid({speed: 'fast'}, 'speed:float', telemetryMetadata);
 expectInvalid({speed: 300}, 'speed:max', telemetryMetadata);
@@ -160,6 +169,9 @@ assert.strictEqual(validEvent.envelope.event.data.limit, 100);
 assert.strictEqual(validEvent.envelope.event.type, 'alert');
 assert.strictEqual(validEvent.envelope.event.level, undefined);
 assert.strictEqual(validEvent.envelope.event.ts, 1700000000000);
+assert.strictEqual(validEvent.envelope.tenantId, undefined);
+assert.strictEqual(validEvent.envelope.deviceId, undefined);
+assert.strictEqual(validEvent.envelope.siteCode, 'SIM');
 
 const fallbackEvent = runValidation({
     event_id: 'overSpeed',
@@ -256,6 +268,9 @@ assert.strictEqual(eventBatch.envelope.events[0].level, undefined);
 assert.strictEqual(eventBatch.envelope.events[0].data.speed, 120);
 assert.strictEqual(eventBatch.envelope.events[1].id, 'overSpeed');
 assert.strictEqual(eventBatch.envelope.events[1].ts, 1700000000001);
+assert.strictEqual(eventBatch.envelope.tenantId, undefined);
+assert.strictEqual(eventBatch.envelope.deviceId, undefined);
+assert.strictEqual(eventBatch.envelope.siteCode, 'SIM');
 
 const invalidEventBatch = runValidation({
     events: [

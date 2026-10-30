@@ -43,12 +43,14 @@ python thing-model/scripts/simulate_telemetry.py `
   --mode mixed --count 2 --seed 1
 ```
 
-指定 `--tsl` 后，属性/事件定义以本地 TSL 为准：
+属性/事件定义来源：
 
-- struct 属性按 `define.specs` 生成扁平 JSON 对象。
-- 事件 payload 默认放在 `events` 数组中，仅包含事件 params 以及 `event_id/event_type/event_ts`，也兼容用 `id` 表示事件标识（`event_id` 优先），不包含属性数据。
-- 发送真实遥测要求产品已同步（`tbProfileId`、`tbAssetId`、`tsl_schema`）。
-- actions 不模拟，因为行为是平台到设备的 RPC，不是遥测上报。
+- 不传 `--tsl` 时，脚本会调用 `GET /api/products/{id}/thing-model` 获取产品最新完整 TSL，因此 `deviceInfo`、`locationInfo`、`realStateInfo` 等 struct 会生成完整字段；接口不可用时回退到 catalog。
+- 指定 `--tsl` 后，属性/事件定义以本地 TSL 为准：
+  - struct 属性按 `define.specs` 生成扁平 JSON 对象。
+  - 事件 payload 默认放在 `events` 数组中，仅包含事件 params 以及 `event_id/event_type/event_ts`，也兼容用 `id` 表示事件标识（`event_id` 优先），不包含属性数据。
+  - 发送真实遥测要求产品已同步（`tbProfileId`、`tbAssetId`、`tsl_schema`）。
+  - actions 不模拟，因为行为是平台到设备的 RPC，不是遥测上报。
 
 ## 注册设备
 
@@ -111,6 +113,65 @@ python thing-model/scripts/simulate_telemetry.py `
 - `--workers` 控制并发设备数。
 - 批量模式不会创建或删除设备，也不要求 `tbProfileId/tbAssetId/tsl_schema`。
 
+## Gateway 推送
+
+Gateway 方式使用网关设备 Token 连接 MQTT，由网关代多台预创建子设备上报。
+
+前置条件：
+
+- 网关设备已注册，并导出 `gateway-credentials.csv`。
+- 网关设备必须开启 Gateway 模式：`additionalInfo.gateway = true`。ThingsBoard UI 中勾选 “Is gateway”，或 REST 请求体带 `"additionalInfo":{"gateway":true}`；否则发布 `v1/gateway/*` 会报 `gatewaySessionHandler is null`。
+- 子设备已通过 `register_devices.py` 预创建在产品 Device Profile 下。
+
+> 当前 `register_devices.py` 只注册产品子设备；网关设备需通过 ThingsBoard UI 或 REST 创建。
+
+注册子设备：
+
+```powershell
+python thing-model/scripts/register_devices.py `
+  --product-id 4DZDCQUA2D `
+  --prefix 4DZDCQUA2D-gw --count 2 `
+  --site-code SIM `
+  --output sub-devices.csv `
+  --password tenant
+```
+
+运行 Gateway 推送：
+
+```powershell
+python thing-model/scripts/simulate_gateway.py `
+  --gateway-csv gateway-credentials.csv `
+  --gateway-name gateway-01 `
+  --sub-devices-csv sub-devices.csv `
+  --product-id 4DZDCQUA2D `
+  --mode mixed --count 2 --interval 1
+```
+
+两个网关分担多台设备，并按每 10 台合并发送：
+
+```powershell
+python thing-model/scripts/simulate_gateway.py `
+  --gateway-csv gateway-credentials.csv `
+  --gateway-names gateway-01,gateway-02 `
+  --sub-devices-csv sub-devices-50.csv `
+  --product-id 4DZDCQUA2D `
+  --mode mixed --count 2 --interval 1 `
+  --batch-size 10 --quiet
+```
+
+说明：
+
+- 脚本发送 `v1/gateway/connect`、`v1/gateway/telemetry`、`v1/gateway/disconnect`。
+- 不传 `--tsl` 时自动从平台获取产品最新 TSL。
+- 每个子设备使用自己的 Device Profile 规则链。
+- `sub-devices.csv` 中的 `access_token` 不会被 Gateway 脚本使用。
+- `--gateway-names` 支持多个网关，子设备按轮询平均分配。
+- `--batch-size` 控制每条 gateway telemetry 合并多少台子设备，默认 10。
+- `--quiet` 只输出批次进度和汇总，不打印完整 payload。
+- `--dry-run` 只打印报文，不连接 MQTT。
+- `--events-per-packet` 控制每包事件数量，默认 4。
+- 如果本机 Python 受 `HTTP_PROXY`/`HTTPS_PROXY` 影响导致平台 TSL 获取超时，增加 `--tsl thing-model/migrate/4DZDCQUA2D.tsl.json`。
+
 ## 密码
 
 推荐使用环境变量：
@@ -172,7 +233,7 @@ python thing-model/scripts/simulate_telemetry.py \
 | `--username` | `tenant@thingsboard.org` | ThingsBoard 租户管理员 |
 | `--password` | `TB_PASSWORD` | ThingsBoard 密码 |
 | `--product-id` | `9HYN9PJNOY` | 产品 ID |
-| `--tsl` | 空 | 本地 TSL JSON 文件；指定后按其中的属性和事件生成数据 |
+| `--tsl` | 空 | 本地 TSL JSON 文件；不传时从平台获取最新 TSL，指定后覆盖平台 TSL |
 | `--device-name` | `sim-<product>-<timestamp>-<random>` | 测试设备名 |
 | `--site-code` | `SIM` | 设备 `site_code` 属性 |
 | `--mode` | `mixed` | `telemetry` / `event` / `invalid` / `mixed`；`mixed` = telemetry + event |

@@ -1,7 +1,7 @@
 # 物联网设备接入对接文档
 
 > 中铁信科物联网平台 · 外部设备 MQTT 接入说明  
-> 文档版本：1.0  
+> 文档版本：1.1  
 > 更新时间：2026-10-29  
 > 适用环境：当前测试环境（ThingsBoard 4.x）
 
@@ -18,9 +18,10 @@
 7. [行为调用与 RPC](#7-行为调用与-rpc)
 8. [平台校验与错误处理](#8-平台校验与错误处理)
 9. [快速接入示例](#9-快速接入示例)
-10. [附录 A：4DZDCQUA2D 物模型](#附录-a4dzdcqua2d-物模型)
-11. [附录 B：与参考文档的差异](#附录-b与参考文档的差异)
-12. [变更记录](#12-变更记录)
+10. [Gateway 接入](#10-gateway-接入多设备代理)
+11. [附录 A：4DZDCQUA2D 物模型](#附录-a4dzdcqua2d-物模型)
+12. [附录 B：与参考文档的差异](#附录-b与参考文档的差异)
+13. [变更记录](#13-变更记录)
 
 ---
 
@@ -630,6 +631,185 @@ mosquitto_sub \
 
 ---
 
+## 10. Gateway 接入（多设备代理）
+
+当多台设备通过同一网关接入时，使用 ThingsBoard Gateway API。网关设备使用自己的 Access Token 连接 MQTT，子设备数据通过 `v1/gateway/*` 主题上报。
+
+### 10.1 前置条件
+
+- 网关设备已注册，并取得 Access Token。
+- 网关设备必须开启 Gateway 模式：`additionalInfo.gateway = true`。ThingsBoard UI 中勾选 “Is gateway”，或 REST 请求体带 `"additionalInfo":{"gateway":true}`；否则发布 `v1/gateway/*` 会报 `gatewaySessionHandler is null`。
+- 子设备已预创建在对应产品 Device Profile 下，例如 `4DZDCQUA2D`。
+- 每台子设备有唯一名称，建议不超过 48 字符，仅英文、数字、下划线。
+- 网关设备本身可以使用 `default` Device Profile，不需要产品 TSL。
+
+### 10.2 Gateway 主题
+
+| 主题 | 方向 | 用途 |
+| --- | --- | --- |
+| `v1/gateway/connect` | 上行 | 子设备上线 |
+| `v1/gateway/disconnect` | 上行 | 子设备下线 |
+| `v1/gateway/telemetry` | 上行 | 子设备属性/事件上报 |
+| `v1/gateway/attributes` | 双向 | 子设备属性 |
+| `v1/gateway/rpc` | 双向 | 子设备 RPC |
+
+### 10.3 子设备上线
+
+```json
+{
+  "device": "4DZDCQUA2D-gw-0001",
+  "type": "4DZDCQUA2D"
+}
+```
+
+说明：
+
+- 子设备已预创建时，`type` 可省略。
+- 如果子设备不存在，ThingsBoard 会根据 `type` 查找或创建对应 Device Profile 并自动创建设备。
+- 生产环境建议预创建子设备，以保证 `site_code`、`tsl_version` 等 server 属性完整。
+
+### 10.4 子设备遥测/事件上报
+
+属性与事件都通过 `v1/gateway/telemetry` 上报，载荷按子设备名称分组：
+
+```json
+{
+  "4DZDCQUA2D-gw-0001": [
+    {
+      "ts": 1793253653000,
+      "values": {
+        "deviceInfo": {
+          "company": "三一重工",
+          "name": "挖掘机-001",
+          "model": "SY215C",
+          "sn": "SN20220601001",
+          "battery": 85,
+          "updateTs": 1793253653000,
+          "category": "挖掘机",
+          "source": "自有",
+          "managementNumber": "GL-2022-001",
+          "onlineState": 2
+        },
+        "locationInfo": {
+          "longitude": 113.264385,
+          "latitude": 23.129163,
+          "updateTs": 1793253653000,
+          "address": "广东省广州市天河区XXX路",
+          "altitude": 12.5
+        },
+        "realStateInfo": {
+          "machineState": 0,
+          "updateTs": 1793253653000,
+          "speed": 15.5,
+          "todayMileage": 12000,
+          "isWork": true,
+          "workTime": 28800,
+          "idleTime": 3600,
+          "fuelConsumptionVolume": 45.5
+        },
+        "imei": "860000000000001",
+        "signalStrength": -65,
+        "totalMileage": 123456
+      }
+    }
+  ]
+}
+```
+
+事件上报同样放在 `values` 中：
+
+```json
+{
+  "4DZDCQUA2D-gw-0001": [
+    {
+      "ts": 1793253653000,
+      "values": {
+        "events": [
+          {
+            "event_id": "alarm",
+            "event_type": "alert",
+            "event_ts": 1793253653000,
+            "address": "广东省广州市天河区XXX路",
+            "longitude": 113.264385,
+            "latitude": 23.129163,
+            "alarmAt": 1793253653000,
+            "alarmType": "oil_abnormal",
+            "remark": "油量异常下降，疑似漏油"
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
+注意：
+
+- 同一包内 `events[].event_id` 必须一致。
+- 每个子设备的数据由它自己的 Device Profile 默认规则链处理。
+- 子设备预创建在 `4DZDCQUA2D` 下时，TSL 校验、事件数组和 Kafka 外发与直连设备完全一致。
+- 单条 Gateway payload 同样建议小于 4 KB。
+
+### 10.5 子设备下线
+
+```json
+{
+  "device": "4DZDCQUA2D-gw-0001"
+}
+```
+
+### 10.6 子设备属性（可选）
+
+```json
+{
+  "4DZDCQUA2D-gw-0001": {
+    "cfg_json": "{\"interval\":60}",
+    "shadow_reported": "online"
+  }
+}
+```
+
+### 10.7 使用模拟脚本
+
+注册网关设备后得到 `gateway-credentials.csv`。注册子设备：
+
+```powershell
+python thing-model/scripts/register_devices.py `
+  --product-id 4DZDCQUA2D `
+  --prefix 4DZDCQUA2D-gw --count 2 `
+  --site-code SIM `
+  --output sub-devices.csv
+```
+
+通过 Gateway 推送：
+
+```powershell
+python thing-model/scripts/simulate_gateway.py `
+  --gateway-csv gateway-credentials.csv `
+  --gateway-name gateway-01 `
+  --sub-devices-csv sub-devices.csv `
+  --product-id 4DZDCQUA2D `
+  --mode mixed --count 2 --interval 1
+```
+
+两台网关分担多台子设备，并按每 10 台合并发送：
+
+```powershell
+python thing-model/scripts/simulate_gateway.py `
+  --gateway-csv gateway-credentials.csv `
+  --gateway-names gateway-01,gateway-02 `
+  --sub-devices-csv sub-devices-50.csv `
+  --product-id 4DZDCQUA2D `
+  --mode mixed --count 2 --interval 1 `
+  --batch-size 10 --quiet
+```
+
+> 当前测试环境如果 Python 受 `HTTP_PROXY`/`HTTPS_PROXY` 影响，增加 `--tsl thing-model/migrate/4DZDCQUA2D.tsl.json` 从本地读取 TSL。
+
+脚本会依次发送 `connect`、`telemetry`、`disconnect`，并在不传 `--tsl` 时自动从平台获取最新 TSL。
+
+---
+
 ## 附录 A：4DZDCQUA2D 物模型
 
 ### A.1 产品信息
@@ -805,8 +985,9 @@ mosquitto_sub \
 
 ---
 
-## 12. 变更记录
+## 13. 变更记录
 
 | 版本 | 日期 | 说明 |
 | --- | --- | --- |
 | 1.0 | 2026-10-29 | 初始版本，基于 4DZDCQUA2D TSL 和 ThingsBoard MQTT 接入 |
+| 1.1 | 2026-10-29 | 增加 Gateway 多设备代理接入说明 |

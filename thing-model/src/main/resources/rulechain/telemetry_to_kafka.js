@@ -415,12 +415,9 @@ if (kind === 'event' && !batch) {
 
 var envelope = {
     v: 1,
-    tenantId: meta.ss_tenant_id || meta.tenantId || null,
-    deviceId: meta.ss_device_uuid || meta.deviceId || null,
     deviceName: meta.deviceName || null,
     productId: schema ? schema.productId : null,
     tslVersion: schema ? schema.tslVersion : null,
-    siteCode: meta.ss_site_code || null,
     ts: ts,
     kind: kind,
     values: Object.keys(values).length ? values : null,
@@ -429,6 +426,11 @@ var envelope = {
     events: null,
     invalid: invalid.length ? invalid : null
 };
+
+var siteCode = meta.ss_site_code;
+if (siteCode !== undefined && siteCode !== null && siteCode !== '') {
+    envelope.siteCode = siteCode;
+}
 
 if (batch) {
     envelope.events = batchEvents.length ? batchEvents : null;
