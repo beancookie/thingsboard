@@ -399,7 +399,7 @@ public final class Constants {
         public static final String DB_SCHEMA = "";
         public static final String KAFKA_TOPIC_TELEMETRY = "iot.telemetry.normalized";
         public static final String KAFKA_TOPIC_EVENT = "iot.event.normalized";
-        public static final String KAFKA_TOPIC_INVALID = "iot.telemetry.invalid";
+        public static final String KAFKA_TOPIC_INVALID = "iot.invalid";
         public static final String KAFKA_KEY_PATTERN = "$[deviceName]";
         public static final List<String> CORS_ALLOWED_ORIGINS = List.of("*");
         public static final long CORS_MAX_AGE = 3600L;

@@ -279,7 +279,7 @@ iot.event.normalized
 非法数据：
 
 ```text
-iot.telemetry.invalid
+iot.invalid
 ```
 
 如果使用外部 Kafka，可在能访问 Kafka 的机器上消费：

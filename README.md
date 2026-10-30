@@ -35,7 +35,7 @@
 - Kafka 三 topic 外发：
   - `iot.telemetry.normalized`
   - `iot.event.normalized`
-  - `iot.telemetry.invalid`
+  - `iot.invalid`
 - 产品与物模型前端页面
 - 设备注册与遥测模拟脚本
 - TDengine 入湖服务（配套独立工程 `thingsboard-ingest`，不在本仓库）

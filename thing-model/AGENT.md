@@ -143,7 +143,7 @@ Route By Kind → Kafka Telemetry / Kafka Event / Kafka Invalid
 - `Route By Validation` 只输出 `valid` / `invalid`。
 - 校验使用生成时内嵌的压缩 TSL schema，不要求设备存在 `tsl_schema`。
 - 合法遥测/事件写入 ThingsBoard 时序库。
-- 非法数据不写时序库，只投递 `iot.telemetry.invalid`。
+- 非法数据不写时序库，只投递 `iot.invalid`。
 - 运行时校验覆盖：
   - 报文结构、大小、时间戳单位
   - 属性类型、范围、required、未知字段、枚举、int32、struct

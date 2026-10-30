@@ -150,7 +150,7 @@ kafka-test1:9095,kafka-test2:9095,kafka-test3:9095
 ```text
 iot.telemetry.normalized
 iot.event.normalized
-iot.telemetry.invalid
+iot.invalid
 ```
 
 产品发布/同步时会生成规则链，名称直接使用 ProductId：
@@ -159,7 +159,7 @@ iot.telemetry.invalid
 <ProductId>
 ```
 
-并绑定到对应 `DeviceProfile.defaultRuleChainId`。存量 `auto_<ProductId>_telemetry` 规则链会在下次发布/同步时自动复用并重命名为 ProductId。生成规则链时会把当前产品录入的压缩 TSL schema 内嵌到校验脚本，运行时按属性与事件校验；非法数据不写 ThingsBoard 时序库，只投递 `iot.telemetry.invalid`。TSL 变更后重新发布或调用 `/sync` 即可刷新规则链。
+并绑定到对应 `DeviceProfile.defaultRuleChainId`。存量 `auto_<ProductId>_telemetry` 规则链会在下次发布/同步时自动复用并重命名为 ProductId。生成规则链时会把当前产品录入的压缩 TSL schema 内嵌到校验脚本，运行时按属性与事件校验；非法数据不写 ThingsBoard 时序库，只投递 `iot.invalid`。TSL 变更后重新发布或调用 `/sync` 即可刷新规则链。
 
 配置项：
 
@@ -170,7 +170,7 @@ thingmodel:
     kafka-bootstrap: kafka-test1:9095,kafka-test2:9095,kafka-test3:9095
     topic-telemetry: iot.telemetry.normalized
     topic-event: iot.event.normalized
-    topic-invalid: iot.telemetry.invalid
+    topic-invalid: iot.invalid
     key-pattern: "$[deviceName]"
 ```
 
@@ -320,8 +320,8 @@ curl -X POST "http://localhost:8090/api/products" \
 - Device Profile、产品 Asset、SERVER_SCOPE 属性同步
 - 按产品生成规则链 `<ProductId>` 并绑定 `defaultRuleChainId`
 - 规则链内嵌产品 TSL schema，按属性 + 事件校验类型、范围、必填、未知字段、枚举、int32、报文大小与时间戳单位
-- 非法数据不写时序库，只投递 `iot.telemetry.invalid`；合法遥测/事件继续落库并投 Kafka
-- 规则链 Kafka 出口：`iot.telemetry.normalized`、`iot.event.normalized`、`iot.telemetry.invalid`
+- 非法数据不写时序库，只投递 `iot.invalid`；合法遥测/事件继续落库并投 Kafka
+- 规则链 Kafka 出口：`iot.telemetry.normalized`、`iot.event.normalized`、`iot.invalid`
 - 厂商服务账号 AES-GCM 加密
 - ThingsBoard JWT 校验与租户隔离
 - Controller `BaseController` + `@RequireAuthority` + `AccessGuard`

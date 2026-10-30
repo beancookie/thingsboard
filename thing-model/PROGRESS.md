@@ -66,7 +66,7 @@
   - 绑定 `DeviceProfile.defaultRuleChainId`
   - 生成时内嵌当前产品压缩 TSL schema，运行时按属性 + 事件校验
   - 校验项：类型、min/max、required、未知字段、枚举 mapping、int32、报文大小、时间戳单位、event_id/event_type/事件参数
-  - 非法数据不写时序库，只投 `iot.telemetry.invalid`
+  - 非法数据不写时序库，只投 `iot.invalid`
   - Kafka 出口：遥测 / 事件 / 校验失败
 - Kafka：
   - 使用外部 Kafka，地址由 `thingmodel.rulechain.kafka-bootstrap` / `THINGMODEL_KAFKA_BOOTSTRAP` 配置
