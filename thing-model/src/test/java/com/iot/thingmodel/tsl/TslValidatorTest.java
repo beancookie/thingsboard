@@ -28,6 +28,33 @@ class TslValidatorTest {
     }
 
     @Test
+    void acceptsEventParamStringRangesWithoutCrashing() throws Exception {
+        ValidationResult result = validator.validate(objectMapper.readTree("""
+                {
+                  "version": "1.0",
+                  "profile": {"ProductId": "P1"},
+                  "properties": [],
+                  "events": [{
+                    "id": "alarm",
+                    "name": "Alarm",
+                    "type": "alert",
+                    "params": [{
+                      "id": "address",
+                      "name": "Address",
+                      "define": {
+                        "type": "string",
+                        "min": 0,
+                        "max": 2048
+                      }
+                    }]
+                  }]
+                }
+                """));
+
+        assertTrue(result.valid());
+    }
+
+    @Test
     void reportsDocumentedBusinessErrors() throws Exception {
         ValidationResult result = validator.validate(load("invalid-tsl.json"));
         Set<String> codes = codes(result.errors());

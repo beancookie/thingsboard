@@ -358,7 +358,7 @@ public class TslValidator {
                     paramPath + PATH_DEFINE,
                     true,
                     errors,
-                    List.of(),
+                    new ArrayList<>(),
                     seenErrors,
                     new HashSet<>());
         }
