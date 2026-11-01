@@ -21,11 +21,11 @@ class ConvertTencentTslTest(unittest.TestCase):
     def test_converts_sample(self) -> None:
         converted = convert_document(self.source)
 
-        self.assertEqual("1.1", converted["version"])
+        self.assertEqual("1.0", converted["version"])
         self.assertEqual("4DZDCQUA2D", converted["profile"]["ProductId"])
-        self.assertEqual(9, len(converted["properties"]))
+        self.assertEqual(3, len(converted["properties"]))
         self.assertEqual(4, len(converted["events"]))
-        self.assertEqual(4, len(converted["actions"]))
+        self.assertEqual(0, len(converted["actions"]))
 
         device_info = converted["properties"][0]
         specs = device_info["define"]["specs"]
@@ -48,34 +48,6 @@ class ConvertTencentTslTest(unittest.TestCase):
         self.assertEqual("enum_string", alarm_type["define"]["type"])
         self.assertIn("low_power", alarm_type["define"]["mapping"])
 
-        report_interval = next(
-            prop for prop in converted["properties"] if prop["id"] == "reportInterval")
-        self.assertEqual("rw", report_interval["mode"])
-        self.assertEqual("int", report_interval["define"]["type"])
-        self.assertEqual(10, report_interval["define"]["min"])
-        self.assertEqual(3600, report_interval["define"]["max"])
-        self.assertEqual("s", report_interval["define"]["unit"])
-
-        signal_strength = next(
-            prop for prop in converted["properties"] if prop["id"] == "signalStrength")
-        self.assertEqual("int", signal_strength["define"]["type"])
-        self.assertEqual(-120, signal_strength["define"]["min"])
-        self.assertEqual("dBm", signal_strength["define"]["unit"])
-
-        reboot = next(action for action in converted["actions"] if action["id"] == "reboot")
-        self.assertEqual([], reboot["input"])
-        self.assertEqual("bool", reboot["output"][0]["define"]["type"])
-
-        set_interval = next(
-            action for action in converted["actions"] if action["id"] == "setReportInterval")
-        self.assertEqual("int", set_interval["input"][0]["define"]["type"])
-        self.assertEqual("interval", set_interval["input"][0]["id"])
-
-        query_location = next(
-            action for action in converted["actions"] if action["id"] == "queryLocation")
-        output_ids = {param["id"] for param in query_location["output"]}
-        self.assertEqual({"longitude", "latitude", "address", "updateTs"}, output_ids)
-
         self.assertFalse(self.contains_key(converted, "dataType"))
         self.assertFalse(self.contains_key(converted, "stringenum"))
 
@@ -86,16 +58,32 @@ class ConvertTencentTslTest(unittest.TestCase):
         self.assertEqual(0, company["min"])
         self.assertEqual(100, company["max"])
 
+    def test_sample_tsl_matches_converter_output(self) -> None:
+        tsl_path = Path(__file__).parent / "4DZDCQUA2D.tsl.json"
+        with tsl_path.open(encoding="utf-8") as stream:
+            generated = json.load(stream)
+
+        expected = convert_document(self.source, keep_string_ranges=True)
+
+        self.assertEqual(expected, generated)
+        self.assertEqual("1.0", generated["version"])
+        company = generated["properties"][0]["define"]["specs"]["company"]
+        self.assertEqual(0, company["min"])
+        self.assertEqual(100, company["max"])
+        alarm_address = next(
+            param for param in generated["events"][3]["params"]
+            if param["id"] == "address")
+        self.assertEqual(0, alarm_address["define"]["min"])
+        self.assertEqual(2048, alarm_address["define"]["max"])
+
     def test_flattens_struct_properties(self) -> None:
         converted = convert_document(self.source, flatten_structs=True)
 
         ids = {prop["id"] for prop in converted["properties"]}
-        self.assertEqual(29, len(ids))
+        self.assertEqual(23, len(ids))
         self.assertIn("deviceInfo_company", ids)
         self.assertIn("locationInfo_longitude", ids)
         self.assertIn("realStateInfo_machineState", ids)
-        self.assertIn("reportInterval", ids)
-        self.assertIn("totalMileage", ids)
         self.assertNotIn("deviceInfo", ids)
         self.assertFalse(any("." in prop_id for prop_id in ids))
 

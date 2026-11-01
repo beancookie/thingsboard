@@ -8,8 +8,8 @@
 # 单文件，输出到同目录 <name>.tsl.json
 python thing-model/migrate/convert_tencent_tsl.py thing-model/migrate/4DZDCQUA2D.json
 
-# 指定输出
-python thing-model/migrate/convert_tencent_tsl.py thing-model/migrate/4DZDCQUA2D.json -o thing-model/migrate/4DZDCQUA2D.tsl.json
+# 指定输出；样例文件保留字符串 min/max
+python thing-model/migrate/convert_tencent_tsl.py thing-model/migrate/4DZDCQUA2D.json -o thing-model/migrate/4DZDCQUA2D.tsl.json --keep-string-ranges
 
 # 批量转换目录
 python thing-model/migrate/convert_tencent_tsl.py thing-model/migrate --output-dir thing-model/migrate/converted
@@ -38,6 +38,7 @@ python thing-model/migrate/convert_tencent_tsl.py thing-model/migrate --output-d
 - 保留 struct 内 `bool` 的 `mapping`
 - 事件参数 `define` 同步转换
 - 默认不覆盖输入文件
+- `4DZDCQUA2D.tsl.json` 使用 `--keep-string-ranges` 生成，字符串字段的 `min`/`max` 作为源数据元数据保留
 
 `--flatten-structs` 使用下划线拼接字段 id，例如：
 
