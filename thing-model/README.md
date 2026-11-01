@@ -78,6 +78,7 @@ python thing-model/scripts/simulate_telemetry.py --mode mixed --count 10
 | `THINGMODEL_DB_SCHEMA` | 空 | 独立库模式不设置；共用库时设为 `thingmodel` |
 | `THINGMODEL_TB_URL` | `http://localhost:18080` | ThingsBoard 地址 |
 | `THINGMODEL_SECRET_KEY` | 空 | AES-GCM 密钥，Base64 编码，16/24/32 字节 |
+| `THINGMODEL_SERVICE_ACCOUNT_EMAIL_DOMAIN` | `thing-model.local` | 自动创建租户服务账号时使用的邮箱域名 |
 | `THINGMODEL_KAFKA_BOOTSTRAP` | `kafka-test1:9095,kafka-test2:9095,kafka-test3:9095` | 规则链 Kafka bootstrap servers |
 | `THINGMODEL_CORS_ALLOWED_ORIGINS` | `*` | 允许的跨域来源，逗号分隔，支持 `*` 与通配模式 |
 | `THINGMODEL_CORS_ALLOW_CREDENTIALS` | `false` | 是否允许跨域携带 Cookie；JWT 走 `X-Authorization`，一般无需开启 |
@@ -184,7 +185,7 @@ $key = New-Object byte[] 32
 [Convert]::ToBase64String($key)
 ```
 
-数据库建好后启动服务，Flyway 会自动创建 `plat_*` 表：
+数据库建好后启动服务，Flyway 会自动执行 V1/V2/V3 并创建 `plat_*` 表。V3 之后产品主键为 `(tenant_id, product_id)`，ProductId 租户内唯一：
 
 ```bash
 mvn -f thing-model/pom.xml spring-boot:run
@@ -206,20 +207,36 @@ Swagger UI 中先通过 `Authorize` 填入 ThingsBoard JWT。
 
 ## 请求上下文与权限
 
-- Controller 统一继承 `controller/BaseController`，通过 `getCurrentUser()` / `tenantScope()` 获取当前用户与租户。
+- Controller 统一继承 `controller/BaseController`，通过 `getCurrentUser()` / `requireTenantId()` 获取当前用户与租户。
 - `auth/RequireAuthority` 是声明式权限注解，由 `AuthInterceptor` 在进入 Controller 前校验。
-- `auth/AccessGuard` 负责租户写入解析与租户隔离校验。
-- Controller 负责服务端字段赋值：租户用户的产品租户来自 JWT；`SYS_ADMIN` 创建产品时必须显式传 `tenantId`。
+- 产品页面和产品 API 只允许 `TENANT_ADMIN`，产品租户来自 JWT。`SYS_ADMIN` 不显示产品菜单，也不能访问产品页面/API。
+- 产品数据按 `(tenant_id, product_id)` 隔离；不同租户可以使用相同 ProductId。
+- 当前没有独立的租户写入解析组件；租户隔离由 Controller 和 Repository 按 JWT tenantId 完成。
 
 ## 厂商服务账号
 
-每个厂商租户需要配置一个 ThingsBoard 租户管理员账号，平台用该账号写入本租户的 Device Profile 与 Asset。仅 `SYS_ADMIN` 可配置：
+每个厂商租户需要一个 ThingsBoard 租户管理员服务账号，平台用该账号写入本租户的 Device Profile 与 Asset。
+
+新建租户后 ui-ngx 会自动调用自动初始化接口：
 
 ```bash
-curl -X POST "http://localhost:8090/api/admin/tenants/<tenantId>/account" \
+curl -X POST "http://localhost:8090/api/admin/tenants/<tenantId>/provision-auto?force=false" \
+  -H "X-Authorization: Bearer <SYS_ADMIN_JWT>"
+```
+
+自动初始化会创建专用 `TENANT_ADMIN`、激活并设置随机密码，然后写入 `plat_vendor_account`。服务账号邮箱格式：
+
+```text
+thing-model-svc-<tenantId>@<THINGMODEL_SERVICE_ACCOUNT_EMAIL_DOMAIN>
+```
+
+也可以使用已有租户管理员手动注册：
+
+```bash
+curl -X POST "http://localhost:8090/api/admin/tenants/<tenantId>/provision" \
   -H "X-Authorization: Bearer <SYS_ADMIN_JWT>" \
   -H "Content-Type: application/json" \
-  -d '{"username":"vendor-admin@example.com","password":"vendor-password"}'
+  -d '{"username":"vendor-admin@example.com","password":"vendor-password","force":false}'
 ```
 
 密码使用 `THINGMODEL_SECRET_KEY` 做 AES-GCM 加密后存入 `plat_vendor_account`，接口不返回密码。
@@ -242,6 +259,9 @@ X-Authorization: Bearer <TB_JWT>
 | POST | `/api/products/{productId}/thing-model/validate` | 只校验 TSL |
 | GET | `/api/products/{productId}/catalog` | 属性/事件/行为目录 |
 | POST | `/api/products/{productId}/sync` | 重新同步模板、资产与属性 |
+| DELETE | `/api/products/{productId}` | 删除产品、物模型和关联 ThingsBoard 资源 |
+| POST | `/api/admin/tenants/{tenantId}/provision-auto` | 自动创建并激活专用 TENANT_ADMIN，注册厂商服务账号 |
+| POST | `/api/admin/tenants/{tenantId}/provision` | 使用已有 TENANT_ADMIN 注册厂商服务账号 |
 | POST | `/api/admin/tenants/{tenantId}/account` | 注册厂商 ThingsBoard 服务账号 |
 
 创建产品示例：
@@ -283,9 +303,9 @@ curl -X POST "http://localhost:8090/api/products" \
 1. 校验 `X-Authorization`，解析租户与权限。
 2. TSL JSON Schema 结构校验 + 业务校验。
 3. 写入 `plat_product` 与 `plat_product_tsl`（DRAFT）。
-4. 按产品名幂等创建/更新 ThingsBoard Device Profile。
-5. 创建/更新产品 Asset，并写入 `tsl_json`、`tsl_schema` 等 SERVER_SCOPE 属性。
-6. 生成/更新规则链，并把压缩 TSL schema 内嵌到校验脚本。
+4. 生成/更新规则链，并把压缩 TSL schema 内嵌到校验脚本。
+5. 按产品名幂等创建/更新 ThingsBoard Device Profile，并绑定默认规则链。
+6. 创建/更新产品 Asset，并写入 `tsl_json`、`tsl_schema` 等 SERVER_SCOPE 属性。
 7. 写入 `plat_profile_binding`，TSL 置为 PUBLISHED。
 
 同步失败时 DRAFT 保留，接口返回 `502`，可调用 `POST /api/products/{productId}/sync` 重试。
@@ -316,15 +336,17 @@ curl -X POST "http://localhost:8090/api/products" \
 已实现：
 
 - TSL 解析、JSON Schema + 业务校验、压缩 schema
-- 产品与 TSL 版本持久化
+- 产品与 TSL 版本持久化，ProductId 租户内唯一
 - Device Profile、产品 Asset、SERVER_SCOPE 属性同步
 - 按产品生成规则链 `<ProductId>` 并绑定 `defaultRuleChainId`
 - 规则链内嵌产品 TSL schema，按属性 + 事件校验类型、范围、必填、未知字段、枚举、int32、报文大小与时间戳单位
 - 非法数据不写时序库，只投递 `iot.invalid`；合法遥测/事件继续落库并投 Kafka
 - 规则链 Kafka 出口：`iot.telemetry.normalized`、`iot.event.normalized`、`iot.invalid`
-- 厂商服务账号 AES-GCM 加密
+- 厂商服务账号 AES-GCM 加密，新建租户后自动创建并注册专用 `TENANT_ADMIN`
 - ThingsBoard JWT 校验与租户隔离
-- Controller `BaseController` + `@RequireAuthority` + `AccessGuard`
+- Controller `BaseController` + `@RequireAuthority`
+- 产品列表、详情、TSL 编辑/校验/删除页面，保存物模型后自动同步，租户服务账号初始化弹窗
+- 产品删除前检查设备，删除时清理独占的 Device Profile、Asset 和 Rule Chain
 - OpenAPI / Swagger UI
 - 独立 database 部署与 `DatabaseGuard` 防误连（可选同库 schema 模式）
 - 数据访问使用 jOOQ `DSLContext`，支持 JSONB、`ON CONFLICT`、`FOR UPDATE` 与批量写入，不再使用 `JdbcTemplate`
@@ -333,10 +355,11 @@ curl -X POST "http://localhost:8090/api/products" \
 
 未实现（后续阶段）：
 
-- TDengine 建表与遥测入湖
-- 设备批量创建与 Access Token 下发
+- 后端设备批量创建与 Access Token 下发 API
 - 事件中心
-- 前端页面
+- 组织树、工点绑定、开放 API
+- OTA、远程配置、影子、设备 SDK
+- TDengine 入湖由外部 `thingsboard-ingest` 负责，不在本工程
 
 ## 说明
 

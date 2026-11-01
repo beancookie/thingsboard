@@ -64,7 +64,7 @@ thing-model/
 │   ├── tb/         ThingsBoard Client、异常转换
 │   └── tsl/        TSL 解析、校验、压缩 schema
 ├── src/main/resources/
-│   ├── db/migration/              Flyway V1/V2
+│   ├── db/migration/              Flyway V1/V2/V3
 │   ├── rulechain/telemetry_to_kafka.js
 │   ├── rulechain/apply_envelope.js
 │   └── schemas/tsl-v1.5.schema.json
@@ -191,14 +191,13 @@ PostgreSQL:5432
   X-Authorization: Bearer <TB_JWT>
   ```
 - `AuthInterceptor` 校验 token，`@RequireAuthority` 声明角色。
-- `AccessGuard` 负责租户写入解析和租户隔离。
-- Controller 继承 `BaseController`。
-- `TENANT_ADMIN` 只能操作本租户；`SYS_ADMIN` 创建产品必须显式传 `tenantId`。
-- 厂商服务账号通过：
+- Controller 继承 `BaseController`，产品租户来自 JWT。
+- 产品页面和产品 API 只允许 `TENANT_ADMIN`；`SYS_ADMIN` 不显示产品菜单，也不能访问产品页面/API。
+- 厂商服务账号自动初始化：
   ```http
-  POST /api/admin/tenants/{tenantId}/account
+  POST /api/admin/tenants/{tenantId}/provision-auto
   ```
-  仅 `SYS_ADMIN` 可调用，密码 AES-GCM 加密存储。
+  仅 `SYS_ADMIN` 可调用，自动创建专用 TENANT_ADMIN、激活并加密存储密码。
 
 ## 9. 测试规范
 
@@ -234,7 +233,7 @@ com.iot.thingmodel.support/
   ```
 - 产品记录位于临时 Testcontainers Postgres，测试结束即销毁；UI 产品页不会显示该 E2E 产品。
 - 测试要求本地 ThingsBoard 已启动，Docker 可用。
-- 当前测试用例总数：79。
+- 当前测试方法约 132 个，包含单元测试、数据库集成测试和外部 ThingsBoard 集成测试。
 
 ### 规则链脚本测试
 

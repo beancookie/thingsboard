@@ -36,12 +36,13 @@
   - `iot.telemetry.normalized`
   - `iot.event.normalized`
   - `iot.invalid`
-- 产品与物模型前端页面
+- 产品与物模型前端页面，支持删除产品并清理关联 ThingsBoard 资源
+- 新建租户后自动初始化厂商服务账号
 - 设备注册与遥测模拟脚本
 - TDengine 入湖服务（配套独立工程 `thingsboard-ingest`，不在本仓库）
 - Kubernetes 增量部署说明
 
-阶段性实施记录见 [thing-model/PROGRESS.md](thing-model/PROGRESS.md)。设计文档中的 `platform-service` 对应当前的 `thing-model` 服务，`ingest-worker` 对应独立的 `thingsboard-ingest` 服务。
+当前实现以 [docs/](docs/) 和 [thing-model/README.md](thing-model/README.md) 为准。未实现能力集中记录在 [09-迁移测试与路线图](docs/09-迁移测试与路线图.md)，不再混入当前能力说明。
 
 ## 3. 仓库结构
 
@@ -50,7 +51,7 @@
 | `application/` | ThingsBoard 应用模块 |
 | `ui-ngx/` | Angular 前端，包含产品/物模型定制页面 |
 | `thing-model/` | 产品与物模型服务，独立 Spring Boot 工程 |
-| `docs/` | 总体设计、物模型、接入、遥测、入湖与部署文档 |
+| `docs/` | 架构、物模型、产品同步、设备接入、前端、API、部署与迁移文档 |
 | `dao/`、`common/`、`rule-engine/`、`transport/` | ThingsBoard 基础模块 |
 | `packaging/`、`msa/`、`monitoring/` | 打包、微服务与监控配置 |
 | `thing-model/deploy/` | thing-model 数据库初始化脚本 |
@@ -62,21 +63,15 @@
 
 | 文档 | 内容 |
 | --- | --- |
-| [01-概述](docs/01-概述.md) | 编写背景、建设目标、术语与 ThingsBoard 实体映射 |
-| [02-总体设计](docs/02-总体设计.md) | 总体架构、关键决策、部署形态 |
-| [03-实体模型](docs/03-实体模型.md) | 租户、产品、设备、组织与物模型的实体设计 |
-| [04-物模型](docs/04-物模型.md) | TSL 解析、校验、版本、模板生成与发布 |
-| [05-设备接入](docs/05-设备接入.md) | MQTT 接入、凭证、设备形态与 SDK 边界 |
-| [06-数字孪生与数据加工](docs/06-数字孪生与数据加工.md) | 组织树、工点/项目、指标与事件中心 |
-| [07-二次开发](docs/07-二次开发.md) | 服务拆分、接口、数据归属与集成约定 |
-| [08-非功能设计](docs/08-非功能设计.md) | 容量、性能、可用性、安全与备份 |
-| [09-实施路线](docs/09-实施路线.md) | P0-P5 阶段、团队配置、风险与对策 |
-| [10-附录](docs/10-附录.md) | 类型映射、样例与补充材料 |
-| [11-前端联动开发指南](docs/11-前端联动开发指南.md) | 产品/物模型页面与后端联动 |
-| [12-遥测单通道设计](docs/12-遥测单通道设计.md) | Telemetry 单通道、Attributes 白名单、事件契约 |
-| [13-物模型入湖链路](docs/13-物模型入湖链路.md) | ThingsBoard 规则链 → Kafka → TDengine |
-| [14-产品按租户展示与权限方案](docs/14-产品按租户展示与权限方案.md) | 租户内唯一 ProductId、租户筛选、服务账号配置、provision 与同步排查 |
-| [15-k8s增量部署](docs/15-k8s增量部署.md) | thing-model 与 crec-ui 的 Kubernetes 增量部署 |
+| [01-平台概览](docs/01-平台概览.md) | 项目定位、当前范围、核心对象和文档导航 |
+| [02-架构与数据模型](docs/02-架构与数据模型.md) | 组件关系、请求链路、数据库表、实体映射 |
+| [03-物模型与校验](docs/03-物模型与校验.md) | TSL 结构、校验规则、压缩 schema、版本状态 |
+| [04-产品同步与规则链](docs/04-产品同步与规则链.md) | 产品发布、ThingsBoard 同步、规则链和 Kafka 消息 |
+| [05-设备接入](docs/05-设备接入.md) | MQTT 凭证、主题、遥测、事件、RPC、网关和脚本 |
+| [06-前端与权限](docs/06-前端与权限.md) | 产品页面、租户弹窗、菜单、JWT 和代理 |
+| [07-API参考](docs/07-API参考.md) | 接口、参数、返回、错误码和示例 |
+| [08-部署与运维](docs/08-部署与运维.md) | 配置、数据库、Kubernetes、升级和排障 |
+| [09-迁移测试与路线图](docs/09-迁移测试与路线图.md) | 腾讯数据迁移、脚本、测试和未实现项 |
 
 ## 5. 环境要求
 
@@ -139,7 +134,7 @@ yarn start
 yarn build:prod
 ```
 
-前端通过 `/api/thing-model` 访问 thing-model，通过 `/api` 访问 ThingsBoard。具体代理规则见 [thing-model/README.md](thing-model/README.md) 和 [15-k8s增量部署](docs/15-k8s增量部署.md)。
+前端通过 `/api/thing-model` 访问 thing-model，通过 `/api` 访问 ThingsBoard。具体代理规则见 [thing-model/README.md](thing-model/README.md) 和 [08-部署与运维](docs/08-部署与运维.md)。
 
 ### 6.4 设备模拟
 
@@ -178,7 +173,7 @@ ThingsBoard 上游测试加速方式见 [TEST_FAST.md](TEST_FAST.md)。
 - thing-model
 - 定制前端 Nginx
 
-增量部署 thing-model 与前端见 [15-k8s增量部署](docs/15-k8s增量部署.md)。
+增量部署 thing-model 与前端见 [08-部署与运维](docs/08-部署与运维.md)。
 
 ## 9. 上游 ThingsBoard
 
