@@ -6,12 +6,9 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import { getCurrentAuthUser } from '@core/auth/auth.selectors';
 import { ProductService } from '@core/http/product.service';
-import { Authority } from '@shared/models/authority.enum';
-import { EntityType } from '@shared/models/entity-type.models';
 import { PageComponent } from '@shared/components/page.component';
 import { ProductItem, ProductStatus } from '@shared/models/product.models';
 import { ProductFormDialogComponent } from './product-form-dialog.component';
@@ -24,44 +21,38 @@ import { ProductFormDialogComponent } from './product-form-dialog.component';
 })
 export class ProductsListComponent extends PageComponent implements OnInit, AfterViewInit {
 
-  displayedColumns: string[] = [];
+  displayedColumns: string[] = [
+    'productId',
+    'name',
+    'model',
+    'categoryId',
+    'tslVersion',
+    'status',
+    'propertyCount',
+    'eventCount',
+    'actionCount',
+    'updatedAt',
+    'actions'
+  ];
 
   dataSource = new MatTableDataSource<ProductItem>([]);
 
   searchControl = new FormControl('');
-
-  tenantControl = new FormControl(null);
-
-  entityType = EntityType;
-
-  isSystemAdmin = false;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
   constructor(private productService: ProductService,
               private dialog: MatDialog,
-              private router: Router,
-              private route: ActivatedRoute) {
+              private router: Router) {
     super();
-    this.isSystemAdmin = getCurrentAuthUser(this.store).authority === Authority.SYS_ADMIN;
   }
 
   ngOnInit(): void {
-    this.displayedColumns = this.isSystemAdmin
-      ? ['productId', 'name', 'model', 'categoryId', 'tslVersion', 'status',
-         'propertyCount', 'eventCount', 'actionCount', 'tenantId', 'updatedAt', 'actions']
-      : ['productId', 'name', 'model', 'categoryId', 'tslVersion', 'status',
-         'propertyCount', 'eventCount', 'actionCount', 'updatedAt', 'actions'];
-    const initialTenant = this.route.snapshot.queryParamMap.get('tenantId');
-    if (this.isSystemAdmin && initialTenant) {
-      this.tenantControl.setValue(initialTenant, {emitEvent: false});
-    }
     this.searchControl.valueChanges.pipe(
       debounceTime(300),
       distinctUntilChanged()
     ).subscribe(() => this.loadProducts());
-    this.tenantControl.valueChanges.subscribe(() => this.loadProducts());
     this.loadProducts();
   }
 
@@ -71,7 +62,7 @@ export class ProductsListComponent extends PageComponent implements OnInit, Afte
   }
 
   loadProducts(): void {
-    this.productService.listProducts(this.searchControl.value, this.currentTenantId()).subscribe(
+    this.productService.listProducts(this.searchControl.value).subscribe(
       (products) => {
         this.dataSource.data = products;
         this.dataSource.paginator = this.paginator;
@@ -85,16 +76,11 @@ export class ProductsListComponent extends PageComponent implements OnInit, Afte
       disableClose: true,
       panelClass: ['tb-dialog', 'tb-fullscreen-dialog'],
       data: {
-        mode: 'create',
-        tenantId: this.currentTenantId()
+        mode: 'create'
       }
     }).afterClosed().subscribe((response) => {
-      const tenantId = this.currentTenantId();
-      if (response?.productId && (!this.isSystemAdmin || tenantId)) {
-        this.router.navigate(
-          ['/entities/products', response.productId],
-          {queryParams: this.isSystemAdmin ? {tenantId} : {}}
-        );
+      if (response?.productId) {
+        this.router.navigate(['/entities/products', response.productId]);
       } else if (response) {
         this.loadProducts();
       }
@@ -105,21 +91,7 @@ export class ProductsListComponent extends PageComponent implements OnInit, Afte
     if (event) {
       event.stopPropagation();
     }
-    this.router.navigate(
-      ['/entities/products', product.productId],
-      {queryParams: this.isSystemAdmin ? {tenantId: product.tenantId} : {}}
-    );
-  }
-
-  private currentTenantId(): string | undefined {
-    return this.isSystemAdmin ? this.entityIdValue(this.tenantControl.value) : undefined;
-  }
-
-  private entityIdValue(value: any): string | undefined {
-    if (!value) {
-      return undefined;
-    }
-    return typeof value === 'string' ? value : value.id;
+    this.router.navigate(['/entities/products', product.productId]);
   }
 
   statusTranslationKey(status: ProductStatus): string {

@@ -42,7 +42,6 @@ class ProductServiceTest {
     private final TslValidator validator = new TslValidator(parser);
     private final CompactSchema compactSchema = new CompactSchema(objectMapper);
     private final UUID tenantId = UUID.randomUUID();
-    private final TenantScope tenantScope = new TenantScope(tenantId, false);
 
     private ProductRepository repository;
     private TbProfileSyncer syncer;
@@ -222,29 +221,10 @@ class ProductServiceTest {
     void listsProductsForTenant() {
         when(repository.listProducts(tenantId, "wifi")).thenReturn(List.of());
 
-        List<ProductItem> result = service.list(tenantScope, null, "wifi");
+        List<ProductItem> result = service.list(tenantId, "wifi");
 
         assertTrue(result.isEmpty());
         verify(repository).listProducts(tenantId, "wifi");
-    }
-
-    @Test
-    void listsAllProductsForSystemAdmin() {
-        TenantScope systemAdmin = new TenantScope(null, true);
-        when(repository.listProducts(null, null)).thenReturn(List.of());
-
-        List<ProductItem> result = service.list(systemAdmin, null, null);
-
-        assertTrue(result.isEmpty());
-        verify(repository).listProducts(null, null);
-    }
-
-    @Test
-    void rejectsListWithoutTenant() {
-        ApiException ex = assertThrows(ApiException.class,
-                () -> service.list(new TenantScope(null, false), null, null));
-
-        assertEquals(HttpStatus.FORBIDDEN.value(), ex.getStatus().value());
     }
 
     @Test

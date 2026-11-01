@@ -53,11 +53,8 @@ public class ProductService {
         this.objectMapper = objectMapper;
     }
 
-    public List<ProductItem> list(TenantScope scope, UUID requestedTenantId, String keyword) {
-        if (scope.systemAdmin()) {
-            return repository.listProducts(requestedTenantId, keyword);
-        }
-        return repository.listProducts(scopeTenant(scope), keyword);
+    public List<ProductItem> list(UUID tenantId, String keyword) {
+        return repository.listProducts(tenantId, keyword);
     }
 
     public ProductDetail get(UUID tenantId, String productId) {
@@ -306,13 +303,6 @@ public class ProductService {
                         HttpStatus.NOT_FOUND, Constants.ErrorCode.PRODUCT_NOT_FOUND, "产品不存在"));
     }
 
-    private UUID scopeTenant(TenantScope scope) {
-        if (scope.tenantId() == null) {
-            throw new ApiException(
-                    HttpStatus.FORBIDDEN, Constants.ErrorCode.TENANT_REQUIRED, "当前用户不属于任何厂商租户");
-        }
-        return scope.tenantId();
-    }
 
     private JsonNode readTsl(JsonNode tsl) {
         if (tsl == null || tsl.isNull()) {

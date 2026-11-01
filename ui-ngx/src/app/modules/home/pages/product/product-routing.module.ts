@@ -20,7 +20,7 @@ export const productRoutes: Routes = [
         path: '',
         component: ProductsListComponent,
         data: {
-          auth: [Authority.TENANT_ADMIN, Authority.SYS_ADMIN],
+          auth: [Authority.TENANT_ADMIN],
           title: 'product.products'
         }
       },
@@ -28,7 +28,7 @@ export const productRoutes: Routes = [
         path: ':productId',
         component: ProductDetailComponent,
         data: {
-          auth: [Authority.TENANT_ADMIN, Authority.SYS_ADMIN],
+          auth: [Authority.TENANT_ADMIN],
           title: 'product.product-details',
           breadcrumb: {
             label: 'product.product-details'

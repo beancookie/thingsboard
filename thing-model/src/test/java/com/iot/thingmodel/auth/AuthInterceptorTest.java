@@ -1,6 +1,8 @@
 package com.iot.thingmodel.auth;
 
 import com.iot.thingmodel.common.ApiException;
+import com.iot.thingmodel.controller.ProductController;
+import com.iot.thingmodel.product.ProductService;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -48,6 +50,29 @@ class AuthInterceptorTest {
         ApiException ex = assertThrows(ApiException.class,
                 () -> interceptor.preHandle(request(), new MockHttpServletResponse(), handler));
         assertEquals(403, ex.getStatus().value());
+    }
+
+    @Test
+    void rejectsSystemAdminOnProductController() throws Exception {
+        CurrentUser systemAdmin = new CurrentUser("root", null, "SYS_ADMIN", "root@b");
+        when(verifier.verify(TOKEN_HEADER)).thenReturn(systemAdmin);
+        HandlerMethod handler = new HandlerMethod(
+                new ProductController(mock(ProductService.class)),
+                ProductController.class.getMethod("list", String.class));
+
+        ApiException ex = assertThrows(ApiException.class,
+                () -> interceptor.preHandle(request(), new MockHttpServletResponse(), handler));
+        assertEquals(403, ex.getStatus().value());
+    }
+
+    @Test
+    void allowsTenantAdminOnProductController() throws Exception {
+        when(verifier.verify(TOKEN_HEADER)).thenReturn(tenantAdmin);
+        HandlerMethod handler = new HandlerMethod(
+                new ProductController(mock(ProductService.class)),
+                ProductController.class.getMethod("list", String.class));
+
+        assertTrue(interceptor.preHandle(request(), new MockHttpServletResponse(), handler));
     }
 
     @Test

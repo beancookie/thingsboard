@@ -1,7 +1,6 @@
 package com.iot.thingmodel.controller;
 
 import com.iot.thingmodel.admin.TenantAccountService;
-import com.iot.thingmodel.auth.AccessGuard;
 import com.iot.thingmodel.auth.AuthInterceptor;
 import com.iot.thingmodel.auth.CurrentUser;
 import com.iot.thingmodel.auth.TbUserVerifier;
@@ -34,7 +33,7 @@ class AdminControllerTest {
     private final TenantAccountService accountService = mock(TenantAccountService.class);
     private final ThingsboardClientProvider clientProvider = mock(ThingsboardClientProvider.class);
     private final MockMvc mockMvc = MockMvcBuilders.standaloneSetup(
-                    new AdminController(new AccessGuard(), accountService, clientProvider))
+                    new AdminController(accountService, clientProvider))
             .addInterceptors(new AuthInterceptor(verifier))
             .setControllerAdvice(new GlobalExceptionHandler())
             .build();

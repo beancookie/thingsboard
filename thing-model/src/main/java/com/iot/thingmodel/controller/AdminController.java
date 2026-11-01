@@ -3,7 +3,6 @@ package com.iot.thingmodel.controller;
 import com.iot.thingmodel.admin.TenantAccountRequest;
 import com.iot.thingmodel.admin.TenantAccountService;
 import com.iot.thingmodel.admin.TenantProvisionRequest;
-import com.iot.thingmodel.auth.AccessGuard;
 import com.iot.thingmodel.auth.RequireAuthority;
 import com.iot.thingmodel.common.Constants;
 import com.iot.thingmodel.tb.ThingsboardClientProvider;
@@ -28,10 +27,8 @@ public class AdminController extends BaseController {
     private final ThingsboardClientProvider clientProvider;
 
     public AdminController(
-            AccessGuard accessGuard,
             TenantAccountService accountService,
             ThingsboardClientProvider clientProvider) {
-        super(accessGuard);
         this.accountService = accountService;
         this.clientProvider = clientProvider;
     }

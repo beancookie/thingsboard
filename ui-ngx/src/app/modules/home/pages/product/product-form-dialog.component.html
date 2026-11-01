@@ -18,19 +18,6 @@
 }
 <mat-dialog-content class="tb-product-form-dialog-content">
   <form [formGroup]="form" class="flex flex-col gap-3">
-    @if (isSystemAdmin) {
-      <tb-entity-autocomplete
-        formControlName="tenantId"
-        [entityType]="entityType.TENANT"
-        labelText="product.tenant"
-        appearance="outline"
-        useFullEntityId
-        required>
-      </tb-entity-autocomplete>
-      @if (form.get('tenantId').hasError('required')) {
-        <mat-error>{{ 'product.tenant-required' | translate }}</mat-error>
-      }
-    }
     <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
       <mat-form-field class="mat-block" appearance="outline">
         <mat-label translate>product.product-id</mat-label>

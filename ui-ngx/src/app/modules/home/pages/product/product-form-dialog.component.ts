@@ -8,11 +8,7 @@ import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
 import { AppState } from '@core/core.state';
-import { getCurrentAuthUser } from '@core/auth/auth.selectors';
-import { AuthUser } from '@shared/models/user.model';
 import { ActionNotificationShow } from '@core/notification/notification.actions';
-import { Authority } from '@shared/models/authority.enum';
-import { EntityType } from '@shared/models/entity-type.models';
 import { DialogComponent } from '@shared/components/dialog.component';
 import { jsonRequired } from '@shared/components/json-object-edit.component';
 import {
@@ -34,7 +30,6 @@ export interface ProductFormDialogData {
   product?: ProductItem;
   thingModel?: ThingModelView;
   productId?: string;
-  tenantId?: string;
 }
 
 @Component({
@@ -45,10 +40,6 @@ export interface ProductFormDialogData {
 })
 export class ProductFormDialogComponent
   extends DialogComponent<ProductFormDialogComponent, ProductResponse> {
-
-  entityType = EntityType;
-
-  isSystemAdmin: boolean;
 
   form: UntypedFormGroup;
 
@@ -61,12 +52,9 @@ export class ProductFormDialogComponent
               private dialog: MatDialog,
               private translate: TranslateService) {
     super(store, router, dialogRef);
-    const authUser: AuthUser = getCurrentAuthUser(store);
-    this.isSystemAdmin = authUser.authority === Authority.SYS_ADMIN;
     const product = data.product;
     const thingModel = data.thingModel;
     this.form = this.fb.group({
-      tenantId: [product?.tenantId || data.tenantId || null, this.isSystemAdmin ? [Validators.required] : []],
       productId: [{
         value: product?.productId || data.productId || '',
         disabled: data.mode === 'edit'
@@ -96,7 +84,7 @@ export class ProductFormDialogComponent
       this.notify('product.product-id-required', 'error');
       return;
     }
-    this.productService.validateThingModel(productId, tsl, this.effectiveTenantId()).subscribe(
+    this.productService.validateThingModel(productId, tsl).subscribe(
       (result: ProductValidationResult) => {
         if (result.valid) {
           this.notify('product.valid', 'success');
@@ -146,9 +134,6 @@ export class ProductFormDialogComponent
         tsl: value.tsl,
         strictUnknown: value.strictUnknown
       };
-      if (this.isSystemAdmin) {
-        request.tenantId = this.entityIdValue(value.tenantId);
-      }
       this.productService.createProduct(request).subscribe(
         (response) => this.onSaved(response),
         (error: HttpErrorResponse) => this.handleError(error)
@@ -158,7 +143,7 @@ export class ProductFormDialogComponent
         tslVersion: value.tslVersion,
         tsl: value.tsl,
         strictUnknown: value.strictUnknown
-      }, this.effectiveTenantId()).subscribe(
+      }).subscribe(
         (response) => this.onSaved(response),
         (error: HttpErrorResponse) => this.handleError(error)
       );
@@ -199,20 +184,6 @@ export class ProductFormDialogComponent
     }
     const tsl = this.form.get('tsl').value;
     return tsl?.profile?.ProductId || tsl?.profile?.productId || tsl?.productId || null;
-  }
-
-  private effectiveTenantId(): string | undefined {
-    if (!this.isSystemAdmin) {
-      return undefined;
-    }
-    return this.entityIdValue(this.form.get('tenantId').value);
-  }
-
-  private entityIdValue(value: any): string {
-    if (!value) {
-      return null;
-    }
-    return typeof value === 'string' ? value : value.id;
   }
 
   private notify(message: string, type: 'success' | 'error'): void {

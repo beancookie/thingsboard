@@ -846,7 +846,6 @@ const defaultUserMenuMap = new Map<Authority, MenuReference[]>([
     Authority.SYS_ADMIN,
     [
       {id: MenuId.home},
-      {id: MenuId.products},
       {
         id: MenuId.tenants_section,
         pages: [

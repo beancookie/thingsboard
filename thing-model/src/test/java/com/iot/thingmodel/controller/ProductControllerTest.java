@@ -1,7 +1,6 @@
 package com.iot.thingmodel.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.iot.thingmodel.auth.AccessGuard;
 import com.iot.thingmodel.auth.AuthInterceptor;
 import com.iot.thingmodel.auth.CurrentUser;
 import com.iot.thingmodel.common.GlobalExceptionHandler;
@@ -38,7 +37,7 @@ class ProductControllerTest {
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final UUID tenantId = UUID.randomUUID();
     private final ProductService productService = mock(ProductService.class);
-    private final ProductController controller = new ProductController(new AccessGuard(), productService);
+    private final ProductController controller = new ProductController(productService);
     private final MockMvc mockMvc = MockMvcBuilders.standaloneSetup(controller)
             .setControllerAdvice(new GlobalExceptionHandler())
             .build();
@@ -49,7 +48,7 @@ class ProductControllerTest {
                 "P1", "1.0", "profile", "asset", "chain", 1, 0, 0, 100,
                 "PUBLISHED", List.of());
         when(productService.create(any())).thenReturn(response);
-        when(productService.list(any(), any(), any())).thenReturn(List.of());
+        when(productService.list(any(), any())).thenReturn(List.of());
         when(productService.get(any(), eq("P1"))).thenReturn(
                 new ProductDetail(null, null, null));
         when(productService.sync(any(), eq("P1"))).thenReturn(response);
@@ -77,19 +76,6 @@ class ProductControllerTest {
         ArgumentCaptor<CreateProductCommand> captor = ArgumentCaptor.forClass(CreateProductCommand.class);
         verify(productService).create(captor.capture());
         assertEquals(tenantId, captor.getValue().tenantId());
-    }
-
-    @Test
-    void systemAdminMustSpecifyTenant() throws Exception {
-        CurrentUser user = new CurrentUser("root", null, "SYS_ADMIN", "root@b");
-
-        mockMvc.perform(post("/api/products")
-                        .requestAttr(AuthInterceptor.CURRENT_USER_ATTRIBUTE, user)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {"productId":"P1","name":"Product","tsl":{}}
-                                """))
-                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -132,7 +118,7 @@ class ProductControllerTest {
                         .requestAttr(AuthInterceptor.CURRENT_USER_ATTRIBUTE, user))
                 .andExpect(status().isOk());
 
-        verify(productService).list(any(), eq(tenantId), eq("wifi"));
+        verify(productService).list(eq(tenantId), eq("wifi"));
     }
 
     @Test
@@ -144,38 +130,6 @@ class ProductControllerTest {
                 .andExpect(status().isOk());
 
         verify(productService).get(eq(tenantId), eq("P1"));
-    }
-
-    @Test
-    void systemAdminProductLookupRequiresTenant() throws Exception {
-        CurrentUser user = new CurrentUser("root", null, "SYS_ADMIN", "root@b");
-
-        mockMvc.perform(get("/api/products/{productId}", "P1")
-                        .requestAttr(AuthInterceptor.CURRENT_USER_ATTRIBUTE, user))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void systemAdminProductLookupUsesRequestedTenant() throws Exception {
-        CurrentUser user = new CurrentUser("root", null, "SYS_ADMIN", "root@b");
-
-        mockMvc.perform(get("/api/products/{productId}", "P1")
-                        .param("tenantId", tenantId.toString())
-                        .requestAttr(AuthInterceptor.CURRENT_USER_ATTRIBUTE, user))
-                .andExpect(status().isOk());
-
-        verify(productService).get(eq(tenantId), eq("P1"));
-    }
-
-    @Test
-    void tenantAdminCannotLookupAnotherTenantProduct() throws Exception {
-        CurrentUser user = new CurrentUser("u1", tenantId.toString(), "TENANT_ADMIN", "a@b");
-        String otherTenant = UUID.randomUUID().toString();
-
-        mockMvc.perform(get("/api/products/{productId}", "P1")
-                        .param("tenantId", otherTenant)
-                        .requestAttr(AuthInterceptor.CURRENT_USER_ATTRIBUTE, user))
-                .andExpect(status().isForbidden());
     }
 
     @Test
