@@ -11,49 +11,34 @@
     <div class="tb-tenant-vendor-account-id">{{ data.tenantId }}</div>
   </div>
 
-  @if (isLoading) {
+  @if (isProvisioning) {
     <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-  } @else {
-    @if (!hasTenantAdmin) {
-      <div class="tb-tenant-vendor-account-warning">
-        <mat-icon>warning</mat-icon>
-        <span>{{ 'tenant.vendor-account-admin-required' | translate }}</span>
-      </div>
-      <button mat-stroked-button color="primary" type="button" (click)="goToTenantAdmins()">
-        <mat-icon>manage_accounts</mat-icon>
-        {{ 'tenant.manage-tenant-admins' | translate }}
-      </button>
-    } @else {
-      <form [formGroup]="form" class="tb-tenant-vendor-account-form">
-        <mat-form-field appearance="outline">
-          <mat-label>{{ 'tenant.vendor-account-username' | translate }}</mat-label>
-          <input matInput formControlName="username" required>
-          @if (form.get('username').hasError('required')) {
-            <mat-error>{{ 'tenant.vendor-account-username-required' | translate }}</mat-error>
-          }
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>{{ 'tenant.vendor-account-password' | translate }}</mat-label>
-          <input matInput type="password" formControlName="password" required>
-          @if (form.get('password').hasError('required')) {
-            <mat-error>{{ 'tenant.vendor-account-password-required' | translate }}</mat-error>
-          }
-        </mat-form-field>
-      </form>
-    }
-  }
-
-  @if (errorMessage) {
-    <div class="tb-tenant-vendor-account-error">{{ errorMessage | translate }}</div>
+    <div class="tb-tenant-vendor-account-status">
+      {{ 'tenant.vendor-account-provisioning' | translate }}
+    </div>
+  } @else if (account) {
+    <div class="tb-tenant-vendor-account-success">
+      <mat-icon>check_circle</mat-icon>
+      <span>{{ 'tenant.vendor-account-save-success' | translate }}</span>
+    </div>
+    <div class="tb-tenant-vendor-account-username">{{ account.username }}</div>
+  } @else if (errorMessage) {
+    <div class="tb-tenant-vendor-account-error">{{ errorMessage }}</div>
   }
 </mat-dialog-content>
 <mat-dialog-actions align="end">
-  <button mat-button type="button" (click)="cancel()">
-    {{ 'action.cancel' | translate }}
-  </button>
-  <button mat-flat-button color="primary" type="button"
-          [disabled]="isLoading || isSaving || !hasTenantAdmin || form.invalid"
-          (click)="save()">
-    {{ 'action.save' | translate }}
-  </button>
+  @if (account) {
+    <button mat-flat-button color="primary" type="button" (click)="close()">
+      {{ 'action.close' | translate }}
+    </button>
+  } @else {
+    @if (!isProvisioning) {
+      <button mat-stroked-button color="primary" type="button" (click)="provision()">
+        {{ 'action.retry' | translate }}
+      </button>
+    }
+    <button mat-button type="button" (click)="close()">
+      {{ 'action.cancel' | translate }}
+    </button>
+  }
 </mat-dialog-actions>

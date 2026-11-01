@@ -6,6 +6,7 @@ import com.iot.thingmodel.admin.TenantAccountService;
 import com.iot.thingmodel.common.ApiException;
 import com.iot.thingmodel.common.Constants;
 import com.iot.thingmodel.sync.SyncResult;
+import com.iot.thingmodel.sync.TbProductResourceDeleter;
 import com.iot.thingmodel.sync.TbProfileSyncer;
 import com.iot.thingmodel.tb.TbSyncException;
 import com.iot.thingmodel.tsl.CompactSchema;
@@ -14,9 +15,11 @@ import com.iot.thingmodel.tsl.TslValidator;
 import java.io.InputStream;
 import java.time.Instant;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InOrder;
 import org.springframework.http.HttpStatus;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -29,6 +32,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -45,6 +49,7 @@ class ProductServiceTest {
 
     private ProductRepository repository;
     private TbProfileSyncer syncer;
+    private TbProductResourceDeleter resourceDeleter;
     private TenantAccountService accountService;
     private ProductService service;
 
@@ -52,9 +57,11 @@ class ProductServiceTest {
     void setUp() {
         repository = mock(ProductRepository.class);
         syncer = mock(TbProfileSyncer.class);
+        resourceDeleter = mock(TbProductResourceDeleter.class);
         accountService = mock(TenantAccountService.class);
         service = new ProductService(
-                repository, parser, validator, compactSchema, syncer, accountService, objectMapper);
+                repository, parser, validator, compactSchema, syncer, resourceDeleter,
+                accountService, objectMapper);
     }
 
     @Test
@@ -361,6 +368,113 @@ class ProductServiceTest {
                                 false)));
 
         assertEquals(Constants.ErrorCode.PRODUCT_NOT_FOUND, ex.getCode());
+    }
+
+    @Test
+    void deletesProductAndOwnedThingsBoardResources() throws Exception {
+        ProductRepository.DraftResult draft = draft(load("valid-tsl.json"));
+        UUID profileId = UUID.randomUUID();
+        UUID assetId = UUID.randomUUID();
+        UUID ruleChainId = UUID.randomUUID();
+        ProductRepository.BindingRow binding =
+                new ProductRepository.BindingRow(
+                        profileId, assetId, ruleChainId, Constants.Tsl.SCHEMA_VERSION,
+                        Constants.Product.SYNC_RESULT_OK, Instant.now());
+        when(repository.findProduct(tenantId, "9HYN9PJNOY"))
+                .thenReturn(java.util.Optional.of(draft.product()));
+        when(repository.listBindings(tenantId, "9HYN9PJNOY")).thenReturn(List.of(binding));
+        when(repository.listBindingsExcludingProduct(tenantId, "9HYN9PJNOY"))
+                .thenReturn(List.of());
+        when(resourceDeleter.countDevices(tenantId, Set.of(profileId))).thenReturn(0L);
+        when(repository.deleteProduct(tenantId, "9HYN9PJNOY")).thenReturn(1);
+
+        service.delete(tenantId, "9HYN9PJNOY");
+
+        InOrder order = inOrder(resourceDeleter, repository);
+        order.verify(resourceDeleter).countDevices(tenantId, Set.of(profileId));
+        order.verify(resourceDeleter).deleteResources(
+                tenantId, Set.of(profileId), Set.of(assetId), Set.of(ruleChainId));
+        order.verify(repository).deleteProduct(tenantId, "9HYN9PJNOY");
+    }
+
+    @Test
+    void rejectsDeleteWhenProductHasDevices() throws Exception {
+        ProductRepository.DraftResult draft = draft(load("valid-tsl.json"));
+        UUID profileId = UUID.randomUUID();
+        ProductRepository.BindingRow binding =
+                new ProductRepository.BindingRow(
+                        profileId, UUID.randomUUID(), UUID.randomUUID(),
+                        Constants.Tsl.SCHEMA_VERSION, Constants.Product.SYNC_RESULT_OK, Instant.now());
+        when(repository.findProduct(tenantId, "9HYN9PJNOY"))
+                .thenReturn(java.util.Optional.of(draft.product()));
+        when(repository.listBindings(tenantId, "9HYN9PJNOY")).thenReturn(List.of(binding));
+        when(repository.listBindingsExcludingProduct(tenantId, "9HYN9PJNOY"))
+                .thenReturn(List.of());
+        when(resourceDeleter.countDevices(tenantId, Set.of(profileId))).thenReturn(2L);
+
+        ApiException ex = assertThrows(ApiException.class,
+                () -> service.delete(tenantId, "9HYN9PJNOY"));
+
+        assertEquals(HttpStatus.CONFLICT.value(), ex.getStatus().value());
+        assertEquals(Constants.ErrorCode.PRODUCT_HAS_DEVICES, ex.getCode());
+        verify(resourceDeleter, never()).deleteResources(any(), any(), any(), any());
+        verify(repository, never()).deleteProduct(any(), anyString());
+    }
+
+    @Test
+    void keepsProductWhenThingsBoardDeletionFails() throws Exception {
+        ProductRepository.DraftResult draft = draft(load("valid-tsl.json"));
+        UUID profileId = UUID.randomUUID();
+        UUID assetId = UUID.randomUUID();
+        UUID ruleChainId = UUID.randomUUID();
+        ProductRepository.BindingRow binding =
+                new ProductRepository.BindingRow(
+                        profileId, assetId, ruleChainId, Constants.Tsl.SCHEMA_VERSION,
+                        Constants.Product.SYNC_RESULT_OK, Instant.now());
+        when(repository.findProduct(tenantId, "9HYN9PJNOY"))
+                .thenReturn(java.util.Optional.of(draft.product()));
+        when(repository.listBindings(tenantId, "9HYN9PJNOY")).thenReturn(List.of(binding));
+        when(repository.listBindingsExcludingProduct(tenantId, "9HYN9PJNOY"))
+                .thenReturn(List.of());
+        when(resourceDeleter.countDevices(tenantId, Set.of(profileId))).thenReturn(0L);
+        doThrow(new TbSyncException("boom", 500, "boom"))
+                .when(resourceDeleter).deleteResources(
+                        tenantId, Set.of(profileId), Set.of(assetId), Set.of(ruleChainId));
+
+        ApiException ex = assertThrows(ApiException.class,
+                () -> service.delete(tenantId, "9HYN9PJNOY"));
+
+        assertEquals(HttpStatus.BAD_GATEWAY.value(), ex.getStatus().value());
+        assertEquals(Constants.ErrorCode.TB_DELETE_FAILED, ex.getCode());
+        verify(repository, never()).deleteProduct(any(), anyString());
+    }
+
+    @Test
+    void deletesDraftProductWithoutBindings() throws Exception {
+        ProductRepository.DraftResult draft = draft(load("valid-tsl.json"));
+        when(repository.findProduct(tenantId, "9HYN9PJNOY"))
+                .thenReturn(java.util.Optional.of(draft.product()));
+        when(repository.listBindings(tenantId, "9HYN9PJNOY")).thenReturn(List.of());
+        when(repository.listBindingsExcludingProduct(tenantId, "9HYN9PJNOY"))
+                .thenReturn(List.of());
+        when(repository.deleteProduct(tenantId, "9HYN9PJNOY")).thenReturn(1);
+
+        service.delete(tenantId, "9HYN9PJNOY");
+
+        verify(resourceDeleter).deleteResources(tenantId, Set.of(), Set.of(), Set.of());
+        verify(repository).deleteProduct(tenantId, "9HYN9PJNOY");
+    }
+
+    @Test
+    void rejectsDeleteWhenProductIsMissing() {
+        when(repository.findProduct(tenantId, "9HYN9PJNOY"))
+                .thenReturn(java.util.Optional.empty());
+
+        ApiException ex = assertThrows(ApiException.class,
+                () -> service.delete(tenantId, "9HYN9PJNOY"));
+
+        assertEquals(Constants.ErrorCode.PRODUCT_NOT_FOUND, ex.getCode());
+        verify(repository, never()).deleteProduct(any(), anyString());
     }
 
     private CreateProductCommand command(JsonNode tsl) {

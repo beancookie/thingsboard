@@ -20,15 +20,16 @@
           {{ statusTranslationKey(detail.product.status) | translate }}
         </span>
         <span class="flex-1"></span>
-        <button mat-stroked-button color="primary" type="button"
-                class="tb-product-sync-button" (click)="syncProduct()">
-          <mat-icon>sync</mat-icon>
-          {{ 'product.sync' | translate }}
-        </button>
-        <button mat-stroked-button color="primary" type="button" (click)="editThingModel()">
-          <mat-icon>edit</mat-icon>
-          {{ 'product.edit-thing-model' | translate }}
-        </button>
+        <div class="tb-product-actions">
+          <button mat-stroked-button color="primary" type="button" (click)="editThingModel()">
+            <mat-icon>edit</mat-icon>
+            {{ 'product.edit-thing-model' | translate }}
+          </button>
+          <button mat-stroked-button color="warn" type="button" (click)="deleteProduct()">
+            <mat-icon>delete</mat-icon>
+            {{ 'product.delete-product' | translate }}
+          </button>
+        </div>
       </div>
     </mat-toolbar>
     <mat-card-content class="tb-product-detail-content">

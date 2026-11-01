@@ -1,6 +1,7 @@
 package com.iot.thingmodel.controller;
 
 import com.iot.thingmodel.admin.TenantAccountService;
+import com.iot.thingmodel.admin.TenantProvisioningService;
 import com.iot.thingmodel.auth.AuthInterceptor;
 import com.iot.thingmodel.auth.CurrentUser;
 import com.iot.thingmodel.auth.TbUserVerifier;
@@ -31,9 +32,10 @@ class AdminControllerTest {
     private final UUID tenantId = UUID.randomUUID();
     private final TbUserVerifier verifier = mock(TbUserVerifier.class);
     private final TenantAccountService accountService = mock(TenantAccountService.class);
+    private final TenantProvisioningService provisioningService = mock(TenantProvisioningService.class);
     private final ThingsboardClientProvider clientProvider = mock(ThingsboardClientProvider.class);
     private final MockMvc mockMvc = MockMvcBuilders.standaloneSetup(
-                    new AdminController(accountService, clientProvider))
+                    new AdminController(accountService, provisioningService, clientProvider))
             .addInterceptors(new AuthInterceptor(verifier))
             .setControllerAdvice(new GlobalExceptionHandler())
             .build();
@@ -62,6 +64,24 @@ class AdminControllerTest {
                 .andExpect(jsonPath("$.password").doesNotExist());
 
         verify(accountService).register(eq(tenantId), eq("vendor@example.com"), eq("secret"));
+        verify(clientProvider).evict(tenantId);
+    }
+
+    @Test
+    void systemAdminCanAutoProvisionAccount() throws Exception {
+        CurrentUser admin = new CurrentUser("root", null, "SYS_ADMIN", "root@b");
+        when(verifier.verify("Bearer token")).thenReturn(admin);
+        when(provisioningService.provisionAuto(tenantId, "token", false))
+                .thenReturn(new TenantAccountService.MaskedAccount(
+                        tenantId, "thing-model-svc@example.com", true));
+
+        mockMvc.perform(post("/api/admin/tenants/{tenantId}/provision-auto", tenantId)
+                        .header("X-Authorization", "Bearer token"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.username").value("thing-model-svc@example.com"))
+                .andExpect(jsonPath("$.password").doesNotExist());
+
+        verify(provisioningService).provisionAuto(tenantId, "token", false);
         verify(clientProvider).evict(tenantId);
     }
 

@@ -9,6 +9,7 @@ public class ThingModelProperties {
 
     private final Tb tb = new Tb();
     private final Auth auth = new Auth();
+    private final Admin admin = new Admin();
     private final Security security = new Security();
     private final Database database = new Database();
     private final RuleChain ruleChain = new RuleChain();
@@ -20,6 +21,10 @@ public class ThingModelProperties {
 
     public Auth getAuth() {
         return auth;
+    }
+
+    public Admin getAdmin() {
+        return admin;
     }
 
     public Security getSecurity() {
@@ -88,6 +93,20 @@ public class ThingModelProperties {
 
         public void setCacheSeconds(int cacheSeconds) {
             this.cacheSeconds = cacheSeconds;
+        }
+    }
+
+    public static class Admin {
+
+        private String serviceAccountEmailDomain =
+                Constants.Defaults.SERVICE_ACCOUNT_EMAIL_DOMAIN;
+
+        public String getServiceAccountEmailDomain() {
+            return serviceAccountEmailDomain;
+        }
+
+        public void setServiceAccountEmailDomain(String serviceAccountEmailDomain) {
+            this.serviceAccountEmailDomain = serviceAccountEmailDomain;
         }
     }
 

@@ -36,6 +36,7 @@ public final class Constants {
         public static final String ROLE_SYS_ADMIN = "SYS_ADMIN";
         public static final String ROLE_TENANT_ADMIN = "TENANT_ADMIN";
         public static final String CURRENT_USER_ATTRIBUTE = "currentUser";
+        public static final String CURRENT_TOKEN_ATTRIBUTE = "currentToken";
         public static final int MAX_CACHE_SIZE = 10000;
         public static final long MILLIS_PER_SECOND = 1000L;
         public static final String SHA_256 = "SHA-256";
@@ -401,6 +402,7 @@ public final class Constants {
         public static final String KAFKA_TOPIC_EVENT = "iot.event.normalized";
         public static final String KAFKA_TOPIC_INVALID = "iot.invalid";
         public static final String KAFKA_KEY_PATTERN = "$[deviceName]";
+        public static final String SERVICE_ACCOUNT_EMAIL_DOMAIN = "thing-model.local";
         public static final List<String> CORS_ALLOWED_ORIGINS = List.of("*");
         public static final long CORS_MAX_AGE = 3600L;
     }
@@ -420,9 +422,12 @@ public final class Constants {
         public static final String PASSWORD_REQUIRED = "PASSWORD_REQUIRED";
         public static final String TENANT_ACCOUNT_MISSING = "TENANT_ACCOUNT_MISSING";
         public static final String TENANT_ACCOUNT_DISABLED = "TENANT_ACCOUNT_DISABLED";
+        public static final String TENANT_ACCOUNT_CONFLICT = "TENANT_ACCOUNT_CONFLICT";
+        public static final String TENANT_NOT_FOUND = "TENANT_NOT_FOUND";
         public static final String PRODUCT_NOT_FOUND = "PRODUCT_NOT_FOUND";
         public static final String PRODUCT_ID_CONFLICT = "PRODUCT_ID_CONFLICT";
         public static final String PRODUCT_CONFLICT = "PRODUCT_CONFLICT";
+        public static final String PRODUCT_HAS_DEVICES = "PRODUCT_HAS_DEVICES";
         public static final String PRODUCT_ID_MISSING = "PRODUCT_ID_MISSING";
         public static final String PRODUCT_ID_MISMATCH = "PRODUCT_ID_MISMATCH";
         public static final String TSL_REQUIRED = "TSL_REQUIRED";
@@ -432,6 +437,7 @@ public final class Constants {
         public static final String VERSION_MISSING = "VERSION_MISSING";
         public static final String VERSION_MISMATCH = "VERSION_MISMATCH";
         public static final String TB_SYNC_FAILED = "TB_SYNC_FAILED";
+        public static final String TB_DELETE_FAILED = "TB_DELETE_FAILED";
         public static final String TB_UNAVAILABLE = "TB_UNAVAILABLE";
         public static final String TB_LOGIN_FAILED = "TB_LOGIN_FAILED";
         public static final String FUNCTION_POINTS = "FUNCTION_POINTS";

@@ -27,6 +27,10 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import static com.iot.thingmodel.db.jooq.Tables.PLAT_PROFILE_BINDING;
+import static com.iot.thingmodel.db.jooq.Tables.PLAT_TSL_ACTION;
+import static com.iot.thingmodel.db.jooq.Tables.PLAT_TSL_EVENT;
+import static com.iot.thingmodel.db.jooq.Tables.PLAT_TSL_PROPERTY;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -170,6 +174,43 @@ class RepositoryIntegrationTest {
                 ruleChainId,
                 Constants.Product.SYNC_RESULT_OK);
         assertEquals(newProfileId, productRepository.findBinding(tenantId, "P1", "1.0").orElseThrow().profileId());
+    }
+
+    @Test
+    void deletesProductAndCascadesChildren() throws Exception {
+        UUID tenantA = UUID.randomUUID();
+        UUID tenantB = UUID.randomUUID();
+        JsonNode tsl = tsl("1.0");
+        productRepository.saveDraft(
+                tenantA, "P1", "Alpha", "M1", "C1", null, "1.0", "sum-1", false, tsl);
+        productRepository.publish(
+                tenantA,
+                "P1",
+                Constants.Product.DEFAULT_TSL_VERSION,
+                definition(tsl),
+                Constants.Tsl.SCHEMA_VERSION,
+                UUID.randomUUID(),
+                UUID.randomUUID(),
+                UUID.randomUUID(),
+                Constants.Product.SYNC_RESULT_OK);
+        productRepository.saveDraft(
+                tenantB, "P1", "Beta", "M2", "C2", null, "1.0", "sum-2", false, tsl);
+
+        assertEquals(1, productRepository.deleteProduct(tenantA, "P1"));
+
+        assertTrue(productRepository.findProduct(tenantA, "P1").isEmpty());
+        assertTrue(productRepository.findLatestTsl(tenantA, "P1").isEmpty());
+        assertTrue(productRepository.findBinding(tenantA, "P1", "1.0").isEmpty());
+        assertEquals(0, dsl.fetchCount(
+                PLAT_TSL_PROPERTY, PLAT_TSL_PROPERTY.TENANT_ID.eq(tenantA)));
+        assertEquals(0, dsl.fetchCount(
+                PLAT_TSL_EVENT, PLAT_TSL_EVENT.TENANT_ID.eq(tenantA)));
+        assertEquals(0, dsl.fetchCount(
+                PLAT_TSL_ACTION, PLAT_TSL_ACTION.TENANT_ID.eq(tenantA)));
+        assertEquals(0, dsl.fetchCount(
+                PLAT_PROFILE_BINDING, PLAT_PROFILE_BINDING.TENANT_ID.eq(tenantA)));
+
+        assertTrue(productRepository.findProduct(tenantB, "P1").isPresent());
     }
 
     @Test

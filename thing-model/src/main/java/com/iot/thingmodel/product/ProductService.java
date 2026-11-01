@@ -6,6 +6,7 @@ import com.iot.thingmodel.admin.TenantAccountService;
 import com.iot.thingmodel.common.ApiException;
 import com.iot.thingmodel.common.Constants;
 import com.iot.thingmodel.sync.SyncResult;
+import com.iot.thingmodel.sync.TbProductResourceDeleter;
 import com.iot.thingmodel.sync.TbProfileSyncer;
 import com.iot.thingmodel.sync.TbSyncRequest;
 import com.iot.thingmodel.tb.TbSyncException;
@@ -21,7 +22,11 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.HexFormat;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +38,7 @@ public class ProductService {
     private final TslValidator validator;
     private final CompactSchema compactSchema;
     private final TbProfileSyncer syncer;
+    private final TbProductResourceDeleter resourceDeleter;
     private final TenantAccountService tenantAccountService;
     private final ObjectMapper objectMapper;
 
@@ -42,6 +48,7 @@ public class ProductService {
             TslValidator validator,
             CompactSchema compactSchema,
             TbProfileSyncer syncer,
+            TbProductResourceDeleter resourceDeleter,
             TenantAccountService tenantAccountService,
             ObjectMapper objectMapper) {
         this.repository = repository;
@@ -49,6 +56,7 @@ public class ProductService {
         this.validator = validator;
         this.compactSchema = compactSchema;
         this.syncer = syncer;
+        this.resourceDeleter = resourceDeleter;
         this.tenantAccountService = tenantAccountService;
         this.objectMapper = objectMapper;
     }
@@ -264,6 +272,49 @@ public class ProductService {
                 validation.warnings());
     }
 
+    public void delete(UUID tenantId, String productId) {
+        requireProduct(tenantId, productId);
+        List<ProductRepository.BindingRow> bindings =
+                repository.listBindings(tenantId, productId);
+        List<ProductRepository.BindingRow> otherBindings =
+                repository.listBindingsExcludingProduct(tenantId, productId);
+        bindings = bindings == null ? List.of() : bindings;
+        otherBindings = otherBindings == null ? List.of() : otherBindings;
+
+        Set<UUID> profileIds = ownedIds(
+                bindings, otherBindings, ProductRepository.BindingRow::profileId);
+        Set<UUID> assetIds = ownedIds(
+                bindings, otherBindings, ProductRepository.BindingRow::assetId);
+        Set<UUID> ruleChainIds = ownedIds(
+                bindings, otherBindings, ProductRepository.BindingRow::ruleChainId);
+
+        try {
+            if (!profileIds.isEmpty()) {
+                long deviceCount = resourceDeleter.countDevices(tenantId, profileIds);
+                if (deviceCount > Constants.Db.ZERO_COUNT) {
+                    throw new ApiException(
+                            HttpStatus.CONFLICT,
+                            Constants.ErrorCode.PRODUCT_HAS_DEVICES,
+                            "产品下存在 " + deviceCount + " 台设备，无法删除");
+                }
+            }
+            resourceDeleter.deleteResources(tenantId, profileIds, assetIds, ruleChainIds);
+        } catch (TbSyncException ex) {
+            throw new ApiException(
+                    HttpStatus.BAD_GATEWAY,
+                    Constants.ErrorCode.TB_DELETE_FAILED,
+                    ex.getMessage());
+        }
+
+        int deleted = repository.deleteProduct(tenantId, productId);
+        if (deleted == Constants.Db.NO_ROWS_AFFECTED) {
+            throw new ApiException(
+                    HttpStatus.NOT_FOUND,
+                    Constants.ErrorCode.PRODUCT_NOT_FOUND,
+                    "产品不存在");
+        }
+    }
+
     public CatalogView catalog(UUID tenantId, String productId) {
         requireProduct(tenantId, productId);
         ProductRepository.TslRow latest = repository.findLatestTsl(tenantId, productId)
@@ -295,6 +346,21 @@ public class ProductService {
             }
             throw ex;
         }
+    }
+
+    private Set<UUID> ownedIds(
+            List<ProductRepository.BindingRow> bindings,
+            List<ProductRepository.BindingRow> otherBindings,
+            Function<ProductRepository.BindingRow, UUID> extractor) {
+        Set<UUID> shared = otherBindings.stream()
+                .map(extractor)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+        return bindings.stream()
+                .map(extractor)
+                .filter(Objects::nonNull)
+                .filter(id -> !shared.contains(id))
+                .collect(Collectors.toSet());
     }
 
     private ProductRepository.ProductRow requireProduct(UUID tenantId, String productId) {

@@ -70,10 +70,9 @@ export class ProductService {
     );
   }
 
-  syncProduct(productId: string, config?: RequestConfig): Observable<ProductResponse> {
-    return this.http.post<ProductResponse>(
-      `/api/thing-model/products/${encodeURIComponent(productId)}/sync`,
-      null,
+  deleteProduct(productId: string, config?: RequestConfig): Observable<void> {
+    return this.http.delete<void>(
+      `/api/thing-model/products/${encodeURIComponent(productId)}`,
       defaultHttpOptionsFromConfig(config)
     );
   }

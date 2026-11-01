@@ -38,8 +38,18 @@ public class AuthInterceptor implements HandlerInterceptor {
         }
         CurrentUser currentUser = userVerifier.verify(token);
         request.setAttribute(CURRENT_USER_ATTRIBUTE, currentUser);
+        request.setAttribute(Constants.Auth.CURRENT_TOKEN_ATTRIBUTE, normalizeToken(token));
         checkAuthority(handler, currentUser);
         return true;
+    }
+
+    private String normalizeToken(String token) {
+        String value = token.trim();
+        if (value.regionMatches(
+                true, 0, Constants.Auth.BEARER_PREFIX, 0, Constants.Auth.BEARER_PREFIX_LENGTH)) {
+            value = value.substring(Constants.Auth.BEARER_PREFIX_LENGTH).trim();
+        }
+        return value;
     }
 
     private void checkAuthority(Object handler, CurrentUser currentUser) {

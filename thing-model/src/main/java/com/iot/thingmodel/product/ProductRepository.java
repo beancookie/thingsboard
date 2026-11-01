@@ -196,13 +196,35 @@ public class ProductRepository {
                 .where(PLAT_PROFILE_BINDING.TENANT_ID.eq(tenantId))
                 .and(PLAT_PROFILE_BINDING.PRODUCT_ID.eq(productId))
                 .and(PLAT_PROFILE_BINDING.TSL_VERSION.eq(version))
-                .fetchOptional(record -> new BindingRow(
-                        record.get(PLAT_PROFILE_BINDING.TB_PROFILE_ID),
-                        record.get(PLAT_PROFILE_BINDING.TB_ASSET_ID),
-                        record.get(PLAT_PROFILE_BINDING.TB_RULE_CHAIN_ID),
-                        record.get(PLAT_PROFILE_BINDING.SCHEMA_VERSION),
-                        record.get(PLAT_PROFILE_BINDING.SYNC_RESULT),
-                        JooqTime.toInstant(record.get(PLAT_PROFILE_BINDING.SYNCED_AT))));
+                .fetchOptional(this::mapBinding);
+    }
+
+    public List<BindingRow> listBindings(UUID tenantId, String productId) {
+        return dsl.select(
+                        PLAT_PROFILE_BINDING.TB_PROFILE_ID,
+                        PLAT_PROFILE_BINDING.TB_ASSET_ID,
+                        PLAT_PROFILE_BINDING.TB_RULE_CHAIN_ID,
+                        PLAT_PROFILE_BINDING.SCHEMA_VERSION,
+                        PLAT_PROFILE_BINDING.SYNC_RESULT,
+                        PLAT_PROFILE_BINDING.SYNCED_AT)
+                .from(PLAT_PROFILE_BINDING)
+                .where(PLAT_PROFILE_BINDING.TENANT_ID.eq(tenantId))
+                .and(PLAT_PROFILE_BINDING.PRODUCT_ID.eq(productId))
+                .fetch(this::mapBinding);
+    }
+
+    public List<BindingRow> listBindingsExcludingProduct(UUID tenantId, String productId) {
+        return dsl.select(
+                        PLAT_PROFILE_BINDING.TB_PROFILE_ID,
+                        PLAT_PROFILE_BINDING.TB_ASSET_ID,
+                        PLAT_PROFILE_BINDING.TB_RULE_CHAIN_ID,
+                        PLAT_PROFILE_BINDING.SCHEMA_VERSION,
+                        PLAT_PROFILE_BINDING.SYNC_RESULT,
+                        PLAT_PROFILE_BINDING.SYNCED_AT)
+                .from(PLAT_PROFILE_BINDING)
+                .where(PLAT_PROFILE_BINDING.TENANT_ID.eq(tenantId))
+                .and(PLAT_PROFILE_BINDING.PRODUCT_ID.ne(productId))
+                .fetch(this::mapBinding);
     }
 
     @Transactional
@@ -347,6 +369,14 @@ public class ProductRepository {
     }
 
     @Transactional
+    public int deleteProduct(UUID tenantId, String productId) {
+        return dsl.deleteFrom(PLAT_PRODUCT)
+                .where(PLAT_PRODUCT.TENANT_ID.eq(tenantId))
+                .and(PLAT_PRODUCT.PRODUCT_ID.eq(productId))
+                .execute();
+    }
+
+    @Transactional
     public void recordSyncFailure(UUID tenantId, String productId, String version, String error) {
         String message = error == null ? "SYNC_FAILED" : error;
         if (message.length() > SYNC_RESULT_MAX_LENGTH) {
@@ -467,6 +497,16 @@ public class ProductRepository {
                 record.getProtocol(),
                 JooqTime.toInstant(record.getCreatedAt()),
                 JooqTime.toInstant(record.getUpdatedAt()));
+    }
+
+    private BindingRow mapBinding(org.jooq.Record record) {
+        return new BindingRow(
+                record.get(PLAT_PROFILE_BINDING.TB_PROFILE_ID),
+                record.get(PLAT_PROFILE_BINDING.TB_ASSET_ID),
+                record.get(PLAT_PROFILE_BINDING.TB_RULE_CHAIN_ID),
+                record.get(PLAT_PROFILE_BINDING.SCHEMA_VERSION),
+                record.get(PLAT_PROFILE_BINDING.SYNC_RESULT),
+                JooqTime.toInstant(record.get(PLAT_PROFILE_BINDING.SYNCED_AT)));
     }
 
     private TslRow mapTsl(com.iot.thingmodel.db.jooq.tables.records.PlatProductTslRecord record) {

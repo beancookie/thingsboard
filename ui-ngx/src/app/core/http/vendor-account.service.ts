@@ -28,4 +28,12 @@ export class VendorAccountService {
       defaultHttpOptionsFromConfig(config)
     );
   }
+
+  autoProvision(tenantId: string, force = false, config?: RequestConfig): Observable<VendorAccount> {
+    return this.http.post<VendorAccount>(
+      `/api/thing-model/admin/tenants/${encodeURIComponent(tenantId)}/provision-auto?force=${force}`,
+      null,
+      defaultHttpOptionsFromConfig(config)
+    );
+  }
 }

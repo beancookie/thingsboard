@@ -23,24 +23,24 @@
   word-break: break-all;
 }
 
-.tb-tenant-vendor-account-form {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+.tb-tenant-vendor-account-status {
+  color: rgba(0, 0, 0, 0.68);
 }
 
-.tb-tenant-vendor-account-warning {
+.tb-tenant-vendor-account-success {
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 12px;
   border-radius: 6px;
-  color: #9a6700;
-  background: #fff4d6;
+  color: #1b5e20;
+  background: #e6f4ea;
+}
 
-  mat-icon {
-    flex: 0 0 auto;
-  }
+.tb-tenant-vendor-account-username {
+  font-family: monospace;
+  font-size: 12px;
+  word-break: break-all;
 }
 
 .tb-tenant-vendor-account-error {

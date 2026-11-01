@@ -78,6 +78,11 @@
                     [matTooltip]="'action.view' | translate" matTooltipPosition="above">
               <mat-icon>visibility</mat-icon>
             </button>
+            <button mat-icon-button color="warn" type="button"
+                    (click)="deleteProduct(product, $event)"
+                    [matTooltip]="'product.delete-product' | translate" matTooltipPosition="above">
+              <mat-icon>delete</mat-icon>
+            </button>
           </td>
         </ng-container>
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

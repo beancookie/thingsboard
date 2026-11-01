@@ -66,10 +66,10 @@ export class ProductDetailComponent extends PageComponent implements OnInit {
     });
   }
 
-  syncProduct(): void {
+  deleteProduct(): void {
     this.dialogService.confirm(
-      this.translate.instant('product.sync-confirm-title'),
-      this.translate.instant('product.sync-confirm-text'),
+      this.translate.instant('product.delete-confirm-title'),
+      this.translate.instant('product.delete-confirm-text', {productId: this.productId}),
       this.translate.instant('action.no'),
       this.translate.instant('action.yes'),
       true
@@ -77,10 +77,10 @@ export class ProductDetailComponent extends PageComponent implements OnInit {
       if (!confirmed) {
         return;
       }
-      this.productService.syncProduct(this.productId).subscribe(
+      this.productService.deleteProduct(this.productId).subscribe(
         () => {
-          this.notify('product.sync-success', 'success');
-          this.load();
+          this.notify('product.delete-success', 'success');
+          this.router.navigate(['/entities/products']);
         },
         (error: HttpErrorResponse) => this.handleError(error)
       );
@@ -99,7 +99,6 @@ export class ProductDetailComponent extends PageComponent implements OnInit {
       }
     }).afterClosed().subscribe((response) => {
       if (response) {
-        this.notify('product.save-success', 'success');
         this.load();
       }
     });
