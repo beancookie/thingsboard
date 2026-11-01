@@ -34,6 +34,7 @@ export interface ProductFormDialogData {
   product?: ProductItem;
   thingModel?: ThingModelView;
   productId?: string;
+  tenantId?: string;
 }
 
 @Component({
@@ -65,7 +66,7 @@ export class ProductFormDialogComponent
     const product = data.product;
     const thingModel = data.thingModel;
     this.form = this.fb.group({
-      tenantId: [product?.tenantId || null, this.isSystemAdmin ? [Validators.required] : []],
+      tenantId: [product?.tenantId || data.tenantId || null, this.isSystemAdmin ? [Validators.required] : []],
       productId: [{
         value: product?.productId || data.productId || '',
         disabled: data.mode === 'edit'
@@ -95,7 +96,7 @@ export class ProductFormDialogComponent
       this.notify('product.product-id-required', 'error');
       return;
     }
-    this.productService.validateThingModel(productId, tsl).subscribe(
+    this.productService.validateThingModel(productId, tsl, this.effectiveTenantId()).subscribe(
       (result: ProductValidationResult) => {
         if (result.valid) {
           this.notify('product.valid', 'success');
@@ -157,7 +158,7 @@ export class ProductFormDialogComponent
         tslVersion: value.tslVersion,
         tsl: value.tsl,
         strictUnknown: value.strictUnknown
-      }).subscribe(
+      }, this.effectiveTenantId()).subscribe(
         (response) => this.onSaved(response),
         (error: HttpErrorResponse) => this.handleError(error)
       );
@@ -198,6 +199,13 @@ export class ProductFormDialogComponent
     }
     const tsl = this.form.get('tsl').value;
     return tsl?.profile?.ProductId || tsl?.profile?.productId || tsl?.productId || null;
+  }
+
+  private effectiveTenantId(): string | undefined {
+    if (!this.isSystemAdmin) {
+      return undefined;
+    }
+    return this.entityIdValue(this.form.get('tenantId').value);
   }
 
   private entityIdValue(value: any): string {

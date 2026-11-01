@@ -20,6 +20,11 @@
           {{ statusTranslationKey(detail.product.status) | translate }}
         </span>
         <span class="flex-1"></span>
+        <button mat-stroked-button color="primary" type="button"
+                class="tb-product-sync-button" (click)="syncProduct()">
+          <mat-icon>sync</mat-icon>
+          {{ 'product.sync' | translate }}
+        </button>
         <button mat-stroked-button color="primary" type="button" (click)="editThingModel()">
           <mat-icon>edit</mat-icon>
           {{ 'product.edit-thing-model' | translate }}

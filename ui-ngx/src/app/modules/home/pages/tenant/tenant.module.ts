@@ -7,11 +7,13 @@ import { TenantComponent } from '@modules/home/pages/tenant/tenant.component';
 import { TenantRoutingModule } from '@modules/home/pages/tenant/tenant-routing.module';
 import { HomeComponentsModule } from '@modules/home/components/home-components.module';
 import { TenantTabsComponent } from '@home/pages/tenant/tenant-tabs.component';
+import { TenantVendorAccountDialogComponent } from '@home/pages/tenant/tenant-vendor-account-dialog.component';
 
 @NgModule({
   declarations: [
     TenantComponent,
-    TenantTabsComponent
+    TenantTabsComponent,
+    TenantVendorAccountDialogComponent
   ],
   imports: [
     CommonModule,

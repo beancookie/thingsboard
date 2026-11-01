@@ -19,7 +19,6 @@ import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.Query;
-import org.jooq.Record;
 import org.jooq.Table;
 import org.jooq.impl.DSL;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -35,12 +34,13 @@ import static com.iot.thingmodel.db.jooq.Tables.PLAT_TSL_EVENT;
 import static com.iot.thingmodel.db.jooq.Tables.PLAT_TSL_PROPERTY;
 import static org.jooq.impl.DSL.excluded;
 import static org.jooq.impl.DSL.field;
-import static org.jooq.impl.DSL.select;
 import static org.jooq.impl.DSL.selectCount;
 import static org.jooq.impl.DSL.trueCondition;
 
 @Repository
 public class ProductRepository {
+
+    private static final int SYNC_RESULT_MAX_LENGTH = 2000;
 
     private final DSLContext dsl;
     private final ObjectMapper objectMapper;
@@ -50,22 +50,25 @@ public class ProductRepository {
         this.objectMapper = objectMapper;
     }
 
-    public Optional<ProductRow> findProduct(String productId) {
+    public Optional<ProductRow> findProduct(UUID tenantId, String productId) {
         return dsl.selectFrom(PLAT_PRODUCT)
-                .where(PLAT_PRODUCT.PRODUCT_ID.eq(productId))
+                .where(PLAT_PRODUCT.TENANT_ID.eq(tenantId))
+                .and(PLAT_PRODUCT.PRODUCT_ID.eq(productId))
                 .fetchOptional(this::mapProduct);
     }
 
     public List<ProductItem> listProducts(UUID tenantId, String keyword) {
         var latest = dsl.select(PLAT_PRODUCT_TSL.asterisk())
-                .distinctOn(PLAT_PRODUCT_TSL.PRODUCT_ID)
+                .distinctOn(PLAT_PRODUCT_TSL.TENANT_ID, PLAT_PRODUCT_TSL.PRODUCT_ID)
                 .from(PLAT_PRODUCT_TSL)
                 .orderBy(
+                        PLAT_PRODUCT_TSL.TENANT_ID,
                         PLAT_PRODUCT_TSL.PRODUCT_ID,
                         PLAT_PRODUCT_TSL.CREATED_AT.desc(),
                         PLAT_PRODUCT_TSL.ID.desc())
                 .asTable(Constants.Db.LATEST_ALIAS);
 
+        Field<UUID> latestTenantId = latest.field(PLAT_PRODUCT_TSL.TENANT_ID);
         Field<String> latestProductId = latest.field(PLAT_PRODUCT_TSL.PRODUCT_ID);
         Field<String> latestVersion = latest.field(PLAT_PRODUCT_TSL.VERSION);
         Field<String> tslVersion = latestVersion.as(Constants.Db.ALIAS_TSL_VERSION);
@@ -73,18 +76,21 @@ public class ProductRepository {
                 .as(Constants.Db.ALIAS_TSL_STATUS);
         Field<Integer> propertyCount = childCount(
                         PLAT_TSL_PROPERTY,
+                        PLAT_TSL_PROPERTY.TENANT_ID,
                         PLAT_TSL_PROPERTY.PRODUCT_ID,
                         PLAT_TSL_PROPERTY.TSL_VERSION,
                         latestVersion)
                 .as(Constants.Db.ALIAS_PROPERTY_COUNT);
         Field<Integer> eventCount = childCount(
                         PLAT_TSL_EVENT,
+                        PLAT_TSL_EVENT.TENANT_ID,
                         PLAT_TSL_EVENT.PRODUCT_ID,
                         PLAT_TSL_EVENT.TSL_VERSION,
                         latestVersion)
                 .as(Constants.Db.ALIAS_EVENT_COUNT);
         Field<Integer> actionCount = childCount(
                         PLAT_TSL_ACTION,
+                        PLAT_TSL_ACTION.TENANT_ID,
                         PLAT_TSL_ACTION.PRODUCT_ID,
                         PLAT_TSL_ACTION.TSL_VERSION,
                         latestVersion)
@@ -116,9 +122,12 @@ public class ProductRepository {
                         PLAT_PROFILE_BINDING.TB_RULE_CHAIN_ID,
                         PLAT_PRODUCT.UPDATED_AT)
                 .from(PLAT_PRODUCT)
-                .leftJoin(latest).on(latestProductId.eq(PLAT_PRODUCT.PRODUCT_ID))
+                .leftJoin(latest).on(
+                        latestTenantId.eq(PLAT_PRODUCT.TENANT_ID)
+                                .and(latestProductId.eq(PLAT_PRODUCT.PRODUCT_ID)))
                 .leftJoin(PLAT_PROFILE_BINDING).on(
-                        PLAT_PROFILE_BINDING.PRODUCT_ID.eq(PLAT_PRODUCT.PRODUCT_ID)
+                        PLAT_PROFILE_BINDING.TENANT_ID.eq(PLAT_PRODUCT.TENANT_ID)
+                                .and(PLAT_PROFILE_BINDING.PRODUCT_ID.eq(PLAT_PRODUCT.PRODUCT_ID))
                                 .and(PLAT_PROFILE_BINDING.TSL_VERSION.eq(latestVersion)))
                 .where(condition)
                 .orderBy(PLAT_PRODUCT.UPDATED_AT.desc(), PLAT_PRODUCT.PRODUCT_ID.asc())
@@ -139,22 +148,24 @@ public class ProductRepository {
                         JooqTime.toInstant(record.get(PLAT_PRODUCT.UPDATED_AT))));
     }
 
-    public Optional<TslRow> findTsl(String productId, String version) {
+    public Optional<TslRow> findTsl(UUID tenantId, String productId, String version) {
         return dsl.selectFrom(PLAT_PRODUCT_TSL)
-                .where(PLAT_PRODUCT_TSL.PRODUCT_ID.eq(productId))
+                .where(PLAT_PRODUCT_TSL.TENANT_ID.eq(tenantId))
+                .and(PLAT_PRODUCT_TSL.PRODUCT_ID.eq(productId))
                 .and(PLAT_PRODUCT_TSL.VERSION.eq(version))
                 .fetchOptional(this::mapTsl);
     }
 
-    public Optional<TslRow> findLatestTsl(String productId) {
+    public Optional<TslRow> findLatestTsl(UUID tenantId, String productId) {
         return dsl.selectFrom(PLAT_PRODUCT_TSL)
-                .where(PLAT_PRODUCT_TSL.PRODUCT_ID.eq(productId))
+                .where(PLAT_PRODUCT_TSL.TENANT_ID.eq(tenantId))
+                .and(PLAT_PRODUCT_TSL.PRODUCT_ID.eq(productId))
                 .orderBy(PLAT_PRODUCT_TSL.CREATED_AT.desc(), PLAT_PRODUCT_TSL.ID.desc())
                 .limit(Constants.Db.LATEST_LIMIT)
                 .fetchOptional(this::mapTsl);
     }
 
-    public List<ProductDetail.TslVersionView> listVersions(String productId) {
+    public List<ProductDetail.TslVersionView> listVersions(UUID tenantId, String productId) {
         return dsl.select(
                         PLAT_PRODUCT_TSL.VERSION,
                         PLAT_PRODUCT_TSL.STATUS,
@@ -162,7 +173,8 @@ public class ProductRepository {
                         PLAT_PRODUCT_TSL.PUBLISHED_AT,
                         PLAT_PRODUCT_TSL.CREATED_AT)
                 .from(PLAT_PRODUCT_TSL)
-                .where(PLAT_PRODUCT_TSL.PRODUCT_ID.eq(productId))
+                .where(PLAT_PRODUCT_TSL.TENANT_ID.eq(tenantId))
+                .and(PLAT_PRODUCT_TSL.PRODUCT_ID.eq(productId))
                 .orderBy(PLAT_PRODUCT_TSL.CREATED_AT.desc(), PLAT_PRODUCT_TSL.ID.desc())
                 .fetch(record -> new ProductDetail.TslVersionView(
                         record.get(PLAT_PRODUCT_TSL.VERSION),
@@ -172,7 +184,7 @@ public class ProductRepository {
                         JooqTime.toInstant(record.get(PLAT_PRODUCT_TSL.CREATED_AT))));
     }
 
-    public Optional<BindingRow> findBinding(String productId, String version) {
+    public Optional<BindingRow> findBinding(UUID tenantId, String productId, String version) {
         return dsl.select(
                         PLAT_PROFILE_BINDING.TB_PROFILE_ID,
                         PLAT_PROFILE_BINDING.TB_ASSET_ID,
@@ -181,7 +193,8 @@ public class ProductRepository {
                         PLAT_PROFILE_BINDING.SYNC_RESULT,
                         PLAT_PROFILE_BINDING.SYNCED_AT)
                 .from(PLAT_PROFILE_BINDING)
-                .where(PLAT_PROFILE_BINDING.PRODUCT_ID.eq(productId))
+                .where(PLAT_PROFILE_BINDING.TENANT_ID.eq(tenantId))
+                .and(PLAT_PROFILE_BINDING.PRODUCT_ID.eq(productId))
                 .and(PLAT_PROFILE_BINDING.TSL_VERSION.eq(version))
                 .fetchOptional(record -> new BindingRow(
                         record.get(PLAT_PROFILE_BINDING.TB_PROFILE_ID),
@@ -204,13 +217,7 @@ public class ProductRepository {
             String checksum,
             boolean strictUnknown,
             JsonNode tsl) {
-        ProductRow existing = findProductForUpdate(productId);
-        if (existing != null && !existing.tenantId().equals(tenantId)) {
-            throw new ApiException(
-                    HttpStatus.CONFLICT,
-                    Constants.ErrorCode.PRODUCT_ID_CONFLICT,
-                    "ProductId 已被其他厂商占用");
-        }
+        ProductRow existing = findProductForUpdate(tenantId, productId);
 
         try {
             if (existing == null) {
@@ -230,7 +237,8 @@ public class ProductRepository {
                         .set(PLAT_PRODUCT.MODEL, model)
                         .set(PLAT_PRODUCT.CATEGORY_ID, categoryId)
                         .set(PLAT_PRODUCT.VENDOR, vendor)
-                        .where(PLAT_PRODUCT.PRODUCT_ID.eq(productId))
+                        .where(PLAT_PRODUCT.TENANT_ID.eq(tenantId))
+                        .and(PLAT_PRODUCT.PRODUCT_ID.eq(productId))
                         .execute();
             }
         } catch (DataIntegrityViolationException ex) {
@@ -238,7 +246,7 @@ public class ProductRepository {
                     HttpStatus.CONFLICT, Constants.ErrorCode.PRODUCT_CONFLICT, "产品创建冲突，请重试");
         }
 
-        TslRow existingTsl = findTslForUpdate(productId, version);
+        TslRow existingTsl = findTslForUpdate(tenantId, productId, version);
         if (existingTsl != null) {
             if (!existingTsl.checksum().equals(checksum)) {
                 throw new ApiException(
@@ -246,7 +254,7 @@ public class ProductRepository {
                         Constants.ErrorCode.TSL_VERSION_EXISTS,
                         "同一 TSL 版本已存在且内容不同");
             }
-            ProductRow product = findProduct(productId).orElseThrow();
+            ProductRow product = findProduct(tenantId, productId).orElseThrow();
             return new DraftResult(product, existingTsl);
         }
 
@@ -260,13 +268,14 @@ public class ProductRepository {
                 .set(PLAT_PRODUCT_TSL.STATUS, Constants.Product.STATUS_DRAFT)
                 .execute();
 
-        ProductRow product = findProduct(productId).orElseThrow();
-        TslRow tslRow = findTsl(productId, version).orElseThrow();
+        ProductRow product = findProduct(tenantId, productId).orElseThrow();
+        TslRow tslRow = findTsl(tenantId, productId, version).orElseThrow();
         return new DraftResult(product, tslRow);
     }
 
     @Transactional
     public void publish(
+            UUID tenantId,
             String productId,
             String version,
             TslDefinition definition,
@@ -278,7 +287,8 @@ public class ProductRepository {
         int updated = dsl.update(PLAT_PRODUCT_TSL)
                 .set(PLAT_PRODUCT_TSL.STATUS, Constants.Product.STATUS_PUBLISHED)
                 .set(PLAT_PRODUCT_TSL.PUBLISHED_AT, JooqTime.now())
-                .where(PLAT_PRODUCT_TSL.PRODUCT_ID.eq(productId))
+                .where(PLAT_PRODUCT_TSL.TENANT_ID.eq(tenantId))
+                .and(PLAT_PRODUCT_TSL.PRODUCT_ID.eq(productId))
                 .and(PLAT_PRODUCT_TSL.VERSION.eq(version))
                 .execute();
         if (updated == Constants.Db.NO_ROWS_AFFECTED) {
@@ -287,23 +297,27 @@ public class ProductRepository {
         }
 
         dsl.deleteFrom(PLAT_TSL_PROPERTY)
-                .where(PLAT_TSL_PROPERTY.PRODUCT_ID.eq(productId))
+                .where(PLAT_TSL_PROPERTY.TENANT_ID.eq(tenantId))
+                .and(PLAT_TSL_PROPERTY.PRODUCT_ID.eq(productId))
                 .and(PLAT_TSL_PROPERTY.TSL_VERSION.eq(version))
                 .execute();
         dsl.deleteFrom(PLAT_TSL_EVENT)
-                .where(PLAT_TSL_EVENT.PRODUCT_ID.eq(productId))
+                .where(PLAT_TSL_EVENT.TENANT_ID.eq(tenantId))
+                .and(PLAT_TSL_EVENT.PRODUCT_ID.eq(productId))
                 .and(PLAT_TSL_EVENT.TSL_VERSION.eq(version))
                 .execute();
         dsl.deleteFrom(PLAT_TSL_ACTION)
-                .where(PLAT_TSL_ACTION.PRODUCT_ID.eq(productId))
+                .where(PLAT_TSL_ACTION.TENANT_ID.eq(tenantId))
+                .and(PLAT_TSL_ACTION.PRODUCT_ID.eq(productId))
                 .and(PLAT_TSL_ACTION.TSL_VERSION.eq(version))
                 .execute();
 
-        insertProperties(productId, version, definition.properties());
-        insertEvents(productId, version, definition.events());
-        insertActions(productId, version, definition.actions());
+        insertProperties(tenantId, productId, version, definition.properties());
+        insertEvents(tenantId, productId, version, definition.events());
+        insertActions(tenantId, productId, version, definition.actions());
 
         dsl.insertInto(PLAT_PROFILE_BINDING)
+                .set(PLAT_PROFILE_BINDING.TENANT_ID, tenantId)
                 .set(PLAT_PROFILE_BINDING.PRODUCT_ID, productId)
                 .set(PLAT_PROFILE_BINDING.TSL_VERSION, version)
                 .set(PLAT_PROFILE_BINDING.TB_PROFILE_ID, profileId)
@@ -312,7 +326,10 @@ public class ProductRepository {
                 .set(PLAT_PROFILE_BINDING.SCHEMA_VERSION, schemaVersion)
                 .set(PLAT_PROFILE_BINDING.SYNC_RESULT, syncResult)
                 .set(PLAT_PROFILE_BINDING.SYNCED_AT, JooqTime.now())
-                .onConflict(PLAT_PROFILE_BINDING.PRODUCT_ID, PLAT_PROFILE_BINDING.TSL_VERSION)
+                .onConflict(
+                        PLAT_PROFILE_BINDING.TENANT_ID,
+                        PLAT_PROFILE_BINDING.PRODUCT_ID,
+                        PLAT_PROFILE_BINDING.TSL_VERSION)
                 .doUpdate()
                 .set(PLAT_PROFILE_BINDING.TB_PROFILE_ID, excluded(PLAT_PROFILE_BINDING.TB_PROFILE_ID))
                 .set(PLAT_PROFILE_BINDING.TB_ASSET_ID, excluded(PLAT_PROFILE_BINDING.TB_ASSET_ID))
@@ -324,11 +341,35 @@ public class ProductRepository {
 
         dsl.update(PLAT_PRODUCT)
                 .set(PLAT_PRODUCT.UPDATED_AT, JooqTime.now())
-                .where(PLAT_PRODUCT.PRODUCT_ID.eq(productId))
+                .where(PLAT_PRODUCT.TENANT_ID.eq(tenantId))
+                .and(PLAT_PRODUCT.PRODUCT_ID.eq(productId))
                 .execute();
     }
 
-    private void insertProperties(String productId, String version, List<TslProperty> properties) {
+    @Transactional
+    public void recordSyncFailure(UUID tenantId, String productId, String version, String error) {
+        String message = error == null ? "SYNC_FAILED" : error;
+        if (message.length() > SYNC_RESULT_MAX_LENGTH) {
+            message = message.substring(0, SYNC_RESULT_MAX_LENGTH);
+        }
+        dsl.insertInto(PLAT_PROFILE_BINDING)
+                .set(PLAT_PROFILE_BINDING.TENANT_ID, tenantId)
+                .set(PLAT_PROFILE_BINDING.PRODUCT_ID, productId)
+                .set(PLAT_PROFILE_BINDING.TSL_VERSION, version)
+                .set(PLAT_PROFILE_BINDING.SYNC_RESULT, message)
+                .set(PLAT_PROFILE_BINDING.SYNCED_AT, JooqTime.now())
+                .onConflict(
+                        PLAT_PROFILE_BINDING.TENANT_ID,
+                        PLAT_PROFILE_BINDING.PRODUCT_ID,
+                        PLAT_PROFILE_BINDING.TSL_VERSION)
+                .doUpdate()
+                .set(PLAT_PROFILE_BINDING.SYNC_RESULT, message)
+                .set(PLAT_PROFILE_BINDING.SYNCED_AT, JooqTime.now())
+                .execute();
+    }
+
+    private void insertProperties(
+            UUID tenantId, String productId, String version, List<TslProperty> properties) {
         if (properties.isEmpty()) {
             return;
         }
@@ -336,6 +377,7 @@ public class ProductRepository {
         for (int i = 0; i < properties.size(); i++) {
             TslProperty property = properties.get(i);
             queries.add(dsl.insertInto(PLAT_TSL_PROPERTY)
+                    .set(PLAT_TSL_PROPERTY.TENANT_ID, tenantId)
                     .set(PLAT_TSL_PROPERTY.PRODUCT_ID, productId)
                     .set(PLAT_TSL_PROPERTY.TSL_VERSION, version)
                     .set(PLAT_TSL_PROPERTY.PROPERTY_KEY, property.id())
@@ -354,7 +396,8 @@ public class ProductRepository {
         dsl.batch(queries).execute();
     }
 
-    private void insertEvents(String productId, String version, List<TslEvent> events) {
+    private void insertEvents(
+            UUID tenantId, String productId, String version, List<TslEvent> events) {
         if (events.isEmpty()) {
             return;
         }
@@ -362,6 +405,7 @@ public class ProductRepository {
         for (int i = 0; i < events.size(); i++) {
             TslEvent event = events.get(i);
             queries.add(dsl.insertInto(PLAT_TSL_EVENT)
+                    .set(PLAT_TSL_EVENT.TENANT_ID, tenantId)
                     .set(PLAT_TSL_EVENT.PRODUCT_ID, productId)
                     .set(PLAT_TSL_EVENT.TSL_VERSION, version)
                     .set(PLAT_TSL_EVENT.EVENT_ID, event.id())
@@ -373,7 +417,8 @@ public class ProductRepository {
         dsl.batch(queries).execute();
     }
 
-    private void insertActions(String productId, String version, List<TslAction> actions) {
+    private void insertActions(
+            UUID tenantId, String productId, String version, List<TslAction> actions) {
         if (actions.isEmpty()) {
             return;
         }
@@ -381,6 +426,7 @@ public class ProductRepository {
         for (int i = 0; i < actions.size(); i++) {
             TslAction action = actions.get(i);
             queries.add(dsl.insertInto(PLAT_TSL_ACTION)
+                    .set(PLAT_TSL_ACTION.TENANT_ID, tenantId)
                     .set(PLAT_TSL_ACTION.PRODUCT_ID, productId)
                     .set(PLAT_TSL_ACTION.TSL_VERSION, version)
                     .set(PLAT_TSL_ACTION.ACTION_ID, action.id())
@@ -392,16 +438,18 @@ public class ProductRepository {
         dsl.batch(queries).execute();
     }
 
-    private ProductRow findProductForUpdate(String productId) {
+    private ProductRow findProductForUpdate(UUID tenantId, String productId) {
         return dsl.selectFrom(PLAT_PRODUCT)
-                .where(PLAT_PRODUCT.PRODUCT_ID.eq(productId))
+                .where(PLAT_PRODUCT.TENANT_ID.eq(tenantId))
+                .and(PLAT_PRODUCT.PRODUCT_ID.eq(productId))
                 .forUpdate()
                 .fetchOne(this::mapProduct);
     }
 
-    private TslRow findTslForUpdate(String productId, String version) {
+    private TslRow findTslForUpdate(UUID tenantId, String productId, String version) {
         return dsl.selectFrom(PLAT_PRODUCT_TSL)
-                .where(PLAT_PRODUCT_TSL.PRODUCT_ID.eq(productId))
+                .where(PLAT_PRODUCT_TSL.TENANT_ID.eq(tenantId))
+                .and(PLAT_PRODUCT_TSL.PRODUCT_ID.eq(productId))
                 .and(PLAT_PRODUCT_TSL.VERSION.eq(version))
                 .forUpdate()
                 .fetchOne(this::mapTsl);
@@ -437,13 +485,15 @@ public class ProductRepository {
 
     private Field<Integer> childCount(
             Table<?> child,
+            Field<UUID> childTenantId,
             Field<String> childProductId,
             Field<String> childTslVersion,
             Field<String> version) {
         return DSL.coalesce(
                         field(selectCount()
                                 .from(child)
-                                .where(childProductId.eq(PLAT_PRODUCT.PRODUCT_ID))
+                                .where(childTenantId.eq(PLAT_PRODUCT.TENANT_ID))
+                                .and(childProductId.eq(PLAT_PRODUCT.PRODUCT_ID))
                                 .and(childTslVersion.eq(version))),
                         DSL.inline(Constants.Db.NO_ROWS_AFFECTED))
                 .cast(Integer.class);

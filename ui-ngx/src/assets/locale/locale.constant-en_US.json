@@ -5217,7 +5217,11 @@
         "event-type": "Event type",
         "params": "Parameters",
         "input": "Input",
-        "output": "Output"
+        "output": "Output",
+        "all-tenants": "All tenants",
+        "filter-by-tenant": "Filter by tenant",
+        "tenant-account-missing": "The current tenant has no ThingsBoard service account",
+        "contact-platform-admin": "Contact the platform administrator to configure the service account"
     },
     "profile": {
         "profile": "Profile",
@@ -6573,7 +6577,14 @@
         "search": "Search tenants",
         "selected-tenants": "{ count, plural, =1 {1 tenant} other {# tenants} } selected",
         "isolated-tb-rule-engine": "Use isolated ThingsBoard Rule Engine queues",
-        "isolated-tb-rule-engine-details": "Each tenant will have dedicated Rule Engine queues"
+        "isolated-tb-rule-engine-details": "Each tenant will have dedicated Rule Engine queues",
+        "vendor-account": "Configure vendor service account",
+        "vendor-account-username": "Tenant admin username",
+        "vendor-account-password": "Tenant admin password",
+        "vendor-account-username-required": "Username is required",
+        "vendor-account-password-required": "Password is required",
+        "vendor-account-save-success": "Vendor service account configured",
+        "vendor-account-admin-required": "Create a tenant admin first, then configure the vendor service account"
     },
     "tenant-profile": {
         "tenant-profile": "Tenant profile",

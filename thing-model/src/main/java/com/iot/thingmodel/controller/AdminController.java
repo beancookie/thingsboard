@@ -2,6 +2,7 @@ package com.iot.thingmodel.controller;
 
 import com.iot.thingmodel.admin.TenantAccountRequest;
 import com.iot.thingmodel.admin.TenantAccountService;
+import com.iot.thingmodel.admin.TenantProvisionRequest;
 import com.iot.thingmodel.auth.AccessGuard;
 import com.iot.thingmodel.auth.RequireAuthority;
 import com.iot.thingmodel.common.Constants;
@@ -43,6 +44,19 @@ public class AdminController extends BaseController {
             @Valid @RequestBody TenantAccountRequest request) {
         UUID id = parseTenantId(tenantId);
         TenantAccountService.MaskedAccount saved = accountService.register(id, request.username(), request.password());
+        clientProvider.evict(id);
+        return saved;
+    }
+
+    @Operation(summary = "Provision a vendor ThingsBoard account",
+            description = "Idempotently registers a vendor account or returns the existing one.")
+    @PostMapping("/tenants/{tenantId}/provision")
+    public TenantAccountService.MaskedAccount provisionTenantAccount(
+            @PathVariable String tenantId,
+            @Valid @RequestBody TenantProvisionRequest request) {
+        UUID id = parseTenantId(tenantId);
+        TenantAccountService.MaskedAccount saved = accountService.provision(
+                id, request.username(), request.password(), request.force());
         clientProvider.evict(id);
         return saved;
     }

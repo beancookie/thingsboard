@@ -2,6 +2,7 @@ package com.iot.thingmodel.product;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.iot.thingmodel.admin.TenantAccountService;
 import com.iot.thingmodel.common.ApiException;
 import com.iot.thingmodel.common.Constants;
 import com.iot.thingmodel.sync.SyncResult;
@@ -27,6 +28,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -44,13 +46,16 @@ class ProductServiceTest {
 
     private ProductRepository repository;
     private TbProfileSyncer syncer;
+    private TenantAccountService accountService;
     private ProductService service;
 
     @BeforeEach
     void setUp() {
         repository = mock(ProductRepository.class);
         syncer = mock(TbProfileSyncer.class);
-        service = new ProductService(repository, parser, validator, compactSchema, syncer, objectMapper);
+        accountService = mock(TenantAccountService.class);
+        service = new ProductService(
+                repository, parser, validator, compactSchema, syncer, accountService, objectMapper);
     }
 
     @Test
@@ -61,9 +66,26 @@ class ProductServiceTest {
 
         assertEquals(HttpStatus.BAD_REQUEST.value(), ex.getStatus().value());
         assertEquals(Constants.ErrorCode.TSL_INVALID, ex.getCode());
-        verifyNoInteractions(syncer);
+        verifyNoInteractions(syncer, accountService);
         verify(repository, never()).saveDraft(any(), anyString(), anyString(), anyString(), anyString(),
                 any(), anyString(), anyString(), anyBoolean(), any());
+    }
+
+    @Test
+    void doesNotSaveDraftWhenTenantAccountIsMissing() throws Exception {
+        JsonNode valid = load("valid-tsl.json");
+        doThrow(new ApiException(
+                HttpStatus.BAD_REQUEST,
+                Constants.ErrorCode.TENANT_ACCOUNT_MISSING,
+                "missing vendor account"))
+                .when(accountService).requireConfigured(tenantId);
+
+        ApiException ex = assertThrows(ApiException.class, () -> service.create(command(valid)));
+
+        assertEquals(Constants.ErrorCode.TENANT_ACCOUNT_MISSING, ex.getCode());
+        verify(repository, never()).saveDraft(any(), anyString(), anyString(), anyString(), anyString(),
+                any(), anyString(), anyString(), anyBoolean(), any());
+        verify(syncer, never()).sync(any());
     }
 
     @Test
@@ -84,6 +106,7 @@ class ProductServiceTest {
         assertEquals(assetId.toString(), response.tbAssetId());
         assertEquals(ruleChainId.toString(), response.tbRuleChainId());
         verify(repository).publish(
+                eq(tenantId),
                 eq("9HYN9PJNOY"),
                 eq(Constants.Product.DEFAULT_TSL_VERSION),
                 any(),
@@ -98,20 +121,21 @@ class ProductServiceTest {
     void syncsStoredProductAndPersistsRuleChainId() throws Exception {
         JsonNode valid = load("valid-tsl.json");
         ProductRepository.DraftResult draft = draft(valid);
-        when(repository.findProduct("9HYN9PJNOY"))
+        when(repository.findProduct(tenantId, "9HYN9PJNOY"))
                 .thenReturn(java.util.Optional.of(draft.product()));
-        when(repository.findLatestTsl("9HYN9PJNOY"))
+        when(repository.findLatestTsl(tenantId, "9HYN9PJNOY"))
                 .thenReturn(java.util.Optional.of(draft.tsl()));
         UUID profileId = UUID.randomUUID();
         UUID assetId = UUID.randomUUID();
         UUID ruleChainId = UUID.randomUUID();
         when(syncer.sync(any())).thenReturn(new SyncResult(profileId, assetId, ruleChainId, 700));
 
-        ProductResponse response = service.sync(tenantScope, "9HYN9PJNOY");
+        ProductResponse response = service.sync(tenantId, "9HYN9PJNOY");
 
         assertEquals(Constants.Product.STATUS_PUBLISHED, response.status());
         assertEquals(ruleChainId.toString(), response.tbRuleChainId());
         verify(repository).publish(
+                eq(tenantId),
                 eq("9HYN9PJNOY"),
                 eq(draft.tsl().version()),
                 any(),
@@ -126,12 +150,12 @@ class ProductServiceTest {
     void returnsLatestThingModel() throws Exception {
         JsonNode valid = load("valid-tsl.json");
         ProductRepository.DraftResult draft = draft(valid);
-        when(repository.findProduct("9HYN9PJNOY"))
+        when(repository.findProduct(tenantId, "9HYN9PJNOY"))
                 .thenReturn(java.util.Optional.of(draft.product()));
-        when(repository.findLatestTsl("9HYN9PJNOY"))
+        when(repository.findLatestTsl(tenantId, "9HYN9PJNOY"))
                 .thenReturn(java.util.Optional.of(draft.tsl()));
 
-        ThingModelView view = service.getThingModel(tenantScope, "9HYN9PJNOY");
+        ThingModelView view = service.getThingModel(tenantId, "9HYN9PJNOY");
 
         assertEquals("9HYN9PJNOY", view.productId());
         assertEquals(draft.tsl().version(), view.version());
@@ -143,7 +167,7 @@ class ProductServiceTest {
     void updateThingModelTriggersRuleChainSync() throws Exception {
         JsonNode valid = load("valid-tsl.json");
         ProductRepository.DraftResult draft = draft(valid);
-        when(repository.findProduct("9HYN9PJNOY"))
+        when(repository.findProduct(tenantId, "9HYN9PJNOY"))
                 .thenReturn(java.util.Optional.of(draft.product()));
         when(repository.saveDraft(any(), anyString(), anyString(), anyString(), anyString(), any(),
                 anyString(), anyString(), anyBoolean(), any())).thenReturn(draft);
@@ -153,7 +177,7 @@ class ProductServiceTest {
         when(syncer.sync(any())).thenReturn(new SyncResult(profileId, assetId, ruleChainId, 700));
 
         ProductResponse response = service.updateThingModel(
-                tenantScope,
+                tenantId,
                 "9HYN9PJNOY",
                 new UpdateThingModelRequest(null, valid, false));
 
@@ -161,6 +185,7 @@ class ProductServiceTest {
         assertEquals(ruleChainId.toString(), response.tbRuleChainId());
         verify(syncer).sync(any());
         verify(repository).publish(
+                eq(tenantId),
                 eq("9HYN9PJNOY"),
                 eq(draft.tsl().version()),
                 any(),
@@ -185,36 +210,19 @@ class ProductServiceTest {
         assertEquals(
                 String.format(Constants.Api.PRODUCT_SYNC_RETRY_PATH, "9HYN9PJNOY"),
                 ex.getRetry());
-        verify(repository, never()).publish(any(), any(), any(), any(), any(), any(), any(), any());
-    }
-
-    @Test
-    void hidesProductsFromAnotherTenant() {
-        UUID otherTenant = UUID.randomUUID();
-        ProductRepository.ProductRow product = new ProductRepository.ProductRow(
-                otherTenant,
-                "9HYN9PJNOY",
-                "WiFi诊断终端",
-                "9HYN9PJNOY",
-                "1",
-                null,
-                Constants.Product.AUTH_TYPE_ACCESS_TOKEN,
-                Constants.Product.PROTOCOL_MQTT,
-                Instant.now(),
-                Instant.now());
-        when(repository.findProduct("9HYN9PJNOY")).thenReturn(java.util.Optional.of(product));
-
-        ApiException ex = assertThrows(ApiException.class, () -> service.get(tenantScope, "9HYN9PJNOY"));
-
-        assertEquals(HttpStatus.NOT_FOUND.value(), ex.getStatus().value());
-        assertEquals(Constants.ErrorCode.PRODUCT_NOT_FOUND, ex.getCode());
+        verify(repository).recordSyncFailure(
+                eq(tenantId),
+                eq("9HYN9PJNOY"),
+                eq(Constants.Product.DEFAULT_TSL_VERSION),
+                anyString());
+        verify(repository, never()).publish(any(), any(), any(), any(), any(), any(), any(), any(), any());
     }
 
     @Test
     void listsProductsForTenant() {
         when(repository.listProducts(tenantId, "wifi")).thenReturn(List.of());
 
-        List<ProductItem> result = service.list(tenantScope, "wifi");
+        List<ProductItem> result = service.list(tenantScope, null, "wifi");
 
         assertTrue(result.isEmpty());
         verify(repository).listProducts(tenantId, "wifi");
@@ -225,7 +233,7 @@ class ProductServiceTest {
         TenantScope systemAdmin = new TenantScope(null, true);
         when(repository.listProducts(null, null)).thenReturn(List.of());
 
-        List<ProductItem> result = service.list(systemAdmin, null);
+        List<ProductItem> result = service.list(systemAdmin, null, null);
 
         assertTrue(result.isEmpty());
         verify(repository).listProducts(null, null);
@@ -234,7 +242,7 @@ class ProductServiceTest {
     @Test
     void rejectsListWithoutTenant() {
         ApiException ex = assertThrows(ApiException.class,
-                () -> service.list(new TenantScope(null, false), null));
+                () -> service.list(new TenantScope(null, false), null, null));
 
         assertEquals(HttpStatus.FORBIDDEN.value(), ex.getStatus().value());
     }
@@ -243,12 +251,12 @@ class ProductServiceTest {
     void returnsCatalog() throws Exception {
         JsonNode valid = load("valid-tsl.json");
         ProductRepository.TslRow tsl = draft(valid).tsl();
-        when(repository.findProduct("9HYN9PJNOY"))
+        when(repository.findProduct(tenantId, "9HYN9PJNOY"))
                 .thenReturn(java.util.Optional.of(draft(valid).product()));
-        when(repository.findLatestTsl("9HYN9PJNOY"))
+        when(repository.findLatestTsl(tenantId, "9HYN9PJNOY"))
                 .thenReturn(java.util.Optional.of(tsl));
 
-        CatalogView catalog = service.catalog(tenantScope, "9HYN9PJNOY");
+        CatalogView catalog = service.catalog(tenantId, "9HYN9PJNOY");
 
         assertEquals("9HYN9PJNOY", catalog.productId());
         assertEquals(Constants.Product.DEFAULT_TSL_VERSION, catalog.version());
@@ -258,12 +266,12 @@ class ProductServiceTest {
     @Test
     void validatesThingModelWithoutPersisting() throws Exception {
         JsonNode valid = load("valid-tsl.json");
-        when(repository.findProduct("9HYN9PJNOY"))
+        when(repository.findProduct(tenantId, "9HYN9PJNOY"))
                 .thenReturn(java.util.Optional.empty());
         com.fasterxml.jackson.databind.node.ObjectNode body = objectMapper.createObjectNode();
         body.set("tsl", valid);
 
-        ValidationResponse response = service.validate(tenantScope, "9HYN9PJNOY", body);
+        ValidationResponse response = service.validate(tenantId, "9HYN9PJNOY", body);
 
         assertTrue(response.valid());
         verify(repository, never()).saveDraft(
@@ -274,10 +282,10 @@ class ProductServiceTest {
     @Test
     void reportsInvalidThingModel() throws Exception {
         JsonNode invalid = load("invalid-tsl.json");
-        when(repository.findProduct("9HYN9PJNOY"))
+        when(repository.findProduct(tenantId, "9HYN9PJNOY"))
                 .thenReturn(java.util.Optional.empty());
 
-        ValidationResponse response = service.validate(tenantScope, "9HYN9PJNOY", invalid);
+        ValidationResponse response = service.validate(tenantId, "9HYN9PJNOY", invalid);
 
         assertFalse(response.valid());
         assertFalse(response.errors().isEmpty());
@@ -292,7 +300,7 @@ class ProductServiceTest {
         ApiException ex = assertThrows(ApiException.class, () -> service.create(command));
 
         assertEquals(Constants.ErrorCode.PRODUCT_ID_MISMATCH, ex.getCode());
-        verifyNoInteractions(syncer);
+        verifyNoInteractions(syncer, accountService);
     }
 
     @Test
@@ -304,7 +312,7 @@ class ProductServiceTest {
         ApiException ex = assertThrows(ApiException.class, () -> service.create(command));
 
         assertEquals(Constants.ErrorCode.VERSION_MISMATCH, ex.getCode());
-        verifyNoInteractions(syncer);
+        verifyNoInteractions(syncer, accountService);
     }
 
     @Test
@@ -317,15 +325,15 @@ class ProductServiceTest {
         ProductRepository.BindingRow binding = new ProductRepository.BindingRow(
                 profileId, assetId, ruleChainId, Constants.Tsl.SCHEMA_VERSION,
                 Constants.Product.SYNC_RESULT_OK, Instant.now());
-        when(repository.findProduct("9HYN9PJNOY"))
+        when(repository.findProduct(tenantId, "9HYN9PJNOY"))
                 .thenReturn(java.util.Optional.of(draft.product()));
-        when(repository.findLatestTsl("9HYN9PJNOY"))
+        when(repository.findLatestTsl(tenantId, "9HYN9PJNOY"))
                 .thenReturn(java.util.Optional.of(draft.tsl()));
         when(repository.findBinding(
-                "9HYN9PJNOY", Constants.Product.DEFAULT_TSL_VERSION))
+                tenantId, "9HYN9PJNOY", Constants.Product.DEFAULT_TSL_VERSION))
                 .thenReturn(java.util.Optional.of(binding));
 
-        ProductDetail detail = service.get(tenantScope, "9HYN9PJNOY");
+        ProductDetail detail = service.get(tenantId, "9HYN9PJNOY");
 
         assertEquals(profileId.toString(), detail.product().tbProfileId());
         assertEquals(assetId.toString(), detail.product().tbAssetId());
@@ -336,47 +344,36 @@ class ProductServiceTest {
 
     @Test
     void rejectsCatalogWhenThingModelIsMissing() throws Exception {
-        when(repository.findProduct("9HYN9PJNOY"))
+        when(repository.findProduct(tenantId, "9HYN9PJNOY"))
                 .thenReturn(java.util.Optional.of(draft(load("valid-tsl.json")).product()));
-        when(repository.findLatestTsl("9HYN9PJNOY"))
+        when(repository.findLatestTsl(tenantId, "9HYN9PJNOY"))
                 .thenReturn(java.util.Optional.empty());
 
         ApiException ex = assertThrows(ApiException.class,
-                () -> service.catalog(tenantScope, "9HYN9PJNOY"));
+                () -> service.catalog(tenantId, "9HYN9PJNOY"));
 
         assertEquals(Constants.ErrorCode.TSL_NOT_FOUND, ex.getCode());
     }
 
     @Test
     void rejectsSyncWhenProductIsMissing() {
-        when(repository.findProduct("9HYN9PJNOY"))
+        when(repository.findProduct(tenantId, "9HYN9PJNOY"))
                 .thenReturn(java.util.Optional.empty());
 
         ApiException ex = assertThrows(ApiException.class,
-                () -> service.sync(tenantScope, "9HYN9PJNOY"));
+                () -> service.sync(tenantId, "9HYN9PJNOY"));
 
         assertEquals(Constants.ErrorCode.PRODUCT_NOT_FOUND, ex.getCode());
     }
 
     @Test
-    void rejectsUpdateThingModelForAnotherTenant() throws Exception {
-        ProductRepository.ProductRow product = new ProductRepository.ProductRow(
-                UUID.randomUUID(),
-                "9HYN9PJNOY",
-                "Other",
-                "Other",
-                "1",
-                null,
-                Constants.Product.AUTH_TYPE_ACCESS_TOKEN,
-                Constants.Product.PROTOCOL_MQTT,
-                Instant.now(),
-                Instant.now());
-        when(repository.findProduct("9HYN9PJNOY"))
-                .thenReturn(java.util.Optional.of(product));
+    void rejectsUpdateThingModelWhenProductIsMissing() throws Exception {
+        when(repository.findProduct(tenantId, "9HYN9PJNOY"))
+                .thenReturn(java.util.Optional.empty());
 
         ApiException ex = assertThrows(ApiException.class,
                 () -> service.updateThingModel(
-                        tenantScope,
+                        tenantId,
                         "9HYN9PJNOY",
                         new UpdateThingModelRequest(
                                 Constants.Product.DEFAULT_TSL_VERSION,
@@ -388,7 +385,8 @@ class ProductServiceTest {
 
     private CreateProductCommand command(JsonNode tsl) {
         return new CreateProductCommand(
-                tenantId, "9HYN9PJNOY", "WiFi诊断终端", "9HYN9PJNOY", "1", Constants.Product.DEFAULT_TSL_VERSION, tsl, false);
+                tenantId, "9HYN9PJNOY", "WiFi诊断终端", "9HYN9PJNOY", "1",
+                Constants.Product.DEFAULT_TSL_VERSION, tsl, false);
     }
 
     private ProductRepository.DraftResult draft(JsonNode tsl) {

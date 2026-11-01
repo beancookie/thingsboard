@@ -10,6 +10,16 @@
       <div class="mat-toolbar-tools">
         <span class="tb-product-title">{{ 'product.products' | translate }}</span>
         <span class="flex-1"></span>
+        @if (isSystemAdmin) {
+          <tb-entity-autocomplete
+            class="tb-product-tenant-filter"
+            [formControl]="tenantControl"
+            [entityType]="entityType.TENANT"
+            labelText="product.tenant"
+            appearance="outline"
+            useFullEntityId>
+          </tb-entity-autocomplete>
+        }
         <mat-form-field appearance="outline" subscriptSizing="dynamic" class="tb-product-search">
           <mat-icon matPrefix>search</mat-icon>
           <input matInput [formControl]="searchControl"

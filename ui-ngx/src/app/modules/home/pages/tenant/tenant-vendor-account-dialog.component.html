@@ -1,0 +1,59 @@
+<!--
+
+    SPDX-FileCopyrightText: Copyright The Thingsboard Authors
+    SPDX-License-Identifier: Apache-2.0
+
+-->
+<h2 mat-dialog-title>{{ 'tenant.vendor-account' | translate }}</h2>
+<mat-dialog-content class="tb-tenant-vendor-account-content">
+  <div class="tb-tenant-vendor-account-tenant">
+    <div class="tb-tenant-vendor-account-title">{{ data.tenantTitle || data.tenantId }}</div>
+    <div class="tb-tenant-vendor-account-id">{{ data.tenantId }}</div>
+  </div>
+
+  @if (isLoading) {
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  } @else {
+    @if (!hasTenantAdmin) {
+      <div class="tb-tenant-vendor-account-warning">
+        <mat-icon>warning</mat-icon>
+        <span>{{ 'tenant.vendor-account-admin-required' | translate }}</span>
+      </div>
+      <button mat-stroked-button color="primary" type="button" (click)="goToTenantAdmins()">
+        <mat-icon>manage_accounts</mat-icon>
+        {{ 'tenant.manage-tenant-admins' | translate }}
+      </button>
+    } @else {
+      <form [formGroup]="form" class="tb-tenant-vendor-account-form">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'tenant.vendor-account-username' | translate }}</mat-label>
+          <input matInput formControlName="username" required>
+          @if (form.get('username').hasError('required')) {
+            <mat-error>{{ 'tenant.vendor-account-username-required' | translate }}</mat-error>
+          }
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'tenant.vendor-account-password' | translate }}</mat-label>
+          <input matInput type="password" formControlName="password" required>
+          @if (form.get('password').hasError('required')) {
+            <mat-error>{{ 'tenant.vendor-account-password-required' | translate }}</mat-error>
+          }
+        </mat-form-field>
+      </form>
+    }
+  }
+
+  @if (errorMessage) {
+    <div class="tb-tenant-vendor-account-error">{{ errorMessage | translate }}</div>
+  }
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="cancel()">
+    {{ 'action.cancel' | translate }}
+  </button>
+  <button mat-flat-button color="primary" type="button"
+          [disabled]="isLoading || isSaving || !hasTenantAdmin || form.invalid"
+          (click)="save()">
+    {{ 'action.save' | translate }}
+  </button>
+</mat-dialog-actions>

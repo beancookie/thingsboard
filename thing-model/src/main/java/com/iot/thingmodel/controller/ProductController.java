@@ -44,20 +44,30 @@ public class ProductController extends BaseController {
 
     @Operation(summary = "List products")
     @GetMapping
-    public List<ProductItem> list(@RequestParam(required = false) String keyword) {
-        return productService.list(tenantScope(), keyword);
+    public List<ProductItem> list(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String tenantId) {
+        CurrentUser currentUser = getCurrentUser();
+        UUID filterTenant = accessGuard.resolveListTenant(currentUser, tenantId);
+        return productService.list(tenantScope(), filterTenant, keyword);
     }
 
     @Operation(summary = "Get product details")
     @GetMapping("/{productId}")
-    public ProductDetail get(@PathVariable String productId) {
-        return productService.get(tenantScope(), productId);
+    public ProductDetail get(
+            @PathVariable String productId,
+            @RequestParam(required = false) String tenantId) {
+        UUID resolvedTenant = accessGuard.resolveProductTenant(getCurrentUser(), tenantId);
+        return productService.get(resolvedTenant, productId);
     }
 
     @Operation(summary = "Get the latest thing model")
     @GetMapping("/{productId}/thing-model")
-    public ThingModelView getThingModel(@PathVariable String productId) {
-        return productService.getThingModel(tenantScope(), productId);
+    public ThingModelView getThingModel(
+            @PathVariable String productId,
+            @RequestParam(required = false) String tenantId) {
+        UUID resolvedTenant = accessGuard.resolveProductTenant(getCurrentUser(), tenantId);
+        return productService.getThingModel(resolvedTenant, productId);
     }
 
     @Operation(summary = "Create or update a product and publish its thing model")
@@ -81,27 +91,37 @@ public class ProductController extends BaseController {
     @PutMapping("/{productId}/thing-model")
     public ProductResponse updateThingModel(
             @PathVariable String productId,
+            @RequestParam(required = false) String tenantId,
             @Valid @RequestBody UpdateThingModelRequest request) {
-        return productService.updateThingModel(tenantScope(), productId, request);
+        UUID resolvedTenant = accessGuard.resolveProductTenant(getCurrentUser(), tenantId);
+        return productService.updateThingModel(resolvedTenant, productId, request);
     }
 
     @Operation(summary = "Validate a thing model without persisting it")
     @PostMapping("/{productId}/thing-model/validate")
     public ValidationResponse validate(
             @PathVariable String productId,
+            @RequestParam(required = false) String tenantId,
             @RequestBody JsonNode body) {
-        return productService.validate(tenantScope(), productId, body);
+        UUID resolvedTenant = accessGuard.resolveProductTenant(getCurrentUser(), tenantId);
+        return productService.validate(resolvedTenant, productId, body);
     }
 
     @Operation(summary = "Get the thing model catalog")
     @GetMapping("/{productId}/catalog")
-    public CatalogView catalog(@PathVariable String productId) {
-        return productService.catalog(tenantScope(), productId);
+    public CatalogView catalog(
+            @PathVariable String productId,
+            @RequestParam(required = false) String tenantId) {
+        UUID resolvedTenant = accessGuard.resolveProductTenant(getCurrentUser(), tenantId);
+        return productService.catalog(resolvedTenant, productId);
     }
 
     @Operation(summary = "Re-sync the product with ThingsBoard")
     @PostMapping("/{productId}/sync")
-    public ProductResponse sync(@PathVariable String productId) {
-        return productService.sync(tenantScope(), productId);
+    public ProductResponse sync(
+            @PathVariable String productId,
+            @RequestParam(required = false) String tenantId) {
+        UUID resolvedTenant = accessGuard.resolveProductTenant(getCurrentUser(), tenantId);
+        return productService.sync(resolvedTenant, productId);
     }
 }

@@ -5062,7 +5062,11 @@
     "event-type": "事件类型",
     "params": "参数",
     "input": "输入",
-    "output": "输出"
+    "output": "输出",
+    "all-tenants": "全部租户",
+    "filter-by-tenant": "按租户筛选",
+    "tenant-account-missing": "当前租户未配置 ThingsBoard 服务账号",
+    "contact-platform-admin": "请联系平台管理员配置服务账号"
   },
   "profile": {
     "profile": "个人资料",
@@ -6420,7 +6424,14 @@
     "search": "搜索租户",
     "selected-tenants": "{ count, plural, =1 {1 个租户} other {# 个租户} }已选择",
     "isolated-tb-rule-engine": "使用隔离的 ThingsBoard 规则引擎队列",
-    "isolated-tb-rule-engine-details": "每个租户将拥有专用的规则引擎队列"
+    "isolated-tb-rule-engine-details": "每个租户将拥有专用的规则引擎队列",
+    "vendor-account": "配置厂商服务账号",
+    "vendor-account-username": "租户管理员用户名",
+    "vendor-account-password": "租户管理员密码",
+    "vendor-account-username-required": "用户名不能为空",
+    "vendor-account-password-required": "密码不能为空",
+    "vendor-account-save-success": "厂商服务账号已配置",
+    "vendor-account-admin-required": "请先创建租户管理员，再配置厂商服务账号"
   },
   "tenant-profile": {
     "tenant-profile": "租户配置",

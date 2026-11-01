@@ -26,6 +26,42 @@ public class AccessGuard {
         }
     }
 
+    public UUID resolveListTenant(CurrentUser user, String requestedTenant) {
+        UUID requested = requestedTenant == null || requestedTenant.isBlank()
+                ? null
+                : parseUuid(requestedTenant, Constants.ErrorCode.TENANT_ID_INVALID);
+        if (user.isSystemAdmin()) {
+            return requested;
+        }
+        UUID tenantId = userTenant(user);
+        if (requested != null && !tenantId.equals(requested)) {
+            throw new ApiException(
+                    HttpStatus.FORBIDDEN, Constants.ErrorCode.FORBIDDEN, "不能操作其他厂商租户的产品");
+        }
+        return tenantId;
+    }
+
+    public UUID resolveProductTenant(CurrentUser user, String requestedTenant) {
+        if (user.isSystemAdmin()) {
+            if (requestedTenant == null || requestedTenant.isBlank()) {
+                throw new ApiException(
+                        HttpStatus.BAD_REQUEST,
+                        Constants.ErrorCode.TENANT_ID_REQUIRED,
+                        "超级管理员查询产品时必须指定租户");
+            }
+            return parseUuid(requestedTenant, Constants.ErrorCode.TENANT_ID_INVALID);
+        }
+        UUID tenantId = userTenant(user);
+        if (requestedTenant != null && !requestedTenant.isBlank()) {
+            UUID requested = parseUuid(requestedTenant, Constants.ErrorCode.TENANT_ID_INVALID);
+            if (!tenantId.equals(requested)) {
+                throw new ApiException(
+                        HttpStatus.FORBIDDEN, Constants.ErrorCode.FORBIDDEN, "不能操作其他厂商租户的产品");
+            }
+        }
+        return tenantId;
+    }
+
     public UUID resolveWriteTenant(CurrentUser user, String requestedTenant) {
         if (user.isSystemAdmin()) {
             if (requestedTenant == null || requestedTenant.isBlank()) {

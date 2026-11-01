@@ -76,9 +76,9 @@ class RepositoryIntegrationTest {
 
         assertEquals(Constants.Product.STATUS_DRAFT, result.tsl().status());
         assertEquals(tsl, result.tsl().tsl());
-        assertEquals(tenantId, productRepository.findProduct("P1").orElseThrow().tenantId());
-        assertEquals(tsl, productRepository.findLatestTsl("P1").orElseThrow().tsl());
-        assertEquals(1, productRepository.listVersions("P1").size());
+        assertEquals(tenantId, productRepository.findProduct(tenantId, "P1").orElseThrow().tenantId());
+        assertEquals(tsl, productRepository.findLatestTsl(tenantId, "P1").orElseThrow().tsl());
+        assertEquals(1, productRepository.listVersions(tenantId, "P1").size());
     }
 
     @Test
@@ -89,8 +89,8 @@ class RepositoryIntegrationTest {
         productRepository.saveDraft(
                 tenantId, "P1", "Alpha", "M1", "C1", null, "1.1", "sum-2", false, tsl("1.1"));
 
-        assertEquals("1.1", productRepository.findLatestTsl("P1").orElseThrow().version());
-        assertEquals(2, productRepository.listVersions("P1").size());
+        assertEquals("1.1", productRepository.findLatestTsl(tenantId, "P1").orElseThrow().version());
+        assertEquals(2, productRepository.listVersions(tenantId, "P1").size());
     }
 
     @Test
@@ -106,14 +106,19 @@ class RepositoryIntegrationTest {
     }
 
     @Test
-    void rejectsProductIdOwnedByAnotherTenant() throws Exception {
+    void allowsSameProductIdForDifferentTenants() throws Exception {
+        UUID tenantA = UUID.randomUUID();
+        UUID tenantB = UUID.randomUUID();
         productRepository.saveDraft(
-                UUID.randomUUID(), "P1", "Alpha", "M1", "C1", null, "1.0", "sum-1", false, tsl("1.0"));
+                tenantA, "P1", "Alpha", "M1", "C1", null, "1.0", "sum-1", false, tsl("1.0"));
+        productRepository.saveDraft(
+                tenantB, "P1", "Beta", "M2", "C2", null, "1.0", "sum-2", false, tsl("1.0"));
 
-        ApiException ex = assertThrows(ApiException.class, () -> productRepository.saveDraft(
-                UUID.randomUUID(), "P1", "Alpha", "M1", "C1", null, "1.0", "sum-1", false, tsl("1.0")));
-
-        assertEquals(Constants.ErrorCode.PRODUCT_ID_CONFLICT, ex.getCode());
+        assertEquals("Alpha",
+                productRepository.findProduct(tenantA, "P1").orElseThrow().name());
+        assertEquals("Beta",
+                productRepository.findProduct(tenantB, "P1").orElseThrow().name());
+        assertEquals(2, productRepository.listProducts(null, null).size());
     }
 
     @Test
@@ -127,6 +132,7 @@ class RepositoryIntegrationTest {
         UUID assetId = UUID.randomUUID();
         UUID ruleChainId = UUID.randomUUID();
         productRepository.publish(
+                tenantId,
                 "P1",
                 Constants.Product.DEFAULT_TSL_VERSION,
                 definition(tsl),
@@ -136,11 +142,11 @@ class RepositoryIntegrationTest {
                 ruleChainId,
                 Constants.Product.SYNC_RESULT_OK);
 
-        ProductRepository.TslRow published = productRepository.findLatestTsl("P1").orElseThrow();
+        ProductRepository.TslRow published = productRepository.findLatestTsl(tenantId, "P1").orElseThrow();
         assertEquals(Constants.Product.STATUS_PUBLISHED, published.status());
         assertNotNull(published.publishedAt());
 
-        ProductRepository.BindingRow binding = productRepository.findBinding("P1", "1.0").orElseThrow();
+        ProductRepository.BindingRow binding = productRepository.findBinding(tenantId, "P1", "1.0").orElseThrow();
         assertEquals(profileId, binding.profileId());
         assertEquals(assetId, binding.assetId());
         assertEquals(ruleChainId, binding.ruleChainId());
@@ -154,6 +160,7 @@ class RepositoryIntegrationTest {
 
         UUID newProfileId = UUID.randomUUID();
         productRepository.publish(
+                tenantId,
                 "P1",
                 Constants.Product.DEFAULT_TSL_VERSION,
                 definition(tsl),
@@ -162,7 +169,7 @@ class RepositoryIntegrationTest {
                 assetId,
                 ruleChainId,
                 Constants.Product.SYNC_RESULT_OK);
-        assertEquals(newProfileId, productRepository.findBinding("P1", "1.0").orElseThrow().profileId());
+        assertEquals(newProfileId, productRepository.findBinding(tenantId, "P1", "1.0").orElseThrow().profileId());
     }
 
     @Test
@@ -185,6 +192,7 @@ class RepositoryIntegrationTest {
         UUID assetId = UUID.randomUUID();
         UUID ruleChainId = UUID.randomUUID();
         productRepository.publish(
+                tenantId,
                 "P1",
                 Constants.Product.DEFAULT_TSL_VERSION,
                 definition(tsl),
@@ -195,7 +203,7 @@ class RepositoryIntegrationTest {
                 Constants.Product.SYNC_RESULT_OK);
 
         ProductRepository.BindingRow binding = productRepository
-                .findBinding("P1", Constants.Product.DEFAULT_TSL_VERSION)
+                .findBinding(tenantId, "P1", Constants.Product.DEFAULT_TSL_VERSION)
                 .orElseThrow();
 
         assertEquals(profileId, binding.profileId());
@@ -226,9 +234,10 @@ class RepositoryIntegrationTest {
 
     @Test
     void returnsEmptyForMissingEntities() {
-        assertTrue(productRepository.findProduct("missing").isEmpty());
-        assertTrue(productRepository.findLatestTsl("missing").isEmpty());
-        assertTrue(productRepository.findBinding("missing", "1.0").isEmpty());
+        UUID tenantId = UUID.randomUUID();
+        assertTrue(productRepository.findProduct(tenantId, "missing").isEmpty());
+        assertTrue(productRepository.findLatestTsl(tenantId, "missing").isEmpty());
+        assertTrue(productRepository.findBinding(tenantId, "missing", "1.0").isEmpty());
     }
 
     @Test
@@ -243,7 +252,7 @@ class RepositoryIntegrationTest {
 
         assertEquals("1.0", second.tsl().version());
         assertEquals("sum-1", second.tsl().checksum());
-        assertEquals(1, productRepository.listVersions("P1").size());
+        assertEquals(1, productRepository.listVersions(tenantId, "P1").size());
     }
 
     @Test
@@ -292,3 +301,4 @@ class RepositoryIntegrationTest {
                 raw);
     }
 }
+

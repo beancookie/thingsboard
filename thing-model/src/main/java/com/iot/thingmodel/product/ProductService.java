@@ -2,6 +2,7 @@ package com.iot.thingmodel.product;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.iot.thingmodel.admin.TenantAccountService;
 import com.iot.thingmodel.common.ApiException;
 import com.iot.thingmodel.common.Constants;
 import com.iot.thingmodel.sync.SyncResult;
@@ -32,6 +33,7 @@ public class ProductService {
     private final TslValidator validator;
     private final CompactSchema compactSchema;
     private final TbProfileSyncer syncer;
+    private final TenantAccountService tenantAccountService;
     private final ObjectMapper objectMapper;
 
     public ProductService(
@@ -40,26 +42,28 @@ public class ProductService {
             TslValidator validator,
             CompactSchema compactSchema,
             TbProfileSyncer syncer,
+            TenantAccountService tenantAccountService,
             ObjectMapper objectMapper) {
         this.repository = repository;
         this.parser = parser;
         this.validator = validator;
         this.compactSchema = compactSchema;
         this.syncer = syncer;
+        this.tenantAccountService = tenantAccountService;
         this.objectMapper = objectMapper;
     }
 
-    public List<ProductItem> list(TenantScope scope, String keyword) {
+    public List<ProductItem> list(TenantScope scope, UUID requestedTenantId, String keyword) {
         if (scope.systemAdmin()) {
-            return repository.listProducts(null, keyword);
+            return repository.listProducts(requestedTenantId, keyword);
         }
         return repository.listProducts(scopeTenant(scope), keyword);
     }
 
-    public ProductDetail get(TenantScope scope, String productId) {
-        ProductRepository.ProductRow product = requireProduct(scope, productId);
-        ProductRepository.TslRow latest = repository.findLatestTsl(productId).orElse(null);
-        List<ProductDetail.TslVersionView> versions = repository.listVersions(productId);
+    public ProductDetail get(UUID tenantId, String productId) {
+        ProductRepository.ProductRow product = requireProduct(tenantId, productId);
+        ProductRepository.TslRow latest = repository.findLatestTsl(tenantId, productId).orElse(null);
+        List<ProductDetail.TslVersionView> versions = repository.listVersions(tenantId, productId);
         CatalogView catalog = null;
         TslDefinition definition = null;
         if (latest != null) {
@@ -67,7 +71,7 @@ public class ProductService {
             catalog = catalog(definition, latest.version());
         }
         ProductRepository.BindingRow binding = latest == null ? null
-                : repository.findBinding(productId, latest.version()).orElse(null);
+                : repository.findBinding(tenantId, productId, latest.version()).orElse(null);
         return new ProductDetail(toItem(product, latest, definition, binding), versions, catalog);
     }
 
@@ -111,6 +115,8 @@ public class ProductService {
         boolean strictUnknown = command.strictUnknown();
         String checksum = checksum(root);
 
+        tenantAccountService.requireConfigured(command.tenantId());
+
         ProductRepository.DraftResult draft = repository.saveDraft(
                 command.tenantId(),
                 productId,
@@ -134,9 +140,11 @@ public class ProductService {
                 root,
                 definition,
                 compact),
-                productId);
+                productId,
+                version);
 
         repository.publish(
+                command.tenantId(),
                 productId,
                 version,
                 definition,
@@ -160,8 +168,9 @@ public class ProductService {
                 validation.warnings());
     }
 
-    public ProductResponse updateThingModel(TenantScope scope, String productId, UpdateThingModelRequest request) {
-        ProductRepository.ProductRow product = requireProduct(scope, productId);
+    public ProductResponse updateThingModel(
+            UUID tenantId, String productId, UpdateThingModelRequest request) {
+        ProductRepository.ProductRow product = requireProduct(tenantId, productId);
         JsonNode root = readTsl(request.tsl());
         if (root == null) {
             throw new ApiException(
@@ -183,8 +192,8 @@ public class ProductService {
                 Boolean.TRUE.equals(request.strictUnknown())));
     }
 
-    public ValidationResponse validate(TenantScope scope, String productId, JsonNode body) {
-        repository.findProduct(productId).ifPresent(product -> requireTenant(scope, product.tenantId()));
+    public ValidationResponse validate(UUID tenantId, String productId, JsonNode body) {
+        repository.findProduct(tenantId, productId);
         JsonNode root = body != null && body.has(Constants.Tsl.KEY_REQUEST_TSL)
                 ? body.get(Constants.Tsl.KEY_REQUEST_TSL)
                 : body;
@@ -197,9 +206,9 @@ public class ProductService {
         return new ValidationResponse(result.valid(), result.errors(), result.warnings());
     }
 
-    public ThingModelView getThingModel(TenantScope scope, String productId) {
-        requireProduct(scope, productId);
-        ProductRepository.TslRow tsl = repository.findLatestTsl(productId)
+    public ThingModelView getThingModel(UUID tenantId, String productId) {
+        requireProduct(tenantId, productId);
+        ProductRepository.TslRow tsl = repository.findLatestTsl(tenantId, productId)
                 .orElseThrow(() -> new ApiException(
                         HttpStatus.NOT_FOUND,
                         Constants.ErrorCode.TSL_NOT_FOUND,
@@ -212,9 +221,9 @@ public class ProductService {
                 tsl.tsl());
     }
 
-    public ProductResponse sync(TenantScope scope, String productId) {
-        ProductRepository.ProductRow product = requireProduct(scope, productId);
-        ProductRepository.TslRow tsl = repository.findLatestTsl(productId)
+    public ProductResponse sync(UUID tenantId, String productId) {
+        ProductRepository.ProductRow product = requireProduct(tenantId, productId);
+        ProductRepository.TslRow tsl = repository.findLatestTsl(tenantId, productId)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, Constants.ErrorCode.TSL_NOT_FOUND, "产品尚未提交物模型"));
         TslDefinition definition = parser.parse(tsl.tsl());
         ValidationResult validation = validator.validate(tsl.tsl());
@@ -232,8 +241,10 @@ public class ProductService {
                 tsl.tsl(),
                 definition,
                 compact),
-                productId);
+                productId,
+                tsl.version());
         repository.publish(
+                tenantId,
                 productId,
                 tsl.version(),
                 definition,
@@ -256,17 +267,18 @@ public class ProductService {
                 validation.warnings());
     }
 
-    public CatalogView catalog(TenantScope scope, String productId) {
-        requireProduct(scope, productId);
-        ProductRepository.TslRow latest = repository.findLatestTsl(productId)
+    public CatalogView catalog(UUID tenantId, String productId) {
+        requireProduct(tenantId, productId);
+        ProductRepository.TslRow latest = repository.findLatestTsl(tenantId, productId)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, Constants.ErrorCode.TSL_NOT_FOUND, "产品尚未提交物模型"));
         return catalog(parser.parse(latest.tsl()), latest.version());
     }
 
-    private SyncResult runSync(TbSyncRequest request, String productId) {
+    private SyncResult runSync(TbSyncRequest request, String productId, String version) {
         try {
             return syncer.sync(request);
         } catch (TbSyncException ex) {
+            repository.recordSyncFailure(request.tenantId(), productId, version, ex.getMessage());
             throw new ApiException(
                     HttpStatus.BAD_GATEWAY,
                     Constants.ErrorCode.TB_SYNC_FAILED,
@@ -274,6 +286,7 @@ public class ProductService {
                     List.of(),
                     String.format(Constants.Api.PRODUCT_SYNC_RETRY_PATH, productId));
         } catch (ApiException ex) {
+            repository.recordSyncFailure(request.tenantId(), productId, version, ex.getMessage());
             if (ex.getStatus() == HttpStatus.BAD_GATEWAY
                     && Constants.ErrorCode.TB_LOGIN_FAILED.equals(ex.getCode())) {
                 throw new ApiException(
@@ -287,20 +300,10 @@ public class ProductService {
         }
     }
 
-    private ProductRepository.ProductRow requireProduct(TenantScope scope, String productId) {
-        ProductRepository.ProductRow product = repository.findProduct(productId)
-                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, Constants.ErrorCode.PRODUCT_NOT_FOUND, "产品不存在"));
-        requireTenant(scope, product.tenantId());
-        return product;
-    }
-
-    private void requireTenant(TenantScope scope, UUID tenantId) {
-        if (scope.systemAdmin()) {
-            return;
-        }
-        if (scope.tenantId() == null || !scope.tenantId().equals(tenantId)) {
-            throw new ApiException(HttpStatus.NOT_FOUND, Constants.ErrorCode.PRODUCT_NOT_FOUND, "产品不存在");
-        }
+    private ProductRepository.ProductRow requireProduct(UUID tenantId, String productId) {
+        return repository.findProduct(tenantId, productId)
+                .orElseThrow(() -> new ApiException(
+                        HttpStatus.NOT_FOUND, Constants.ErrorCode.PRODUCT_NOT_FOUND, "产品不存在"));
     }
 
     private UUID scopeTenant(TenantScope scope) {

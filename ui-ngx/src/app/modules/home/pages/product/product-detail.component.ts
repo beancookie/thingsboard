@@ -1,13 +1,17 @@
 // SPDX-FileCopyrightText: Copyright The Thingsboard Authors
 // SPDX-License-Identifier: Apache-2.0
 import { Component, OnInit } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { getCurrentAuthUser } from '@core/auth/auth.selectors';
 import { ActionNotificationShow } from '@core/notification/notification.actions';
+import { DialogService } from '@core/services/dialog.service';
 import { ProductService } from '@core/http/product.service';
+import { Authority } from '@shared/models/authority.enum';
 import { PageComponent } from '@shared/components/page.component';
 import {
   ProductAction,
@@ -30,6 +34,10 @@ export class ProductDetailComponent extends PageComponent implements OnInit {
 
   productId: string;
 
+  tenantId: string;
+
+  isSystemAdmin = false;
+
   detail: ProductDetail;
 
   thingModel: ThingModelView;
@@ -43,23 +51,52 @@ export class ProductDetailComponent extends PageComponent implements OnInit {
               private router: Router,
               private productService: ProductService,
               private dialog: MatDialog,
+              private dialogService: DialogService,
               private translate: TranslateService) {
     super();
+    this.isSystemAdmin = getCurrentAuthUser(this.store).authority === Authority.SYS_ADMIN;
   }
 
   ngOnInit(): void {
     this.productId = this.route.snapshot.paramMap.get('productId');
+    this.tenantId = this.route.snapshot.queryParamMap.get('tenantId');
+    if (this.isSystemAdmin && !this.tenantId) {
+      this.notify('product.tenant-required', 'error');
+      this.back();
+      return;
+    }
     this.load();
   }
 
   load(): void {
-    this.productService.getProduct(this.productId).subscribe((detail) => {
+    this.productService.getProduct(this.productId, this.tenantId).subscribe((detail) => {
       this.detail = detail;
-      this.productService.getThingModel(this.productId).pipe(
+      this.productService.getThingModel(this.productId, this.tenantId).pipe(
         catchError(() => of(null))
       ).subscribe((thingModel) => {
         this.thingModel = thingModel;
       });
+    });
+  }
+
+  syncProduct(): void {
+    this.dialogService.confirm(
+      this.translate.instant('product.sync-confirm-title'),
+      this.translate.instant('product.sync-confirm-text'),
+      this.translate.instant('action.no'),
+      this.translate.instant('action.yes'),
+      true
+    ).subscribe((confirmed) => {
+      if (!confirmed) {
+        return;
+      }
+      this.productService.syncProduct(this.productId, this.tenantId).subscribe(
+        () => {
+          this.notify('product.sync-success', 'success');
+          this.load();
+        },
+        (error: HttpErrorResponse) => this.handleError(error)
+      );
     });
   }
 
@@ -71,7 +108,8 @@ export class ProductDetailComponent extends PageComponent implements OnInit {
         mode: 'edit',
         product: this.detail.product,
         thingModel: this.thingModel,
-        productId: this.detail.product.productId
+        productId: this.detail.product.productId,
+        tenantId: this.detail.product.tenantId
       }
     }).afterClosed().subscribe((response) => {
       if (response) {
@@ -101,7 +139,10 @@ export class ProductDetailComponent extends PageComponent implements OnInit {
   }
 
   back(): void {
-    this.router.navigate(['/entities/products']);
+    this.router.navigate(
+      ['/entities/products'],
+      {queryParams: this.isSystemAdmin && this.tenantId ? {tenantId: this.tenantId} : {}}
+    );
   }
 
   private showJson(title: string, value: any): void {
@@ -140,6 +181,10 @@ export class ProductDetailComponent extends PageComponent implements OnInit {
 
   statusClass(status: ProductStatus): string {
     return `tb-product-status tb-product-status-${status?.toLowerCase()}`;
+  }
+
+  private handleError(error: HttpErrorResponse): void {
+    this.notify(error?.error?.message || 'product.operation-failed', 'error');
   }
 
   private notify(message: string, type: 'success' | 'error'): void {

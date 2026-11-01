@@ -56,4 +56,37 @@ class AccessGuardTest {
                 () -> guard.checkSystemAdmin(tenantAdmin));
         assertEquals(403, ex.getStatus().value());
     }
+
+    @Test
+    void listTenantIsOptionalForSystemAdmin() {
+        assertEquals(null, guard.resolveListTenant(systemAdmin, null));
+        assertEquals(tenantB, guard.resolveListTenant(systemAdmin, tenantB.toString()));
+    }
+
+    @Test
+    void tenantAdminCannotListAnotherTenant() {
+        assertEquals(tenantA, guard.resolveListTenant(tenantAdmin, null));
+
+        ApiException ex = assertThrows(ApiException.class,
+                () -> guard.resolveListTenant(tenantAdmin, tenantB.toString()));
+        assertEquals(403, ex.getStatus().value());
+    }
+
+    @Test
+    void productTenantIsRequiredForSystemAdmin() {
+        ApiException ex = assertThrows(ApiException.class,
+                () -> guard.resolveProductTenant(systemAdmin, null));
+        assertEquals(400, ex.getStatus().value());
+        assertEquals(tenantB, guard.resolveProductTenant(systemAdmin, tenantB.toString()));
+    }
+
+    @Test
+    void productTenantUsesCurrentTenantForTenantAdmin() {
+        assertEquals(tenantA, guard.resolveProductTenant(tenantAdmin, null));
+        assertEquals(tenantA, guard.resolveProductTenant(tenantAdmin, tenantA.toString()));
+
+        ApiException ex = assertThrows(ApiException.class,
+                () -> guard.resolveProductTenant(tenantAdmin, tenantB.toString()));
+        assertEquals(403, ex.getStatus().value());
+    }
 }

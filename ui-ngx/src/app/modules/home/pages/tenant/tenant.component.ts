@@ -4,6 +4,7 @@ import { ChangeDetectorRef, Component, Inject } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { AppState } from '@core/core.state';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { Tenant, TenantInfo } from '@app/shared/models/tenant.model';
 import { ActionNotificationShow } from '@app/core/notification/notification.actions';
 import { TranslateService } from '@ngx-translate/core';
@@ -11,6 +12,7 @@ import { ContactBasedComponent } from '../../components/entity/contact-based.com
 import { EntityTableConfig } from '@home/models/entity/entities-table-config.models';
 import { isDefinedAndNotNull } from '@core/utils';
 import { CountryData } from '@shared/models/country.models';
+import { TenantVendorAccountDialogComponent } from './tenant-vendor-account-dialog.component';
 
 @Component({
     selector: 'tb-tenant',
@@ -26,7 +28,8 @@ export class TenantComponent extends ContactBasedComponent<TenantInfo> {
               @Inject('entitiesTableConfig') protected entitiesTableConfigValue: EntityTableConfig<TenantInfo>,
               protected fb: UntypedFormBuilder,
               protected cd: ChangeDetectorRef,
-              protected countryData: CountryData) {
+              protected countryData: CountryData,
+              private dialog: MatDialog) {
     super(store, fb, entityValue, entitiesTableConfigValue, cd, countryData);
   }
 
@@ -89,5 +92,23 @@ export class TenantComponent extends ContactBasedComponent<TenantInfo> {
 
   onTenantProfileUpdated() {
     this.entitiesTableConfig.updateData(false, false);
+  }
+
+  configureVendorAccount(): void {
+    this.dialog.open<TenantVendorAccountDialogComponent, any, any>(TenantVendorAccountDialogComponent, {
+      disableClose: true,
+      panelClass: ['tb-dialog', 'tb-fullscreen-dialog'],
+      data: {
+        tenantId: this.entity.id.id,
+        tenantTitle: this.entity.title
+      }
+    }).afterClosed().subscribe((account) => {
+      if (account) {
+        this.store.dispatch(new ActionNotificationShow({
+          message: this.translate.instant('tenant.vendor-account-save-success'),
+          type: 'success'
+        }));
+      }
+    });
   }
 }

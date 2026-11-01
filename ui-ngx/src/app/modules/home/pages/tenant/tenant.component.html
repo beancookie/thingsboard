@@ -19,6 +19,12 @@
   </button>
   <button mat-stroked-button color="primary"
           [disabled]="(isLoading$ | async)"
+          (click)="configureVendorAccount()"
+          [class.!hidden]="isEdit || !entity?.id">
+    {{'tenant.vendor-account' | translate }}
+  </button>
+  <button mat-stroked-button color="primary"
+          [disabled]="(isLoading$ | async)"
           (click)="onEntityAction($event, 'delete')"
           [class.!hidden]="hideDelete() || isEdit">
     {{'tenant.delete' | translate }}

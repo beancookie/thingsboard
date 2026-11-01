@@ -17,7 +17,9 @@ import { EntityType, entityTypeResources, entityTypeTranslations } from '@shared
 import { TenantComponent } from '@modules/home/pages/tenant/tenant.component';
 import { EntityAction } from '@home/models/entity/entity-component.models';
 import { TenantTabsComponent } from '@home/pages/tenant/tenant-tabs.component';
-import { mergeMap } from 'rxjs/operators';
+import { TenantVendorAccountDialogComponent } from '@home/pages/tenant/tenant-vendor-account-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
+import { mergeMap, tap } from 'rxjs/operators';
 
 @Injectable()
 export class TenantsTableConfigResolver  {
@@ -27,7 +29,8 @@ export class TenantsTableConfigResolver  {
   constructor(private tenantService: TenantService,
               private translate: TranslateService,
               private datePipe: DatePipe,
-              private router: Router) {
+              private router: Router,
+              private dialog: MatDialog) {
 
     this.config.entityType = EntityType.TENANT;
     this.config.entityComponent = TenantComponent;
@@ -60,9 +63,17 @@ export class TenantsTableConfigResolver  {
 
     this.config.entitiesFetchFunction = pageLink => this.tenantService.getTenantInfos(pageLink);
     this.config.loadEntity = id => this.tenantService.getTenantInfo(id.id);
-    this.config.saveEntity = tenant => this.tenantService.saveTenant(tenant).pipe(
-      mergeMap((savedTenant) => this.tenantService.getTenantInfo(savedTenant.id.id))
-    );
+    this.config.saveEntity = tenant => {
+      const isNew = !tenant.id?.id;
+      return this.tenantService.saveTenant(tenant).pipe(
+        mergeMap((savedTenant) => this.tenantService.getTenantInfo(savedTenant.id.id)),
+        tap((savedTenant) => {
+          if (isNew) {
+            this.openVendorAccountDialog(savedTenant);
+          }
+        })
+      );
+    };
     this.config.deleteEntity = id => this.tenantService.deleteTenant(id.id);
     this.config.onEntityAction = action => this.onTenantAction(action, this.config);
   }
@@ -79,6 +90,17 @@ export class TenantsTableConfigResolver  {
     }
     const url = this.router.createUrlTree([tenant.id.id], {relativeTo: config.getActivatedRoute()});
     this.router.navigateByUrl(url);
+  }
+
+  openVendorAccountDialog(tenant: TenantInfo): void {
+    this.dialog.open<TenantVendorAccountDialogComponent, any, any>(TenantVendorAccountDialogComponent, {
+      disableClose: true,
+      panelClass: ['tb-dialog', 'tb-fullscreen-dialog'],
+      data: {
+        tenantId: tenant.id.id,
+        tenantTitle: tenant.title
+      }
+    });
   }
 
   manageTenantAdmins($event: Event, tenant: TenantInfo) {

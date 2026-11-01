@@ -75,7 +75,8 @@
 | [11-前端联动开发指南](docs/11-前端联动开发指南.md) | 产品/物模型页面与后端联动 |
 | [12-遥测单通道设计](docs/12-遥测单通道设计.md) | Telemetry 单通道、Attributes 白名单、事件契约 |
 | [13-物模型入湖链路](docs/13-物模型入湖链路.md) | ThingsBoard 规则链 → Kafka → TDengine |
-| [14-k8s增量部署](docs/14-k8s增量部署.md) | thing-model 与 crec-ui 的 Kubernetes 增量部署 |
+| [14-产品按租户展示与权限方案](docs/14-产品按租户展示与权限方案.md) | 租户内唯一 ProductId、租户筛选、服务账号配置、provision 与同步排查 |
+| [15-k8s增量部署](docs/15-k8s增量部署.md) | thing-model 与 crec-ui 的 Kubernetes 增量部署 |
 
 ## 5. 环境要求
 
@@ -138,7 +139,7 @@ yarn start
 yarn build:prod
 ```
 
-前端通过 `/api/thing-model` 访问 thing-model，通过 `/api` 访问 ThingsBoard。具体代理规则见 [thing-model/README.md](thing-model/README.md) 和 [14-k8s增量部署](docs/14-k8s增量部署.md)。
+前端通过 `/api/thing-model` 访问 thing-model，通过 `/api` 访问 ThingsBoard。具体代理规则见 [thing-model/README.md](thing-model/README.md) 和 [15-k8s增量部署](docs/15-k8s增量部署.md)。
 
 ### 6.4 设备模拟
 
@@ -177,7 +178,7 @@ ThingsBoard 上游测试加速方式见 [TEST_FAST.md](TEST_FAST.md)。
 - thing-model
 - 定制前端 Nginx
 
-增量部署 thing-model 与前端见 [14-k8s增量部署](docs/14-k8s增量部署.md)。
+增量部署 thing-model 与前端见 [15-k8s增量部署](docs/15-k8s增量部署.md)。
 
 ## 9. 上游 ThingsBoard
 

@@ -40,12 +40,26 @@ public class TenantAccountService {
         return new MaskedAccount(tenantId, normalizedUsername, true);
     }
 
+    public boolean isConfigured(UUID tenantId) {
+        return repository.find(tenantId).map(TenantAccountRepository.TenantAccountRow::enabled).orElse(false);
+    }
+
+    public void requireConfigured(UUID tenantId) {
+        credentials(tenantId);
+    }
+
+    public MaskedAccount provision(UUID tenantId, String username, String password, boolean force) {
+        return findMasked(tenantId)
+                .filter(account -> !force)
+                .orElseGet(() -> register(tenantId, username, password));
+    }
+
     public TenantCredentials credentials(UUID tenantId) {
         TenantAccountRepository.TenantAccountRow row = repository.find(tenantId)
                 .orElseThrow(() -> new ApiException(
                         HttpStatus.BAD_REQUEST,
                         Constants.ErrorCode.TENANT_ACCOUNT_MISSING,
-                        "厂商租户未配置 ThingsBoard 服务账号"));
+                        "厂商租户 " + tenantId + " 未配置 ThingsBoard 服务账号"));
         if (!row.enabled()) {
             throw new ApiException(
                     HttpStatus.FORBIDDEN,

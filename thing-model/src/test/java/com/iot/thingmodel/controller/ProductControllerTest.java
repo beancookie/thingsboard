@@ -49,7 +49,7 @@ class ProductControllerTest {
                 "P1", "1.0", "profile", "asset", "chain", 1, 0, 0, 100,
                 "PUBLISHED", List.of());
         when(productService.create(any())).thenReturn(response);
-        when(productService.list(any(), any())).thenReturn(List.of());
+        when(productService.list(any(), any(), any())).thenReturn(List.of());
         when(productService.get(any(), eq("P1"))).thenReturn(
                 new ProductDetail(null, null, null));
         when(productService.sync(any(), eq("P1"))).thenReturn(response);
@@ -132,7 +132,7 @@ class ProductControllerTest {
                         .requestAttr(AuthInterceptor.CURRENT_USER_ATTRIBUTE, user))
                 .andExpect(status().isOk());
 
-        verify(productService).list(any(), eq("wifi"));
+        verify(productService).list(any(), eq(tenantId), eq("wifi"));
     }
 
     @Test
@@ -143,7 +143,39 @@ class ProductControllerTest {
                         .requestAttr(AuthInterceptor.CURRENT_USER_ATTRIBUTE, user))
                 .andExpect(status().isOk());
 
-        verify(productService).get(any(), eq("P1"));
+        verify(productService).get(eq(tenantId), eq("P1"));
+    }
+
+    @Test
+    void systemAdminProductLookupRequiresTenant() throws Exception {
+        CurrentUser user = new CurrentUser("root", null, "SYS_ADMIN", "root@b");
+
+        mockMvc.perform(get("/api/products/{productId}", "P1")
+                        .requestAttr(AuthInterceptor.CURRENT_USER_ATTRIBUTE, user))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void systemAdminProductLookupUsesRequestedTenant() throws Exception {
+        CurrentUser user = new CurrentUser("root", null, "SYS_ADMIN", "root@b");
+
+        mockMvc.perform(get("/api/products/{productId}", "P1")
+                        .param("tenantId", tenantId.toString())
+                        .requestAttr(AuthInterceptor.CURRENT_USER_ATTRIBUTE, user))
+                .andExpect(status().isOk());
+
+        verify(productService).get(eq(tenantId), eq("P1"));
+    }
+
+    @Test
+    void tenantAdminCannotLookupAnotherTenantProduct() throws Exception {
+        CurrentUser user = new CurrentUser("u1", tenantId.toString(), "TENANT_ADMIN", "a@b");
+        String otherTenant = UUID.randomUUID().toString();
+
+        mockMvc.perform(get("/api/products/{productId}", "P1")
+                        .param("tenantId", otherTenant)
+                        .requestAttr(AuthInterceptor.CURRENT_USER_ATTRIBUTE, user))
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -155,7 +187,7 @@ class ProductControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.tbRuleChainId").value("chain"));
 
-        verify(productService).sync(any(), eq("P1"));
+        verify(productService).sync(eq(tenantId), eq("P1"));
     }
 
     @Test
@@ -171,7 +203,7 @@ class ProductControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.valid").value(true));
 
-        verify(productService).validate(any(), eq("P1"), any());
+        verify(productService).validate(eq(tenantId), eq("P1"), any());
     }
 
     @Test
@@ -183,7 +215,7 @@ class ProductControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.productId").value("P1"));
 
-        verify(productService).getThingModel(any(), eq("P1"));
+        verify(productService).getThingModel(eq(tenantId), eq("P1"));
     }
 
     @Test
@@ -195,6 +227,6 @@ class ProductControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.productId").value("P1"));
 
-        verify(productService).catalog(any(), eq("P1"));
+        verify(productService).catalog(eq(tenantId), eq("P1"));
     }
 }
