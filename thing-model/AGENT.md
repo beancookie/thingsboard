@@ -64,7 +64,7 @@ thing-model/
 │   ├── tb/         ThingsBoard Client、异常转换
 │   └── tsl/        TSL 解析、校验、压缩 schema
 ├── src/main/resources/
-│   ├── db/migration/              Flyway V1/V2/V3
+│   ├── db/migration/              Flyway V1/V2/V3/V4
 │   ├── rulechain/telemetry_to_kafka.js
 │   ├── rulechain/apply_envelope.js
 │   └── schemas/tsl-v1.5.schema.json

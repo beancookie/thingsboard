@@ -56,7 +56,7 @@ erDiagram
 
 1. 产品是业务主数据，Device Profile 是 ThingsBoard 设备模板。
 2. 产品 Asset 只承载 TSL 元数据，不是设备台账。
-3. ProductId 在租户内唯一，不同租户可以重复。
+3. ProductId 全系统唯一，不同租户也不能重复。
 4. 设备由 ThingsBoard 或运维脚本管理，`thing-model` 不维护设备清单。
 5. 规则链校验使用发布时内嵌的压缩 schema，不依赖设备上的 `tsl_schema`。
 

@@ -1,6 +1,6 @@
 // SPDX-FileCopyrightText: Copyright The Thingsboard Authors
 // SPDX-License-Identifier: Apache-2.0
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormControl } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
@@ -42,7 +42,9 @@ export class ProductsListComponent extends PageComponent implements OnInit, Afte
   dataSource = new MatTableDataSource<ProductItem>([]);
 
   searchControl = new FormControl('');
+  textSearchMode = false;
 
+  @ViewChild('searchInput') searchInputField: ElementRef<HTMLInputElement>;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
@@ -65,6 +67,21 @@ export class ProductsListComponent extends PageComponent implements OnInit, Afte
   ngAfterViewInit(): void {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
+  }
+
+  enterFilterMode(): void {
+    this.textSearchMode = true;
+    setTimeout(() => {
+      if (this.searchInputField) {
+        this.searchInputField.nativeElement.focus();
+        this.searchInputField.nativeElement.setSelectionRange(0, 0);
+      }
+    }, 10);
+  }
+
+  exitFilterMode(): void {
+    this.textSearchMode = false;
+    this.searchControl.reset('', {emitEvent: true});
   }
 
   loadProducts(): void {

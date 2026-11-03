@@ -1,0 +1,258 @@
+.tb-ai-agent-fab {
+  position: fixed;
+  z-index: 1000;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.tb-ai-agent-fab:active {
+  cursor: grabbing;
+}
+
+.tb-ai-agent-panel {
+  position: fixed;
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+  width: min(420px, calc(100vw - 48px));
+  height: min(680px, calc(100vh - 140px));
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.22);
+}
+
+.tb-ai-agent-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  color: #195da2;
+}
+
+.tb-ai-agent-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.tb-ai-agent-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+  background: #f7f9fc;
+}
+
+.tb-ai-agent-welcome {
+  padding: 24px 12px;
+  text-align: center;
+}
+
+.tb-ai-agent-welcome-title {
+  margin-bottom: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.tb-ai-agent-welcome-text {
+  font-size: 13px;
+  line-height: 1.6;
+  color: rgba(0, 0, 0, 0.54);
+}
+
+.tb-ai-agent-message {
+  max-width: 92%;
+  margin-bottom: 10px;
+  padding: 8px 10px;
+  overflow-wrap: anywhere;
+  border-radius: 8px;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.tb-ai-agent-message tb-markdown {
+  display: block;
+  max-width: 100%;
+}
+
+:host ::ng-deep .tb-ai-agent-markdown {
+  max-width: 100%;
+  font-size: 13px;
+  line-height: 1.6;
+
+  p:first-child {
+    margin-top: 0;
+  }
+
+  p:last-child {
+    margin-bottom: 0;
+  }
+
+  ul,
+  ol {
+    margin: 6px 0;
+    padding-left: 20px;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    margin: 10px 0 6px;
+    line-height: 1.35;
+  }
+
+  pre {
+    max-width: 100%;
+    overflow-x: auto;
+    border-radius: 6px;
+  }
+
+  code {
+    font-size: 12px;
+  }
+}
+
+.tb-ai-agent-message-user {
+  margin-left: auto;
+  color: #fff;
+  border-color: #195da2;
+  background: #195da2;
+}
+
+.tb-ai-agent-message-role {
+  margin-bottom: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  opacity: 0.65;
+}
+
+.tb-ai-agent-message-content {
+  font-size: 13px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.tb-ai-agent-loading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 4px;
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.54);
+}
+
+.tb-ai-agent-actions {
+  margin-top: 8px;
+  padding: 10px;
+  border: 1px solid rgba(25, 93, 162, 0.22);
+  border-radius: 8px;
+  background: #f3f7fc;
+}
+
+.tb-ai-agent-actions-title {
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #195da2;
+}
+
+.tb-ai-agent-action {
+  margin-bottom: 8px;
+  padding: 8px;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.tb-ai-agent-action-title {
+  margin-bottom: 4px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.tb-ai-agent-action-params {
+  max-height: 140px;
+  margin: 0;
+  overflow: auto;
+  font-size: 11px;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: rgba(0, 0, 0, 0.65);
+}
+
+.tb-ai-agent-actions-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.tb-ai-agent-error {
+  margin-top: 8px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #b3261e;
+  background: #fff1f0;
+}
+
+.tb-ai-agent-composer {
+  padding: 8px 12px 12px;
+}
+
+.tb-ai-agent-tsl-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  padding: 4px 4px 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  color: #195da2;
+  background: #eef4fb;
+}
+
+.tb-ai-agent-tsl-chip span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tb-ai-agent-tsl-editor,
+.tb-ai-agent-input {
+  width: 100%;
+}
+
+.tb-ai-agent-tsl-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.tb-ai-agent-composer-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.tb-ai-agent-composer-actions .mat-mdc-form-field {
+  margin-bottom: -16px;
+}
+
+@media (max-width: 600px) {
+  .tb-ai-agent-panel {
+    inset: 0 !important;
+    width: auto !important;
+    height: auto !important;
+    border: 0;
+    border-radius: 0;
+  }
+}

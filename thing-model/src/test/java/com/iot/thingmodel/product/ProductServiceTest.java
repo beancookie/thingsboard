@@ -10,6 +10,7 @@ import com.iot.thingmodel.sync.TbProductResourceDeleter;
 import com.iot.thingmodel.sync.TbProfileSyncer;
 import com.iot.thingmodel.tb.TbSyncException;
 import com.iot.thingmodel.tsl.CompactSchema;
+import com.iot.thingmodel.tsl.TencentTslNormalizer;
 import com.iot.thingmodel.tsl.TslParser;
 import com.iot.thingmodel.tsl.TslValidator;
 import java.io.InputStream;
@@ -60,8 +61,8 @@ class ProductServiceTest {
         resourceDeleter = mock(TbProductResourceDeleter.class);
         accountService = mock(TenantAccountService.class);
         service = new ProductService(
-                repository, parser, validator, compactSchema, syncer, resourceDeleter,
-                accountService, objectMapper);
+                repository, parser, validator, new TencentTslNormalizer(objectMapper),
+                compactSchema, syncer, resourceDeleter, accountService, objectMapper);
     }
 
     @Test
@@ -267,6 +268,40 @@ class ProductServiceTest {
     }
 
     @Test
+    void validatesTencentTslWithoutConversion() throws Exception {
+        JsonNode tencent = objectMapper.readTree("""
+                {
+                  "version": "1.0",
+                  "profile": {"ProductId": "4DZDCQUA2D", "CategoryId": "1"},
+                  "properties": [{
+                    "id": "info",
+                    "name": "Info",
+                    "mode": "r",
+                    "define": {
+                      "type": "struct",
+                      "specs": [{
+                        "id": "state",
+                        "name": "State",
+                        "dataType": {
+                          "type": "stringenum",
+                          "mapping": {"on": "On", "off": "Off"}
+                        }
+                      }]
+                    }
+                  }],
+                  "events": [],
+                  "actions": []
+                }
+                """);
+        com.fasterxml.jackson.databind.node.ObjectNode body = objectMapper.createObjectNode();
+        body.set("tsl", tencent);
+
+        ValidationResponse response = service.validate(tenantId, "4DZDCQUA2D", body);
+
+        assertTrue(response.valid());
+    }
+
+    @Test
     void reportsInvalidThingModel() throws Exception {
         JsonNode invalid = load("invalid-tsl.json");
         when(repository.findProduct(tenantId, "9HYN9PJNOY"))
@@ -288,6 +323,34 @@ class ProductServiceTest {
 
         assertEquals(Constants.ErrorCode.PRODUCT_ID_MISMATCH, ex.getCode());
         verifyNoInteractions(syncer, accountService);
+    }
+
+    @Test
+    void rejectsProductIdOwnedByAnotherTenant() throws Exception {
+        UUID otherTenant = UUID.randomUUID();
+        ProductRepository.ProductRow existing = new ProductRepository.ProductRow(
+                otherTenant,
+                "9HYN9PJNOY",
+                "Other Product",
+                "M1",
+                "1",
+                null,
+                Constants.Product.AUTH_TYPE_ACCESS_TOKEN,
+                Constants.Product.PROTOCOL_MQTT,
+                Instant.now(),
+                Instant.now());
+        when(repository.findProductByProductId("9HYN9PJNOY"))
+                .thenReturn(java.util.Optional.of(existing));
+
+        ApiException ex = assertThrows(ApiException.class,
+                () -> service.create(command(load("valid-tsl.json"))));
+
+        assertEquals(HttpStatus.CONFLICT.value(), ex.getStatus().value());
+        assertEquals(Constants.ErrorCode.PRODUCT_ID_CONFLICT, ex.getCode());
+        verify(repository, never()).saveDraft(
+                any(), anyString(), anyString(), anyString(), anyString(),
+                any(), anyString(), anyString(), anyBoolean(), any());
+        verify(syncer, never()).sync(any());
     }
 
     @Test

@@ -9,9 +9,8 @@
   font-weight: 500;
 }
 
-.tb-product-search {
-  width: 260px;
-  margin: 0 12px;
+.tb-product-search-field {
+  margin: 0 8px;
 }
 
 .tb-product-table-container {
@@ -55,10 +54,4 @@
 .tb-product-status-deprecated {
   color: #616161;
   background: #eeeeee;
-}
-
-@media (max-width: 960px) {
-  .tb-product-search {
-    width: 180px;
-  }
 }

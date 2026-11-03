@@ -14,6 +14,7 @@ import com.iot.thingmodel.tsl.CompactSchema;
 import com.iot.thingmodel.tsl.TslAction;
 import com.iot.thingmodel.tsl.TslDefinition;
 import com.iot.thingmodel.tsl.TslEvent;
+import com.iot.thingmodel.tsl.TencentTslNormalizer;
 import com.iot.thingmodel.tsl.TslParser;
 import com.iot.thingmodel.tsl.TslProperty;
 import com.iot.thingmodel.tsl.TslValidator;
@@ -36,6 +37,7 @@ public class ProductService {
     private final ProductRepository repository;
     private final TslParser parser;
     private final TslValidator validator;
+    private final TencentTslNormalizer tencentNormalizer;
     private final CompactSchema compactSchema;
     private final TbProfileSyncer syncer;
     private final TbProductResourceDeleter resourceDeleter;
@@ -46,6 +48,7 @@ public class ProductService {
             ProductRepository repository,
             TslParser parser,
             TslValidator validator,
+            TencentTslNormalizer tencentNormalizer,
             CompactSchema compactSchema,
             TbProfileSyncer syncer,
             TbProductResourceDeleter resourceDeleter,
@@ -54,6 +57,7 @@ public class ProductService {
         this.repository = repository;
         this.parser = parser;
         this.validator = validator;
+        this.tencentNormalizer = tencentNormalizer;
         this.compactSchema = compactSchema;
         this.syncer = syncer;
         this.resourceDeleter = resourceDeleter;
@@ -90,6 +94,7 @@ public class ProductService {
             throw new ApiException(
                     HttpStatus.BAD_REQUEST, Constants.ErrorCode.TSL_REQUIRED, "缺少物模型 TSL");
         }
+        root = tencentNormalizer.normalize(root);
         TslDefinition definition = parser.parse(root);
         ValidationResult validation = validator.validate(root);
         if (!validation.valid()) {
@@ -104,6 +109,15 @@ public class ProductService {
                 && !command.productId().equals(definition.productId())) {
             throw new ApiException(HttpStatus.BAD_REQUEST, Constants.ErrorCode.PRODUCT_ID_MISMATCH, "请求 ProductId 与 TSL 不一致");
         }
+
+        repository.findProductByProductId(productId).ifPresent(existing -> {
+            if (!existing.tenantId().equals(command.tenantId())) {
+                throw new ApiException(
+                        HttpStatus.CONFLICT,
+                        Constants.ErrorCode.PRODUCT_ID_CONFLICT,
+                        "ProductId 已存在，ProductId 必须全系统唯一");
+            }
+        });
 
         String version = firstNonBlank(command.tslVersion(), definition.version());
         if (version == null) {
@@ -207,6 +221,7 @@ public class ProductService {
             throw new ApiException(
                     HttpStatus.BAD_REQUEST, Constants.ErrorCode.TSL_REQUIRED, "缺少物模型 TSL");
         }
+        root = tencentNormalizer.normalize(root);
         ValidationResult result = validator.validate(root);
         return new ValidationResponse(result.valid(), result.errors(), result.warnings());
     }
@@ -230,8 +245,9 @@ public class ProductService {
         ProductRepository.ProductRow product = requireProduct(tenantId, productId);
         ProductRepository.TslRow tsl = repository.findLatestTsl(tenantId, productId)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, Constants.ErrorCode.TSL_NOT_FOUND, "产品尚未提交物模型"));
-        TslDefinition definition = parser.parse(tsl.tsl());
-        ValidationResult validation = validator.validate(tsl.tsl());
+        JsonNode root = tencentNormalizer.normalize(tsl.tsl());
+        TslDefinition definition = parser.parse(root);
+        ValidationResult validation = validator.validate(root);
         if (!validation.valid()) {
             throw new ApiException(HttpStatus.BAD_REQUEST, Constants.ErrorCode.TSL_INVALID, "已存物模型校验失败", validation.errors());
         }
@@ -243,7 +259,7 @@ public class ProductService {
                 product.model(),
                 product.categoryId(),
                 tsl.version(),
-                tsl.tsl(),
+                root,
                 definition,
                 compact),
                 productId,

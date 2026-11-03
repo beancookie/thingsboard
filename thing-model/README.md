@@ -185,7 +185,7 @@ $key = New-Object byte[] 32
 [Convert]::ToBase64String($key)
 ```
 
-数据库建好后启动服务，Flyway 会自动执行 V1/V2/V3 并创建 `plat_*` 表。V3 之后产品主键为 `(tenant_id, product_id)`，ProductId 租户内唯一：
+数据库建好后启动服务，Flyway 会自动执行 V1/V2/V3/V4 并创建 `plat_*` 表。产品主键为 `(tenant_id, product_id)`，ProductId 额外受全系统唯一约束：
 
 ```bash
 mvn -f thing-model/pom.xml spring-boot:run
@@ -210,7 +210,7 @@ Swagger UI 中先通过 `Authorize` 填入 ThingsBoard JWT。
 - Controller 统一继承 `controller/BaseController`，通过 `getCurrentUser()` / `requireTenantId()` 获取当前用户与租户。
 - `auth/RequireAuthority` 是声明式权限注解，由 `AuthInterceptor` 在进入 Controller 前校验。
 - 产品页面和产品 API 只允许 `TENANT_ADMIN`，产品租户来自 JWT。`SYS_ADMIN` 不显示产品菜单，也不能访问产品页面/API。
-- 产品数据按 `(tenant_id, product_id)` 隔离；不同租户可以使用相同 ProductId。
+- 产品数据按 `(tenant_id, product_id)` 隔离；ProductId 全系统唯一，不同租户也不能重复。
 - 当前没有独立的租户写入解析组件；租户隔离由 Controller 和 Repository 按 JWT tenantId 完成。
 
 ## 厂商服务账号
@@ -336,7 +336,8 @@ curl -X POST "http://localhost:8090/api/products" \
 已实现：
 
 - TSL 解析、JSON Schema + 业务校验、压缩 schema
-- 产品与 TSL 版本持久化，ProductId 租户内唯一
+- 腾讯原始 TSL 自动规范化，支持 `stringenum`、`dataType`、数组形式 `specs`
+- 产品与 TSL 版本持久化，ProductId 全系统唯一
 - Device Profile、产品 Asset、SERVER_SCOPE 属性同步
 - 按产品生成规则链 `<ProductId>` 并绑定 `defaultRuleChainId`
 - 规则链内嵌产品 TSL schema，按属性 + 事件校验类型、范围、必填、未知字段、枚举、int32、报文大小与时间戳单位

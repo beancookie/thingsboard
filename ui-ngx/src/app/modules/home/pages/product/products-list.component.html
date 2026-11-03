@@ -7,21 +7,35 @@
 <div class="mat-padding">
   <mat-card appearance="outlined" class="tb-product-card">
     <mat-toolbar class="mat-mdc-table-toolbar">
-      <div class="mat-toolbar-tools">
+      <div class="mat-toolbar-tools" [class.!hidden]="textSearchMode">
         <span class="tb-product-title">{{ 'product.products' | translate }}</span>
         <span class="flex-1"></span>
-        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="tb-product-search">
-          <mat-icon matPrefix>search</mat-icon>
-          <input matInput [formControl]="searchControl"
-                 [placeholder]="'product.search' | translate">
-        </mat-form-field>
         <button mat-icon-button type="button" (click)="loadProducts()"
                 [matTooltip]="'action.refresh' | translate" matTooltipPosition="above">
           <mat-icon>refresh</mat-icon>
         </button>
+        <button mat-icon-button type="button" (click)="enterFilterMode()"
+                [matTooltip]="'product.search' | translate" matTooltipPosition="above">
+          <mat-icon>search</mat-icon>
+        </button>
         <button mat-flat-button color="primary" type="button" (click)="createProduct()">
           <mat-icon>add</mat-icon>
           {{ 'product.create-product' | translate }}
+        </button>
+      </div>
+      <div class="mat-toolbar-tools" [class.!hidden]="!textSearchMode">
+        <button mat-icon-button type="button">
+          <mat-icon>search</mat-icon>
+        </button>
+        <mat-form-field appearance="outline" subscriptSizing="dynamic"
+                        class="flex-1 tb-product-search-field">
+          <mat-label>&nbsp;</mat-label>
+          <input #searchInput matInput [formControl]="searchControl"
+                 [placeholder]="'product.search' | translate">
+        </mat-form-field>
+        <button mat-icon-button type="button" (click)="exitFilterMode()"
+                [matTooltip]="'action.close' | translate" matTooltipPosition="above">
+          <mat-icon>close</mat-icon>
         </button>
       </div>
     </mat-toolbar>

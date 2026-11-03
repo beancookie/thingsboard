@@ -10,6 +10,7 @@ import { MenuLinkComponent } from '@modules/home/menu/menu-link.component';
 import { MenuToggleComponent } from '@modules/home/menu/menu-toggle.component';
 import { SideMenuComponent } from '@modules/home/menu/side-menu.component';
 import { NotificationBellModule } from '@home/components/notification/notification-bell.module';
+import { AiAgentComponent } from '@home/components/ai-agent/ai-agent.component';
 
 @NgModule({
   declarations:
@@ -23,6 +24,7 @@ import { NotificationBellModule } from '@home/components/notification/notificati
     CommonModule,
     SharedModule,
     NotificationBellModule,
+    AiAgentComponent,
     HomeRoutingModule
   ]
 })

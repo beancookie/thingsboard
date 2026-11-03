@@ -10,6 +10,7 @@ import com.iot.thingmodel.tsl.TslAction;
 import com.iot.thingmodel.tsl.TslDefinition;
 import com.iot.thingmodel.tsl.TslEvent;
 import com.iot.thingmodel.tsl.TslProperty;
+import java.sql.SQLException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +55,12 @@ public class ProductRepository {
         return dsl.selectFrom(PLAT_PRODUCT)
                 .where(PLAT_PRODUCT.TENANT_ID.eq(tenantId))
                 .and(PLAT_PRODUCT.PRODUCT_ID.eq(productId))
+                .fetchOptional(this::mapProduct);
+    }
+
+    public Optional<ProductRow> findProductByProductId(String productId) {
+        return dsl.selectFrom(PLAT_PRODUCT)
+                .where(PLAT_PRODUCT.PRODUCT_ID.eq(productId))
                 .fetchOptional(this::mapProduct);
     }
 
@@ -263,9 +270,9 @@ public class ProductRepository {
                         .and(PLAT_PRODUCT.PRODUCT_ID.eq(productId))
                         .execute();
             }
-        } catch (DataIntegrityViolationException ex) {
-            throw new ApiException(
-                    HttpStatus.CONFLICT, Constants.ErrorCode.PRODUCT_CONFLICT, "产品创建冲突，请重试");
+        } catch (DataIntegrityViolationException
+                 | org.jooq.exception.IntegrityConstraintViolationException ex) {
+            throw productConflict(ex);
         }
 
         TslRow existingTsl = findTslForUpdate(tenantId, productId, version);
@@ -537,6 +544,29 @@ public class ProductRepository {
                                 .and(childTslVersion.eq(version))),
                         DSL.inline(Constants.Db.NO_ROWS_AFFECTED))
                 .cast(Integer.class);
+    }
+
+    private ApiException productConflict(Throwable ex) {
+        if (isUniqueViolation(ex)) {
+            return new ApiException(
+                    HttpStatus.CONFLICT,
+                    Constants.ErrorCode.PRODUCT_ID_CONFLICT,
+                    "ProductId 已存在，ProductId 必须全系统唯一");
+        }
+        return new ApiException(
+                HttpStatus.CONFLICT, Constants.ErrorCode.PRODUCT_CONFLICT, "产品创建冲突，请重试");
+    }
+
+    private boolean isUniqueViolation(Throwable ex) {
+        Throwable cause = ex;
+        while (cause != null) {
+            if (cause instanceof SQLException sqlException
+                    && "23505".equals(sqlException.getSQLState())) {
+                return true;
+            }
+            cause = cause.getCause();
+        }
+        return false;
     }
 
     private long longValue(Integer value) {

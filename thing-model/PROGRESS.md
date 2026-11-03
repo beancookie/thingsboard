@@ -7,7 +7,7 @@
 
 | 方向 | 状态 | 说明 |
 | --- | --- | --- |
-| 产品与 TSL | 完成 | ProductId 租户内唯一，TSL 版本、目录、压缩 schema 已实现 |
+| 产品与 TSL | 完成 | ProductId 全系统唯一，TSL 版本、目录、压缩 schema 已实现 |
 | ThingsBoard 同步 | 完成 | Device Profile、产品 Asset、规则链同步和失败记录 |
 | 规则链 | 完成 | 按 ProductId 生成，校验遥测/事件并输出 Kafka |
 | 产品前端 | 完成 | 列表、详情、创建/编辑、校验、同步 |
@@ -58,7 +58,7 @@
 ### 工程与测试
 
 - 独立 Spring Boot 工程，不加入 ThingsBoard 根 Maven reactor。
-- Flyway V1/V2/V3，jOOQ 数据访问。
+- Flyway V1/V2/V3/V4，jOOQ 数据访问。
 - `DatabaseGuard` 防止误连 ThingsBoard 数据库。
 - 单元测试、Web Slice、Testcontainers 数据库测试、外部 ThingsBoard 集成测试。
 - OpenAPI / Swagger UI。
@@ -75,7 +75,7 @@ plat_profile_binding
 plat_vendor_account
 ```
 
-V3 之后产品相关表均包含 `tenant_id`，产品主键为 `(tenant_id, product_id)`。
+V3 之后产品相关表均包含 `tenant_id`，产品主键为 `(tenant_id, product_id)`。V4 增加 `product_id` 全系统唯一约束。
 
 ## 4. 当前接口
 

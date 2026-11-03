@@ -12,6 +12,13 @@ const PROXY_CONFIG = {
       "^/api/thing-model": "/api"
     },
   },
+  "/api/ai-agent": {
+    "target": "http://localhost:8000",
+    "secure": false,
+    "pathRewrite": {
+      "^/api/ai-agent": ""
+    },
+  },
   "/api": {
     "target": forwardUrl,
     "secure": false,

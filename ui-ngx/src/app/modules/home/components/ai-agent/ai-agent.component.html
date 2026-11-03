@@ -1,0 +1,157 @@
+@if (visible) {
+  @if (panelOpen()) {
+    <div class="tb-ai-agent-panel"
+         [style.left.px]="panelPosition().left"
+         [style.top.px]="panelPosition().top">
+      <div class="tb-ai-agent-header">
+        <div class="tb-ai-agent-title">
+          <mat-icon>auto_awesome</mat-icon>
+          <span>{{ 'ai-agent.title' | translate }}</span>
+        </div>
+        <span class="flex-1"></span>
+        <button mat-icon-button type="button" (click)="clearChat()"
+                [matTooltip]="'ai-agent.clear' | translate" matTooltipPosition="above">
+          <mat-icon>delete_sweep</mat-icon>
+        </button>
+        <button mat-icon-button type="button" (click)="closePanel()"
+                [matTooltip]="'ai-agent.close' | translate" matTooltipPosition="above">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <div #messagesContainer class="tb-ai-agent-messages">
+        @if (!messages().length && !loading()) {
+          <div class="tb-ai-agent-welcome">
+            <div class="tb-ai-agent-welcome-title">{{ 'ai-agent.welcome-title' | translate }}</div>
+            <div class="tb-ai-agent-welcome-text">{{ 'ai-agent.welcome-text' | translate }}</div>
+          </div>
+        }
+
+        @for (message of messages(); track $index) {
+          <div class="tb-ai-agent-message" [class.tb-ai-agent-message-user]="message.role === 'user'">
+            <div class="tb-ai-agent-message-role">
+              {{ (message.role === 'user' ? 'ai-agent.you' : 'ai-agent.assistant') | translate }}
+            </div>
+            @if (message.role === 'assistant') {
+              <tb-markdown [data]="message.content"
+                           [usePlainMarkdown]="true"
+                           markdownClass="tb-ai-agent-markdown"
+                           (ready)="onMarkdownReady()">
+              </tb-markdown>
+            } @else {
+              <div class="tb-ai-agent-message-content">{{ message.content }}</div>
+            }
+          </div>
+        }
+
+        @if (loading()) {
+          <div class="tb-ai-agent-loading">
+            <mat-spinner diameter="18"></mat-spinner>
+            <span>{{ 'ai-agent.thinking' | translate }}</span>
+          </div>
+        }
+
+        @if (pendingActions().length) {
+          <div class="tb-ai-agent-actions">
+            <div class="tb-ai-agent-actions-title">{{ 'ai-agent.pending-actions' | translate }}</div>
+            @for (action of pendingActions(); track action.id) {
+              <div class="tb-ai-agent-action">
+                <div class="tb-ai-agent-action-title">{{ action.summary || action.type }}</div>
+                <pre class="tb-ai-agent-action-params">{{ action.params | json }}</pre>
+              </div>
+            }
+            <div class="tb-ai-agent-actions-buttons">
+              <button mat-button type="button" (click)="cancelActions()"
+                      [disabled]="loading()">
+                {{ 'ai-agent.cancel' | translate }}
+              </button>
+              <button mat-flat-button color="primary" type="button" (click)="confirmActions()"
+                      [disabled]="loading()">
+                {{ 'ai-agent.confirm' | translate }}
+              </button>
+            </div>
+          </div>
+        }
+
+        @if (error()) {
+          <div class="tb-ai-agent-error">{{ error() }}</div>
+        }
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <div class="tb-ai-agent-composer">
+        @if (tslFileName()) {
+          <div class="tb-ai-agent-tsl-chip">
+            <mat-icon>description</mat-icon>
+            <span>{{ tslFileName() }}</span>
+            <button mat-icon-button type="button" (click)="clearTsl()"
+                    [matTooltip]="'ai-agent.clear-tsl' | translate" matTooltipPosition="above">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+        }
+
+        @if (showTslEditor()) {
+          <mat-form-field appearance="outline" class="tb-ai-agent-tsl-editor">
+            <mat-label>{{ 'ai-agent.tsl-json' | translate }}</mat-label>
+            <textarea matInput rows="6"
+                      [ngModel]="tslText()"
+                      (ngModelChange)="tslText.set($event)"
+                      [placeholder]="'ai-agent.tsl-placeholder' | translate"></textarea>
+          </mat-form-field>
+          <div class="tb-ai-agent-tsl-actions">
+            <button mat-button type="button" (click)="showTslEditor.set(false)">
+              {{ 'ai-agent.cancel' | translate }}
+            </button>
+            <button mat-flat-button color="primary" type="button" (click)="applyPastedTsl()">
+              {{ 'ai-agent.apply-tsl' | translate }}
+            </button>
+          </div>
+        }
+
+        <mat-form-field appearance="outline" class="tb-ai-agent-input">
+          <textarea matInput rows="3"
+                    [ngModel]="input()"
+                    (ngModelChange)="input.set($event)"
+                    (keydown)="onInputKeydown($event)"
+                    [disabled]="pendingActions().length > 0"
+                    [placeholder]="(pendingActions().length ? 'ai-agent.confirm-first' : 'ai-agent.placeholder') | translate"></textarea>
+        </mat-form-field>
+
+        <div class="tb-ai-agent-composer-actions">
+          <input #fileInput type="file" accept=".json,application/json" hidden
+                 (change)="onFileSelected($event)">
+          <button mat-icon-button type="button" (click)="fileInput.click()"
+                  [matTooltip]="'ai-agent.upload-tsl' | translate" matTooltipPosition="above">
+            <mat-icon>attach_file</mat-icon>
+          </button>
+          <button mat-icon-button type="button" (click)="showTslEditor.set(!showTslEditor())"
+                  [matTooltip]="'ai-agent.paste-tsl' | translate" matTooltipPosition="above">
+            <mat-icon>data_object</mat-icon>
+          </button>
+          <span class="flex-1"></span>
+          <button mat-flat-button color="primary" type="button" (click)="sendMessage()"
+                  [disabled]="!canSend()">
+            <mat-icon>send</mat-icon>
+            {{ 'ai-agent.send' | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <button mat-fab color="primary" type="button" class="tb-ai-agent-fab"
+          [style.left.px]="fabPosition().left"
+          [style.top.px]="fabPosition().top"
+          (pointerdown)="onFabPointerDown($event)"
+          (pointermove)="onFabPointerMove($event)"
+          (pointerup)="onFabPointerUp($event)"
+          (pointercancel)="onFabPointerUp($event)"
+          (click)="onFabClick($event)"
+          [matTooltip]="'ai-agent.open' | translate" matTooltipPosition="above">
+    <mat-icon>auto_awesome</mat-icon>
+  </button>
+}

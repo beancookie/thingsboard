@@ -110,19 +110,34 @@ class RepositoryIntegrationTest {
     }
 
     @Test
-    void allowsSameProductIdForDifferentTenants() throws Exception {
+    void rejectsSameProductIdForDifferentTenants() throws Exception {
         UUID tenantA = UUID.randomUUID();
         UUID tenantB = UUID.randomUUID();
         productRepository.saveDraft(
                 tenantA, "P1", "Alpha", "M1", "C1", null, "1.0", "sum-1", false, tsl("1.0"));
+
+        ApiException ex = assertThrows(ApiException.class, () -> productRepository.saveDraft(
+                tenantB, "P1", "Beta", "M2", "C2", null, "1.0", "sum-2", false, tsl("1.0")));
+
+        assertEquals(Constants.ErrorCode.PRODUCT_ID_CONFLICT, ex.getCode());
+        assertEquals("Alpha",
+                productRepository.findProduct(tenantA, "P1").orElseThrow().name());
+        assertTrue(productRepository.findProduct(tenantB, "P1").isEmpty());
+    }
+
+    @Test
+    void allowsReusingProductIdAfterDelete() throws Exception {
+        UUID tenantA = UUID.randomUUID();
+        UUID tenantB = UUID.randomUUID();
+        productRepository.saveDraft(
+                tenantA, "P1", "Alpha", "M1", "C1", null, "1.0", "sum-1", false, tsl("1.0"));
+        productRepository.deleteProduct(tenantA, "P1");
+
         productRepository.saveDraft(
                 tenantB, "P1", "Beta", "M2", "C2", null, "1.0", "sum-2", false, tsl("1.0"));
 
-        assertEquals("Alpha",
-                productRepository.findProduct(tenantA, "P1").orElseThrow().name());
         assertEquals("Beta",
                 productRepository.findProduct(tenantB, "P1").orElseThrow().name());
-        assertEquals(2, productRepository.listProducts(null, null).size());
     }
 
     @Test
@@ -194,7 +209,7 @@ class RepositoryIntegrationTest {
                 UUID.randomUUID(),
                 Constants.Product.SYNC_RESULT_OK);
         productRepository.saveDraft(
-                tenantB, "P1", "Beta", "M2", "C2", null, "1.0", "sum-2", false, tsl);
+                tenantB, "P2", "Beta", "M2", "C2", null, "1.0", "sum-2", false, tsl);
 
         assertEquals(1, productRepository.deleteProduct(tenantA, "P1"));
 
@@ -210,7 +225,7 @@ class RepositoryIntegrationTest {
         assertEquals(0, dsl.fetchCount(
                 PLAT_PROFILE_BINDING, PLAT_PROFILE_BINDING.TENANT_ID.eq(tenantA)));
 
-        assertTrue(productRepository.findProduct(tenantB, "P1").isPresent());
+        assertTrue(productRepository.findProduct(tenantB, "P2").isPresent());
     }
 
     @Test
