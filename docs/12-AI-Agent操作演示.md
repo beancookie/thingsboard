@@ -1,0 +1,391 @@
+# 12 AI Agent 操作演示
+
+> 中铁信科物联网平台文档集｜[总目录](../README.md)｜上一篇 [AI Agent 对话助手方案](11-AI-Agent对话助手方案.md)
+
+本文用于现场演示前端 AI 助手如何生成待确认动作、确认后执行 ThingsBoard 与 thing-model 操作。
+
+## 12.1 演示目标
+
+演示以下能力：
+
+- SYS_ADMIN 查询租户、创建租户、创建租户管理员。
+- TENANT_ADMIN 查询本租户产品/设备、创建产品、创建设备、创建用户。
+- 所有写操作先生成待确认动作，用户确认后才执行。
+- 产品创建后自动同步 ThingsBoard，不需要手动同步。
+- 权限、TSL、ProductId 重复等异常场景有明确结果。
+
+当前不支持通过 AI 删除、修改或批量操作数据。
+
+## 12.2 前置条件
+
+本地演示默认地址：
+
+| 服务 | 地址 |
+| --- | --- |
+| ThingsBoard | `http://localhost:18080` |
+| thing-model | `http://localhost:8090` |
+| ai-agent | `http://localhost:8000` |
+| 前端 | `http://localhost:4200` |
+
+本地默认账号：
+
+| 角色 | 账号 |
+| --- | --- |
+| SYS_ADMIN | `sysadmin@thingsboard.org` / `sysadmin` |
+| TENANT_ADMIN | `tenant@thingsboard.org` / `tenant` |
+
+检查服务：
+
+```bash
+curl http://localhost:8000/health
+curl http://localhost:8000/ready
+curl http://localhost:8090/actuator/health
+```
+
+检查配置：
+
+- `ai-agent/.env` 已配置有效的 `AI_AGENT_OPENAI_API_KEY`。
+- `AI_AGENT_ENABLED=true`。
+- `AI_AGENT_THING_MODEL_URL` 和 `AI_AGENT_THINGSBOARD_URL` 可访问。
+- 前端已代理 `/api/ai-agent/` 到 `http://localhost:8000`。
+
+演示物模型：
+
+```text
+thing-model/migrate/4DZDCQUA2D.json
+thing-model/migrate/4DZDCQUA2D.tsl.json
+```
+
+首次演示可直接使用 `4DZDCQUA2D`。重复演示时建议复制一份 TSL，并把 `profile.ProductId` 改成唯一值，例如 `DEMO2026110301`。
+
+## 12.3 权限与能力
+
+| 能力 | SYS_ADMIN | TENANT_ADMIN |
+| --- | --- | --- |
+| 查询租户 | 支持 | 不支持 |
+| 创建租户 | 支持 | 不支持 |
+| 创建租户管理员 | 支持 | 不支持 |
+| 查询本租户产品 | 不支持 | 支持 |
+| 查询本租户设备 | 不支持 | 支持 |
+| 创建产品 | 不支持 | 支持 |
+| 创建设备 | 不支持 | 支持 |
+| 创建 CUSTOMER_USER | 支持，需指定 tenantId | 支持，自动使用当前租户 |
+| 创建 TENANT_ADMIN | 支持 | 不支持 |
+
+AI 助手只对 `SYS_ADMIN` 和 `TENANT_ADMIN` 显示。
+
+## 12.4 演示流程总览
+
+```mermaid
+flowchart LR
+  A[SYS_ADMIN 登录] --> B[查询租户]
+  B --> C[创建租户]
+  C --> D[创建租户管理员]
+  D --> E[TENANT_ADMIN 登录]
+  E --> F[查询产品/设备]
+  F --> G[上传 TSL 创建产品]
+  G --> H[创建设备]
+  H --> I[创建用户]
+  G --> J[异常与边界演示]
+```
+
+## 12.5 场景 1：打开 AI 助手
+
+1. 使用 SYS_ADMIN 登录平台。
+2. 找到右下角 AI 悬浮按钮。
+3. 点击按钮打开 AI 助手。
+4. 拖动悬浮按钮，刷新页面后确认位置仍然保留。
+5. 展示欢迎语和输入框。
+
+预期结果：
+
+- AI 助手面板正常打开。
+- 页面切换后历史对话仍然保留。
+- 点击“清空对话”后消息和待确认动作被清除。
+- 点击“关闭”按钮后面板关闭，悬浮按钮仍可再次打开。
+
+## 12.6 场景 2：查询租户
+
+输入：
+
+```text
+查询当前平台租户列表
+```
+
+预期结果：
+
+- AI 直接调用只读工具查询租户。
+- 不生成待确认动作。
+- 回复中展示租户名称、租户 ID 等信息。
+
+说明：只读操作不会修改数据，不需要二次确认。
+
+## 12.7 场景 3：创建租户
+
+输入：
+
+```text
+创建一个租户，名称是演示厂商，说明是 AI 演示
+```
+
+预期结果：
+
+- AI 生成 `create_tenant` 待确认动作。
+- 待确认区域显示动作名称和参数。
+- 输入框被禁用，提示先确认或取消待确认操作。
+
+点击“取消”：
+
+- 不创建租户。
+- 待确认动作消失。
+
+再次输入并点击“确认执行”：
+
+- 创建租户成功。
+- 返回租户 ID。
+- 平台自动初始化厂商服务账号。
+- 如果服务账号初始化失败，返回 warning，但租户已经创建。
+
+记录返回的租户 ID，后续创建租户管理员时使用。
+
+## 12.8 场景 4：创建租户管理员
+
+使用上一步返回的租户 ID，输入：
+
+```text
+为租户 <tenantId> 创建管理员 demo-admin@example.com
+```
+
+预期结果：
+
+- AI 生成 `create_tenant_admin` 待确认动作。
+- 确认执行后创建 TENANT_ADMIN 用户。
+- 如果 SMTP 已配置，用户收到激活邮件。
+- 如果 SMTP 未配置，动作返回失败或邮件发送失败原因。
+
+演示提示：
+
+- 不要删除自动创建的 `thing-model-svc-*` 服务账号。
+- 如果收不到激活邮件，可通过 ThingsBoard 用户管理页完成激活或重置密码。
+
+## 12.9 场景 5：切换租户管理员查询数据
+
+1. 退出 SYS_ADMIN。
+2. 使用刚创建的租户管理员登录。
+3. 打开 AI 助手。
+
+输入：
+
+```text
+查询本租户产品
+```
+
+再输入：
+
+```text
+查询本租户设备
+```
+
+预期结果：
+
+- 只返回当前租户的数据。
+- 不产生待确认动作。
+- 新租户产品和设备为空时，返回空列表或提示暂无数据。
+
+## 12.10 场景 6：创建产品
+
+准备 TSL：
+
+- 点击 AI 面板中的附件按钮上传 `4DZDCQUA2D.json`。
+- 也可以点击 JSON 按钮粘贴 TSL。
+- 上传成功后输入框上方显示 TSL 文件名。
+
+输入：
+
+```text
+使用当前 TSL 创建产品，产品 ID 为 4DZDCQUA2D，名称是挖掘机物模型，型号 4DZDCQUA2D，分类 1
+```
+
+如果使用自定义 ProductId，先修改 TSL 中的 `profile.ProductId`，再输入对应的产品 ID。
+
+预期结果：
+
+- AI 生成 `create_product` 待确认动作。
+- 待确认参数包含产品 ID、名称、型号、分类和 TSL 相关信息。
+- 点击“确认执行”后创建产品。
+- 平台自动规范化腾讯 TSL 并同步 ThingsBoard。
+- 返回 Device Profile、产品 Asset 和规则链信息。
+
+验证：
+
+1. 打开“产品”页面。
+2. 确认产品出现在列表中。
+3. 打开产品详情。
+4. 确认 Device Profile、产品 Asset、规则链已生成。
+5. 确认不需要手动点击同步按钮。
+
+注意事项：
+
+- ProductId 全系统唯一，不同租户也不能重复。
+- TSL 中的 `profile.ProductId` 必须与请求中的 ProductId 一致。
+- 产品创建动作必须附带 TSL，否则会提示缺少物模型。
+- 重复演示前需要更换 ProductId，或先清理旧产品。
+
+## 12.11 场景 7：创建设备
+
+继续使用 TENANT_ADMIN，确保产品已创建并同步成功。
+
+输入：
+
+```text
+为产品 4DZDCQUA2D 创建设备 demo_device_01，名称是演示设备，工点编码 DEMO
+```
+
+预期结果：
+
+- AI 生成 `create_device` 待确认动作。
+- 确认执行后创建 ThingsBoard 设备。
+- 设备自动绑定产品对应的 Device Profile。
+- 设备 `SERVER_SCOPE` 属性写入 `product_id`、`tsl_version` 和 `site_code`。
+
+验证：
+
+1. 打开 ThingsBoard 设备列表。
+2. 找到 `demo_device_01`。
+3. 确认设备配置为产品对应的 Device Profile。
+4. 查看服务端属性，确认产品 ID、TSL 版本和工点编码正确。
+
+设备名称限制：
+
+- 只能包含英文、数字和下划线。
+- 最长 48 个字符。
+- 不返回设备 Access Token。
+
+## 12.12 场景 8：创建用户
+
+输入：
+
+```text
+创建用户 demo-user@example.com，角色 CUSTOMER_USER
+```
+
+预期结果：
+
+- AI 生成 `create_user` 待确认动作。
+- 确认执行后创建用户。
+- 如果 SMTP 已配置，用户收到激活邮件。
+- CUSTOMER_USER 只能访问被授权的内容。
+
+如果使用 SYS_ADMIN 创建用户，必须提供租户 ID：
+
+```text
+为租户 <tenantId> 创建用户 demo-user@example.com，角色 CUSTOMER_USER
+```
+
+说明：
+
+- TENANT_ADMIN 可以创建 CUSTOMER_USER。
+- TENANT_ADMIN 不能创建 TENANT_ADMIN。
+- SYS_ADMIN 可以创建 TENANT_ADMIN 或 CUSTOMER_USER，但必须指定租户。
+
+## 12.13 场景 9：异常与边界
+
+### 12.13.1 取消待确认动作
+
+生成动作后点击“取消”。
+
+预期结果：
+
+- 不调用 ThingsBoard 或 thing-model。
+- 不产生任何数据。
+- 可以继续输入新的需求。
+
+### 12.13.2 越权操作
+
+使用 TENANT_ADMIN 输入：
+
+```text
+查询所有平台租户
+```
+
+预期结果：
+
+- 返回权限不足。
+- 不返回其他租户数据。
+
+### 12.13.3 缺少 TSL 创建产品
+
+不附加 TSL，直接输入：
+
+```text
+创建产品，产品 ID 为 DEMO0001，名称是演示产品
+```
+
+预期结果：
+
+- AI 提示需要先上传或粘贴 TSL。
+- 不生成可执行的产品创建动作。
+
+### 12.13.4 ProductId 重复
+
+使用已经存在的 ProductId 创建产品。
+
+预期结果：
+
+- 返回 ProductId 冲突。
+- 提示 ProductId 必须全系统唯一。
+- 不创建重复产品。
+
+### 12.13.5 消息和动作超限
+
+连续发送超过 20 条消息，或生成超过 10 个动作。
+
+预期结果：
+
+- 不显示超限错误。
+- 后端只保留最近 20 条消息和最近 10 个动作。
+- 最早的消息和动作被静默丢弃。
+
+### 12.13.6 AI 服务不可用
+
+停止 ai-agent 或填写错误的 OpenAI Key。
+
+预期结果：
+
+- 前端显示操作失败。
+- 不执行任何写操作。
+- 待确认动作不会被创建。
+
+## 12.14 演示检查清单
+
+| 检查项 | 期望 |
+| --- | --- |
+| 查询租户 | 直接返回结果，无待确认动作 |
+| 创建租户 | 确认后创建成功，服务账号自动初始化 |
+| 创建租户管理员 | 确认后创建用户，触发激活邮件 |
+| 查询产品/设备 | 只返回当前租户数据 |
+| 创建产品 | TSL 校验通过，自动同步 ThingsBoard |
+| 创建设备 | 绑定正确 Device Profile 和产品属性 |
+| 创建用户 | 角色正确，触发激活邮件 |
+| 取消动作 | 不产生数据 |
+| 越权操作 | 返回权限错误 |
+| ProductId 重复 | 返回全系统唯一冲突 |
+| 消息/动作超限 | 静默丢弃最早内容，不报错 |
+| AI 服务不可用 | 返回失败提示，不执行动作 |
+
+## 12.15 清理与重置
+
+AI 助手当前不提供删除操作。演示结束后按以下方式清理：
+
+1. 在产品页面删除演示产品。
+2. 在 ThingsBoard 设备页面删除演示设备。
+3. 在 ThingsBoard 用户页面删除演示用户。
+4. 在 ThingsBoard 租户页面删除演示租户。
+5. 点击 AI 助手“清空对话”清除本地聊天记录。
+
+注意事项：
+
+- 删除产品前先删除该产品下的设备。
+- 删除租户前先确认租户下没有保留的数据。
+- 每次演示建议使用唯一 ProductId，避免全系统唯一约束冲突。
+- 演示前不要提交真实 API Key、JWT、密码或数据库密钥。
