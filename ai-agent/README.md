@@ -63,6 +63,19 @@ AI_AGENT_THINGSBOARD_URL=http://localhost:18080
 
 完整配置见 `.env.example`。
 
+## Kubernetes
+
+参考配置见 `deploy/k8s/ai-agent.yaml`，包含 Secret、ConfigMap、Deployment 和 Service。
+
+```bash
+kubectl -n <namespace> apply -f ai-agent/deploy/k8s/ai-agent.yaml
+kubectl -n <namespace> rollout status deployment/ai-agent
+```
+
+部署前替换 `<namespace>`、`<registry>`、`<tag>`、`<openai-api-key>`，并按集群实际服务名调整 `AI_AGENT_THING_MODEL_URL` 和 `AI_AGENT_THINGSBOARD_URL`。
+
+AI Agent 监听 `8000`，健康检查为 `/health` 和 `/ready`。前端网关需要把 `/api/ai-agent/` 转发到 `http://ai-agent:8000/`。
+
 ## 上下文队列
 
 服务按队列保留最近内容，不会因为超出上限返回错误：

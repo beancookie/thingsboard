@@ -100,6 +100,9 @@ ai-agent/
 │   └── integration/
 │       ├── conftest.py
 │       └── test_thingsboard_integration.py
+├── deploy/
+│   └── k8s/
+│       └── ai-agent.yaml        Secret、ConfigMap、Deployment、Service
 ├── pyproject.toml
 ├── uv.lock
 ├── .python-version

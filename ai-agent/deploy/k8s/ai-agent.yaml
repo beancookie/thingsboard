@@ -1,0 +1,85 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ai-agent-secret
+  namespace: <namespace>
+type: Opaque
+stringData:
+  AI_AGENT_OPENAI_API_KEY: "<openai-api-key>"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ai-agent-config
+  namespace: <namespace>
+data:
+  AI_AGENT_ENABLED: "true"
+  AI_AGENT_OPENAI_BASE_URL: "https://api.deepseek.com/v1"
+  AI_AGENT_OPENAI_MODEL: "deepseek-chat"
+  AI_AGENT_TIMEOUT_SECONDS: "60"
+  AI_AGENT_MAX_TOKENS: "2048"
+  AI_AGENT_THING_MODEL_URL: "http://thing-model:8090"
+  AI_AGENT_THINGSBOARD_URL: "http://thingsboard:8080"
+  AI_AGENT_AUTH_CACHE_SECONDS: "60"
+  AI_AGENT_MAX_MESSAGES: "20"
+  AI_AGENT_MAX_TSL_BYTES: "2000000"
+  AI_AGENT_MAX_ACTIONS: "10"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ai-agent
+  namespace: <namespace>
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ai-agent
+  template:
+    metadata:
+      labels:
+        app: ai-agent
+    spec:
+      containers:
+        - name: ai-agent
+          image: <registry>/ai-agent:<tag>
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: ai-agent-config
+            - secretRef:
+                name: ai-agent-secret
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ai-agent
+  namespace: <namespace>
+spec:
+  selector:
+    app: ai-agent
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
