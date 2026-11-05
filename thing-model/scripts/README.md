@@ -88,7 +88,8 @@ CSV 列：
 
 ```text
 product_id, device_name, device_id, access_token, tsl_version,
-profile_id, site_code, status, error, created_at
+profile_id, profile_name, site_code, relation_type, relation_status,
+status, error, created_at
 ```
 
 > CSV 包含完整 Access Token，请妥善保管，不要提交到代码仓库。
@@ -214,6 +215,84 @@ python thing-model/scripts/simulate_gateway_all.py `
 - `--no-gateway-mock` 可关闭网关自身 mock。
 - `--gateway-version`、`--gateway-type`、`--connectors` 可自定义网关属性。
 - 先用 `--dry-run --count 1` 检查报文。
+
+## Windows 协议连接器模拟
+
+Windows 主机运行协议模拟器，Docker Desktop 运行 `tb-gateway`。每次启动只使用
+`--protocol` 指定的一个协议，不混用、不自动切换。
+
+支持：
+
+| 协议 | Windows 模拟器 | 网关侧访问地址 |
+| --- | --- | --- |
+| `modbus` | Modbus TCP Slave，端口 5021 | `host.docker.internal:5021` |
+| `opcua` | OPC-UA Server，端口 4840 | `opc.tcp://host.docker.internal:4840` |
+| `s7` | Snap7 S7 Server，端口 1102 | `host.docker.internal:1102` |
+| `can` | `python-can` `udp_multicast` | 组播 `239.255.0.1:15000` |
+| `odbc` | PostgreSQL 数据表，端口 5433 | `odbc-db:5432` |
+
+安装依赖：
+
+```powershell
+python -m pip install -r thing-model/scripts/requirements.txt
+```
+
+准备网关与子设备 CSV：
+
+```powershell
+python thing-model/scripts/setup_gateway.py `
+  --gateway-name gateway-01 `
+  --products-dir thing-model/migrate/integrated `
+  --count 1 `
+  --output-dir .
+```
+
+生成单协议映射和网关配置：
+
+```powershell
+python thing-model/scripts/generate_gateway_config.py `
+  --protocol modbus `
+  --sub-devices-csv sub-devices.csv `
+  --output-dir thing-model/docker/gateway-sim/config
+```
+
+启动 Windows 模拟器：
+
+```powershell
+python thing-model/scripts/run_protocol_sim.py `
+  --protocol modbus `
+  --mapping thing-model/docker/gateway-sim/config/connector-mapping-modbus.json
+```
+
+启动网关：
+
+```powershell
+Copy-Item thing-model/docker/gateway-sim/.env.example thing-model/docker/gateway-sim/.env
+# 编辑 .env，填入网关 Access Token
+docker compose -f thing-model/docker/gateway-sim/docker-compose.yml up -d --build
+```
+
+发送数据：
+
+```powershell
+python thing-model/scripts/simulate_gateway_all.py `
+  --protocol modbus `
+  --mapping thing-model/docker/gateway-sim/config/connector-mapping-modbus.json `
+  --sub-devices-csv sub-devices.csv `
+  --tsl-dir thing-model/migrate/integrated `
+  --count 0 --interval 1 --quiet
+```
+
+说明：
+
+- 切换协议时，重新执行 `generate_gateway_config.py --protocol <协议>`，重启
+  `tb-gateway`，再用相同 `--protocol` 启动模拟器和数据脚本。
+- `--protocol mqtt` 仍保持原有 `v1/gateway/*` MQTT 模拟方式。
+- 协议模式只发送属性遥测；TSL 事件暂不通过协议连接器发送。
+- Windows 不支持 SocketCAN，CAN 使用 `udp_multicast`；需在防火墙放行对应 UDP 端口。
+- ODBC 使用 `thing-model/docker/gateway-sim/docker-compose.yml` 中的 PostgreSQL，
+  Windows 侧写入 `127.0.0.1:5433`，网关侧访问 `odbc-db:5432`。
+- 不要提交 `.env`、`gateway-credentials.csv`、`sub-devices.csv` 或 Access Token。
 
 
 ## 密码

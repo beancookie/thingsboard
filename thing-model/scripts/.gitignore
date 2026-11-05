@@ -1,3 +1,10 @@
 __pycache__/
 *.pyc
 device-credentials-*.csv
+connector-mapping-*.json
+tb_gateway.json
+modbus.json
+opcua.json
+s7.json
+can.json
+odbc.json

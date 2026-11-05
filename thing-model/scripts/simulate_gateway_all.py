@@ -24,6 +24,8 @@ from simulate_gateway import (
     resolve_tsl,
     wait_connected,
 )
+from protocol_mapping import PROTOCOLS
+from protocol_writers import create_writer, load_mapping
 from simulate_telemetry import ApiError, TelemetryGenerator, ThingsBoardClient
 
 DEFAULT_TSL_DIR = Path(__file__).resolve().parent.parent / "migrate" / "integrated"
@@ -89,9 +91,20 @@ def parse_args() -> argparse.Namespace:
         help="mock gateway type attribute",
     )
     parser.add_argument(
+        "--protocol",
+        choices=["mqtt", *PROTOCOLS],
+        default="mqtt",
+        help="single data protocol for this run; defaults to gateway MQTT",
+    )
+    parser.add_argument(
+        "--mapping",
+        default=None,
+        help="connector-mapping-<protocol>.json; defaults to the current directory",
+    )
+    parser.add_argument(
         "--connectors",
         default="modbus,mqtt,socket,rest",
-        help="comma-separated active connector names",
+        help="comma-separated active connector names used by gateway mock only",
     )
     parser.add_argument(
         "--mqtt-host",
@@ -350,6 +363,65 @@ def build_gateway_telemetry(
     }
 
 
+def run_protocol_mode(
+        args: argparse.Namespace,
+        contexts: List[Dict[str, Any]]) -> int:
+    mapping_path = args.mapping or f"connector-mapping-{args.protocol}.json"
+    mapping = load_mapping(mapping_path, args.protocol)
+    mapping_devices = mapping.get("devices") or {}
+    missing = [
+        device_name
+        for context in contexts
+        for device_name in context["devices"]
+        if device_name not in mapping_devices
+    ]
+    if missing:
+        raise ApiError(
+            f"devices missing from {mapping_path}: {', '.join(missing)}")
+
+    print(
+        f"protocol={args.protocol} mapping={mapping_path} "
+        f"products={len(contexts)} count={args.count}")
+    writer = None
+    errors = 0
+    index = 0
+    try:
+        if not args.dry_run:
+            writer = create_writer(args.protocol, mapping)
+        while args.count <= 0 or index < args.count:
+            for context in contexts:
+                for device_name, generator in zip(
+                        context["devices"], context["generators"]):
+                    values = generator.telemetry()
+                    if args.dry_run:
+                        print(
+                            f"[dry-run] {args.protocol} device={device_name} "
+                            f"{json.dumps(values, ensure_ascii=False)}")
+                    else:
+                        assert writer is not None
+                        writer.write(mapping_devices[device_name], values)
+                        if args.quiet:
+                            print(
+                                f"[{args.protocol}] device={device_name} "
+                                f"keys={len(values)}")
+                        else:
+                            print(
+                                f"[{args.protocol}] device={device_name} "
+                                f"{json.dumps(values, ensure_ascii=False)}")
+            index += 1
+            if args.count <= 0 or index < args.count:
+                time.sleep(args.interval)
+    except KeyboardInterrupt:
+        print("\ninterrupted", file=sys.stderr)
+    except Exception as exc:
+        errors += 1
+        print(f"error: {exc}", file=sys.stderr)
+    finally:
+        if writer is not None:
+            writer.close()
+    return 0 if errors == 0 else 1
+
+
 def main() -> int:
     args = parse_args()
     args.tsl = None
@@ -360,10 +432,12 @@ def main() -> int:
     admin_token: Optional[str] = None
     gateway_id: Optional[str] = None
     try:
-        gateways = load_gateways(args.gateway_csv, gateway_names)
-        gateway_name, gateway_token = gateways[0]
         groups = load_sub_devices_by_product(args.sub_devices_csv)
         contexts = build_contexts(groups, args)
+        if args.protocol != "mqtt":
+            return run_protocol_mode(args, contexts)
+        gateways = load_gateways(args.gateway_csv, gateway_names)
+        gateway_name, gateway_token = gateways[0]
         if args.gateway_mock:
             if args.password is None:
                 args.password = getpass.getpass(

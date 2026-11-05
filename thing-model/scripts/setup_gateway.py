@@ -20,6 +20,7 @@ CSV_FIELDS = [
     "access_token",
     "tsl_version",
     "profile_id",
+    "profile_name",
     "site_code",
     "relation_type",
     "relation_status",
@@ -143,9 +144,21 @@ def load_product_context(
             "run product sync first")
     tsl_version = info.get("tslVersion") or "1.0"
     tsl_schema = find_tsl_schema(client.get_asset_attributes(token, asset_id))
+    profile_name = ""
+    try:
+        response = client.session.get(
+            f"{client.tb_url}/api/deviceProfile/{profile_id}",
+            headers=client._auth_headers(token),
+            timeout=client.timeout,
+        )
+        if response.ok:
+            profile_name = response.json().get("name") or ""
+    except Exception:
+        profile_name = ""
     return {
         "product_id": product_id,
         "profile_id": profile_id,
+        "profile_name": profile_name,
         "tenant_id": tenant_id,
         "tsl_version": tsl_version,
         "tsl_schema": tsl_schema,
@@ -349,6 +362,7 @@ def main() -> int:
             "access_token": gateway_token,
             "tsl_version": "",
             "profile_id": gateway_profile_id,
+            "profile_name": "",
             "site_code": args.site_code,
             "relation_type": args.relation_type,
             "relation_status": "",
@@ -405,6 +419,7 @@ def main() -> int:
                     "access_token": access_token,
                     "tsl_version": context["tsl_version"],
                     "profile_id": context["profile_id"],
+                    "profile_name": context["profile_name"],
                     "site_code": args.site_code,
                     "relation_type": args.relation_type,
                     "relation_status": relation_status,
