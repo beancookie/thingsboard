@@ -317,6 +317,7 @@
                        [style.min-width]="(cellActionDescriptors.length * 48) + 'px'">
                     @for (actionDescriptor of cellActionDescriptors; track actionDescriptor) {
                       <button mat-icon-button [disabled]="(isLoading$ | async) || !actionDescriptor.isEnabled(entity)"
+                              [class.!hidden]="actionDescriptor.isHidden && actionDescriptor.isHidden(entity)"
                               matTooltip="{{ actionDescriptor.nameFunction ? actionDescriptor.nameFunction(entity) : actionDescriptor.name }}"
                               matTooltipPosition="above"
                               (click)="actionDescriptor.onAction($event, entity)">
@@ -336,7 +337,7 @@
                       @for (actionDescriptor of cellActionDescriptors; track actionDescriptor) {
                         <button mat-menu-item
                                 [disabled]="isLoading$ | async"
-                                [class.!hidden]="!actionDescriptor.isEnabled(entity)"
+                                [class.!hidden]="!actionDescriptor.isEnabled(entity) || (actionDescriptor.isHidden && actionDescriptor.isHidden(entity))"
                                 (click)="actionDescriptor.onAction($event, entity)">
                           <tb-icon matMenuItemIcon [style]="actionDescriptor.style">
                             {{actionDescriptor.iconFunction ?  actionDescriptor.iconFunction(entity) : actionDescriptor.icon}}

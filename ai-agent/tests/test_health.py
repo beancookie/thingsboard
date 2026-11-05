@@ -17,3 +17,11 @@ def test_ready() -> None:
 
     assert response.status_code == 200
     assert response.json() == {"status": "ready"}
+
+
+def test_swagger_ui() -> None:
+    with TestClient(app) as client:
+        response = client.get("/swagger-ui.html")
+
+    assert response.status_code == 200
+    assert "text/html" in response.headers["content-type"]

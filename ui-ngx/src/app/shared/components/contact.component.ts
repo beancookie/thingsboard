@@ -15,13 +15,13 @@ export class ContactComponent {
 
   @Input() isEdit: boolean;
 
-  phoneInputDefaultCountry = 'US';
+  phoneInputDefaultCountry = 'CN';
 
   constructor() {
   }
 
   changeCountry(countryCode: string) {
-    this.phoneInputDefaultCountry = countryCode ?? 'US';
+    this.phoneInputDefaultCountry = countryCode ?? 'CN';
     setTimeout(() => {
       this.parentForm.get('phone').setValue(this.parentForm.get('phone').value);
     });

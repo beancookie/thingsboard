@@ -49,6 +49,7 @@ export interface CellActionDescriptor<T extends BaseData<HasId>> {
   iconFunction?: (entity: T) => string;
   style?: any;
   isEnabled: (entity: T) => boolean;
+  isHidden?: (entity: T) => boolean;
   onAction: ($event: MouseEvent, entity: T) => any;
   type?: CellActionDescriptorType;
 }
@@ -192,6 +193,7 @@ export class EntityTableConfig<T extends BaseData<HasId>, P extends PageLink = P
   detailsReadonly: EntityBooleanFunction<T> = () => false;
   entitySelectionEnabled: EntityBooleanFunction<L> = () => true;
   deleteEnabled: EntityBooleanFunction<T | L> = () => true;
+  deleteHidden: EntityBooleanFunction<T | L> = () => false;
   deleteEntityTitle: EntityStringFunction<L> = () => '';
   deleteEntityContent: EntityStringFunction<L> = () => '';
   deleteEntitiesTitle: EntityCountStringFunction = () => '';

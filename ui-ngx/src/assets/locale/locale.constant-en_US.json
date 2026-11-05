@@ -3696,6 +3696,19 @@
         "goto-help-page": "Go to help page",
         "show-help": "Show help"
     },
+    "manual": {
+        "manuals": "User manuals",
+        "total": "{{count}} manuals",
+        "search": "Search manuals",
+        "no-manuals": "No user manuals",
+        "no-results": "No matching manuals",
+        "not-found": "Manual not found",
+        "load-failed": "Failed to load manual",
+        "retry": "Retry",
+        "open-list": "Open manual list",
+        "close-list": "Close manual list",
+        "select-manual": "Select a manual from the list"
+    },
     "home": {
         "home": "Home",
         "profile": "Profile",

@@ -1,0 +1,124 @@
+<!--
+
+    SPDX-FileCopyrightText: Copyright The Thingsboard Authors
+    SPDX-License-Identifier: Apache-2.0
+
+-->
+<mat-drawer-container class="tb-manuals-container" [hasBackdrop]="drawerMode === 'over'" autosize>
+  <mat-drawer #drawer
+              class="tb-manuals-drawer"
+              [mode]="drawerMode"
+              [opened]="drawerOpen"
+              (openedChange)="drawerOpen = $event">
+    <div class="tb-manuals-drawer-header">
+      <div class="tb-manuals-brand-icon">
+        <mat-icon>menu_book</mat-icon>
+      </div>
+      <div class="tb-manuals-brand-text">
+        <div class="tb-manuals-title">{{ 'manual.manuals' | translate }}</div>
+        <div class="tb-manuals-subtitle">{{ 'manual.total' | translate:{count: manuals.length} }}</div>
+      </div>
+      <span class="flex-1"></span>
+      <button mat-icon-button
+              type="button"
+              class="tb-manuals-menu-button"
+              (click)="toggleDrawer()"
+              [matTooltip]="'manual.close-list' | translate"
+              matTooltipPosition="above">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    <div class="tb-manuals-search">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="mat-block">
+        <mat-icon matPrefix>search</mat-icon>
+        <input matInput
+               [ngModel]="searchText"
+               (ngModelChange)="onSearch($event)"
+               [placeholder]="'manual.search' | translate">
+        @if (searchText) {
+          <button mat-icon-button
+                  matSuffix
+                  type="button"
+                  (click)="onSearch('')"
+                  [matTooltip]="'action.clear-search' | translate"
+                  matTooltipPosition="above">
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+      </mat-form-field>
+    </div>
+    @if (indexLoading) {
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    }
+    <mat-nav-list class="tb-manuals-list">
+      @for (manual of filteredManuals; track manual.path) {
+        <button mat-list-item
+                type="button"
+                class="tb-manual-list-item"
+                [class.tb-manual-list-item-active]="manual.path === selectedPath"
+                (click)="selectManual(manual)">
+          <span matListItemTitle>{{ manual.title }}</span>
+        </button>
+      }
+      @if (!indexLoading && !filteredManuals.length) {
+        <div class="tb-manuals-empty-list">
+          <mat-icon>search_off</mat-icon>
+          <span>{{ (searchText ? 'manual.no-results' : 'manual.no-manuals') | translate }}</span>
+        </div>
+      }
+    </mat-nav-list>
+  </mat-drawer>
+  <mat-drawer-content class="tb-manuals-content">
+    <div class="tb-manuals-toolbar">
+      <button mat-icon-button
+              type="button"
+              class="tb-manuals-menu-button"
+              (click)="toggleDrawer()"
+              [matTooltip]="'manual.open-list' | translate"
+              matTooltipPosition="above">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <div class="tb-manuals-toolbar-heading">
+        <div class="tb-manuals-breadcrumb">{{ 'manual.manuals' | translate }}</div>
+        <div class="tb-manuals-selected-title">{{ selectedTitle }}</div>
+      </div>
+      <span class="flex-1"></span>
+      @if (markdown) {
+        <button mat-stroked-button
+                type="button"
+                class="tb-manuals-print-button"
+                (click)="printManual()">
+          <mat-icon>print</mat-icon>
+          <span>{{ 'action.print' | translate }}</span>
+        </button>
+      }
+    </div>
+    @if (contentLoading) {
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    }
+    <div #contentScroller class="tb-manuals-content-scroll">
+      <div class="tb-manuals-document">
+        @if (error) {
+          <div class="tb-manuals-message">
+            <mat-icon class="tb-manuals-message-icon">error_outline</mat-icon>
+            <div class="tb-manuals-message-text">{{ error | translate }}</div>
+            <button mat-stroked-button color="primary" type="button" (click)="retry()">
+              {{ 'manual.retry' | translate }}
+            </button>
+          </div>
+        } @else if (markdown) {
+          <div class="tb-manuals-markdown" (click)="onMarkdownClick($event)">
+            <tb-markdown [data]="markdown"
+                         [usePlainMarkdown]="true"
+                         markdownClass="tb-manual-markdown"></tb-markdown>
+          </div>
+        } @else if (!contentLoading) {
+          <div class="tb-manuals-message">
+            <mat-icon class="tb-manuals-message-icon">menu_book</mat-icon>
+            <div class="tb-manuals-message-text">{{ 'manual.select-manual' | translate }}</div>
+          </div>
+        }
+      </div>
+    </div>
+  </mat-drawer-content>
+</mat-drawer-container>

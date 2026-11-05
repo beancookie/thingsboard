@@ -15,6 +15,7 @@ import { ActionNotificationShow } from '@app/core/notification/notification.acti
 import { TranslateService } from '@ngx-translate/core';
 import { environment as env } from '@env/environment';
 import { UnitSystems } from '@shared/models/unit.models';
+import { isVendorServiceAccountEmail } from '@shared/models/vendor-account.models';
 
 @Component({
     selector: 'tb-user',
@@ -48,6 +49,10 @@ export class UserComponent extends EntityComponent<User>{
     } else {
       return false;
     }
+  }
+
+  isVendorServiceAccount(): boolean {
+    return isVendorServiceAccountEmail(this.entity?.email, this.entity?.tenantId?.id);
   }
 
   isUserCredentialsEnabled(): boolean {

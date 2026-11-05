@@ -1,0 +1,473 @@
+{
+  "version": "1.0",
+  "properties": [
+    {
+      "id": "accX",
+      "name": "X轴加速度",
+      "desc": "",
+      "mode": "r",
+      "define": {
+        "type": "float",
+        "min": "-4",
+        "max": "4",
+        "start": "0",
+        "step": "0.001",
+        "unit": "g"
+      },
+      "required": false
+    },
+    {
+      "id": "accY",
+      "name": "Y轴加速度",
+      "desc": "",
+      "mode": "r",
+      "define": {
+        "type": "float",
+        "min": "-4",
+        "max": "4",
+        "start": "0",
+        "step": "0.001",
+        "unit": "g"
+      },
+      "required": false
+    },
+    {
+      "id": "accZ",
+      "name": "Z轴加速度",
+      "desc": "",
+      "mode": "r",
+      "define": {
+        "type": "float",
+        "min": "-4",
+        "max": "4",
+        "start": "1",
+        "step": "0.001",
+        "unit": "g"
+      },
+      "required": false
+    },
+    {
+      "id": "gyroX",
+      "name": "X轴角速度",
+      "desc": "",
+      "mode": "r",
+      "define": {
+        "type": "float",
+        "min": "-2000",
+        "max": "2000",
+        "start": "0",
+        "step": "0.001",
+        "unit": "°/s"
+      },
+      "required": false
+    },
+    {
+      "id": "gyroY",
+      "name": "Y轴角速度",
+      "desc": "",
+      "mode": "r",
+      "define": {
+        "type": "float",
+        "min": "-2000",
+        "max": "2000",
+        "start": "0",
+        "step": "0.001",
+        "unit": "°/s"
+      },
+      "required": false
+    },
+    {
+      "id": "gyroZ",
+      "name": "Z轴角速度",
+      "desc": "",
+      "mode": "r",
+      "define": {
+        "type": "float",
+        "min": "-2000",
+        "max": "2000",
+        "start": "0",
+        "step": "0.001",
+        "unit": "°/s"
+      },
+      "required": false
+    },
+    {
+      "id": "rssi",
+      "name": "WiFi信号强度",
+      "desc": "",
+      "mode": "r",
+      "define": {
+        "type": "int",
+        "min": "-100",
+        "max": "0",
+        "start": "-50",
+        "step": "1",
+        "unit": "dBm"
+      },
+      "required": false
+    },
+    {
+      "id": "channel",
+      "name": "WiFi信道",
+      "desc": "",
+      "mode": "r",
+      "define": {
+        "type": "int",
+        "min": "1",
+        "max": "14",
+        "start": "1",
+        "step": "1",
+        "unit": ""
+      },
+      "required": false
+    },
+    {
+      "id": "bssid",
+      "name": "AP_MAC",
+      "desc": "",
+      "mode": "r",
+      "define": {
+        "type": "string",
+        "min": "0",
+        "max": "17"
+      },
+      "required": false
+    },
+    {
+      "id": "ip",
+      "name": "本机IP",
+      "desc": "",
+      "mode": "r",
+      "define": {
+        "type": "string",
+        "min": "0",
+        "max": "16"
+      },
+      "required": false
+    },
+    {
+      "id": "uptime",
+      "name": "运行时长",
+      "desc": "",
+      "mode": "r",
+      "define": {
+        "type": "int",
+        "min": "0",
+        "max": "2147483647",
+        "start": "0",
+        "step": "1",
+        "unit": "s"
+      },
+      "required": false
+    },
+    {
+      "id": "heap",
+      "name": "可用堆",
+      "desc": "",
+      "mode": "r",
+      "define": {
+        "type": "int",
+        "min": "0",
+        "max": "2147483647",
+        "start": "0",
+        "step": "1",
+        "unit": "B"
+      },
+      "required": false
+    },
+    {
+      "id": "reset",
+      "name": "复位原因",
+      "desc": "",
+      "mode": "r",
+      "define": {
+        "type": "string",
+        "min": "0",
+        "max": "16"
+      },
+      "required": false
+    },
+    {
+      "id": "mac",
+      "name": "设备MAC",
+      "desc": "",
+      "mode": "r",
+      "define": {
+        "type": "string",
+        "min": "0",
+        "max": "17"
+      },
+      "required": false
+    },
+    {
+      "id": "temp",
+      "name": "芯片温度",
+      "desc": "",
+      "mode": "r",
+      "define": {
+        "type": "float",
+        "min": "-40",
+        "max": "125",
+        "start": "0",
+        "step": "0.01",
+        "unit": "℃"
+      },
+      "required": false
+    },
+    {
+      "id": "ssid",
+      "name": "WiFi名称",
+      "desc": "",
+      "mode": "r",
+      "define": {
+        "type": "string",
+        "min": "0",
+        "max": "32"
+      },
+      "required": false
+    },
+    {
+      "id": "gw",
+      "name": "网关",
+      "desc": "",
+      "mode": "r",
+      "define": {
+        "type": "string",
+        "min": "0",
+        "max": "16"
+      },
+      "required": false
+    },
+    {
+      "id": "mask",
+      "name": "子网掩码",
+      "desc": "",
+      "mode": "r",
+      "define": {
+        "type": "string",
+        "min": "0",
+        "max": "16"
+      },
+      "required": false
+    },
+    {
+      "id": "dns",
+      "name": "DNS",
+      "desc": "",
+      "mode": "r",
+      "define": {
+        "type": "string",
+        "min": "0",
+        "max": "16"
+      },
+      "required": false
+    },
+    {
+      "id": "hostname",
+      "name": "主机名",
+      "desc": "",
+      "mode": "r",
+      "define": {
+        "type": "string",
+        "min": "0",
+        "max": "32"
+      },
+      "required": false
+    },
+    {
+      "id": "txpower",
+      "name": "发射功率",
+      "desc": "",
+      "mode": "r",
+      "define": {
+        "type": "int",
+        "min": "0",
+        "max": "84",
+        "start": "0",
+        "step": "1",
+        "unit": ""
+      },
+      "required": false
+    },
+    {
+      "id": "heapMin",
+      "name": "历史最小堆",
+      "desc": "",
+      "mode": "r",
+      "define": {
+        "type": "int",
+        "min": "0",
+        "max": "2147483647",
+        "start": "0",
+        "step": "1",
+        "unit": "B"
+      },
+      "required": false
+    },
+    {
+      "id": "freeSketch",
+      "name": "可用程序空间",
+      "desc": "",
+      "mode": "r",
+      "define": {
+        "type": "int",
+        "min": "0",
+        "max": "2147483647",
+        "start": "0",
+        "step": "1",
+        "unit": "B"
+      },
+      "required": false
+    },
+    {
+      "id": "chip",
+      "name": "芯片型号",
+      "desc": "",
+      "mode": "r",
+      "define": {
+        "type": "string",
+        "min": "0",
+        "max": "16"
+      },
+      "required": false
+    },
+    {
+      "id": "cores",
+      "name": "核心数",
+      "desc": "",
+      "mode": "r",
+      "define": {
+        "type": "int",
+        "min": "1",
+        "max": "4",
+        "start": "1",
+        "step": "1",
+        "unit": ""
+      },
+      "required": false
+    },
+    {
+      "id": "freq",
+      "name": "主频",
+      "desc": "",
+      "mode": "r",
+      "define": {
+        "type": "int",
+        "min": "1",
+        "max": "400",
+        "start": "240",
+        "step": "1",
+        "unit": "MHz"
+      },
+      "required": false
+    },
+    {
+      "id": "flash",
+      "name": "Flash容量",
+      "desc": "",
+      "mode": "r",
+      "define": {
+        "type": "int",
+        "min": "0",
+        "max": "2147483647",
+        "start": "0",
+        "step": "1",
+        "unit": "B"
+      },
+      "required": false
+    },
+    {
+      "id": "sdk",
+      "name": "SDK版本",
+      "desc": "",
+      "mode": "r",
+      "define": {
+        "type": "string",
+        "min": "0",
+        "max": "32"
+      },
+      "required": false
+    },
+    {
+      "id": "bootCount",
+      "name": "启动次数",
+      "desc": "",
+      "mode": "r",
+      "define": {
+        "type": "int",
+        "min": "0",
+        "max": "2147483647",
+        "start": "0",
+        "step": "1",
+        "unit": ""
+      },
+      "required": false
+    },
+    {
+      "id": "lastPushMs",
+      "name": "上次上报耗时",
+      "desc": "",
+      "mode": "r",
+      "define": {
+        "type": "int",
+        "min": "0",
+        "max": "60000",
+        "start": "0",
+        "step": "1",
+        "unit": "ms"
+      },
+      "required": false
+    },
+    {
+      "id": "loopMs",
+      "name": "循环周期",
+      "desc": "",
+      "mode": "r",
+      "define": {
+        "type": "int",
+        "min": "0",
+        "max": "60000",
+        "start": "0",
+        "step": "1",
+        "unit": "ms"
+      },
+      "required": false
+    },
+    {
+      "id": "failCount",
+      "name": "上报失败次数",
+      "desc": "",
+      "mode": "r",
+      "define": {
+        "type": "int",
+        "min": "0",
+        "max": "2147483647",
+        "start": "0",
+        "step": "1",
+        "unit": ""
+      },
+      "required": false
+    },
+    {
+      "id": "ts",
+      "name": "NTP时间戳",
+      "desc": "",
+      "mode": "r",
+      "define": {
+        "type": "int",
+        "min": "0",
+        "max": "2147483647",
+        "start": "0",
+        "step": "1",
+        "unit": "s"
+      },
+      "required": false
+    }
+  ],
+  "events": [],
+  "actions": [],
+  "profile": {
+    "ProductId": "JH3OWWF8SF",
+    "CategoryId": "1"
+  }
+}

@@ -38,7 +38,7 @@ uv run uvicorn app.main:app --host 0.0.0.0 --port 8000
 接口文档：
 
 ```text
-http://localhost:8000/docs
+http://localhost:8000/swagger-ui.html
 ```
 
 依赖管理：

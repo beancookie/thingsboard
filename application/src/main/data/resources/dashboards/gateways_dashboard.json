@@ -16,7 +16,7 @@
           "color": "rgba(0, 0, 0, 0.87)",
           "padding": "4px",
           "settings": {
-            "entitiesTitle": "网关列表",
+            "entitiesTitle": "网关",
             "enableSearch": true,
             "enableSelectColumnDisplay": false,
             "enableStickyHeader": true,
@@ -31,7 +31,7 @@
             "defaultSortOrder": "entityName",
             "useRowStyleFunction": false
           },
-          "title": "网关列表",
+          "title": "网关",
           "dropShadow": true,
           "enableFullscreen": false,
           "titleStyle": {
@@ -675,7 +675,7 @@
               {
                 "name": "type",
                 "type": "alarm",
-                "label": "Type",
+                "label": "类型",
                 "color": "#f44336",
                 "settings": {
                   "useCellStyleFunction": false,
@@ -688,7 +688,7 @@
               {
                 "name": "severity",
                 "type": "alarm",
-                "label": "Severity",
+                "label": "严重程度",
                 "color": "#ffc107",
                 "settings": {
                   "useCellStyleFunction": false,
@@ -699,7 +699,7 @@
               {
                 "name": "details",
                 "type": "alarm",
-                "label": "details",
+                "label": "详情",
                 "color": "#9c27b0",
                 "settings": {},
                 "_hash": 0.10903701402251387
@@ -1750,14 +1750,14 @@
           "color": "rgba(0, 0, 0, 0.87)",
           "padding": "4px",
           "settings": {
-            "entitiesTitle": "Devices",
+            "entitiesTitle": "设备列表",
             "enableSearch": true,
             "enableSelectColumnDisplay": true,
             "enableStickyHeader": true,
             "enableStickyAction": true,
             "reserveSpaceForHiddenAction": "true",
             "displayEntityName": true,
-            "entityNameColumnTitle": "Device Name",
+            "entityNameColumnTitle": "设备名称",
             "displayEntityLabel": false,
             "displayEntityType": false,
             "displayPagination": true,
@@ -1765,7 +1765,7 @@
             "defaultSortOrder": "entityName",
             "useRowStyleFunction": false
           },
-          "title": "Devices",
+          "title": "设备列表",
           "dropShadow": true,
           "enableFullscreen": true,
           "titleStyle": {
@@ -1784,7 +1784,7 @@
                 {
                   "name": "type",
                   "type": "entityField",
-                  "label": "Device Type",
+                  "label": "设备类型",
                   "color": "#2196f3",
                   "settings": {},
                   "_hash": 0.3129929097366162,
@@ -1804,7 +1804,7 @@
                     "columnWidth": "0px",
                     "useCellStyleFunction": false,
                     "useCellContentFunction": true,
-                    "cellContentFunction": "let cssClass;\r\nswitch (value) {\r\n      case \"Active\":\r\n        cssClass = \"status status-active\";\r\n        break;\r\n      case \"Inactive\":\r\n           default:\r\n        cssClass = \"status status-inactive\";\r\n        break;\r\n    }\r\n    \r\n    return `<span class='${cssClass}'>${value}</span>`;",
+                    "cellContentFunction": "let cssClass;\r\nswitch (value) {\r\n      case \"在线\":\r\n        cssClass = \"status status-active\";\r\n        break;\r\n      case \"离线\":\r\n           default:\r\n        cssClass = \"status status-inactive\";\r\n        break;\r\n    }\r\n    \r\n    return `<span class='${cssClass}'>${value}</span>`;",
                     "defaultColumnVisibility": "visible",
                     "columnSelectionToDisplay": "enabled"
                   },
@@ -1814,12 +1814,12 @@
                   "decimals": null,
                   "funcBody": null,
                   "usePostProcessing": true,
-                  "postFuncBody": "return value == 'true' ? \"Active\": \"Inactive\";"
+                  "postFuncBody": "return value == 'true' ? \"在线\": \"离线\";"
                 },
                 {
                   "name": "connectorName",
                   "type": "attribute",
-                  "label": "Connector Name",
+                  "label": "连接器名称",
                   "color": "#f44336",
                   "settings": {},
                   "_hash": 0.012483045440007778,
@@ -1833,7 +1833,7 @@
                 {
                   "name": "connectorType",
                   "type": "attribute",
-                  "label": "Connector Type",
+                  "label": "连接器类型",
                   "color": "#ffc107",
                   "settings": {},
                   "_hash": 0.6004192233378134,
@@ -1891,14 +1891,14 @@
           "color": "rgba(0, 0, 0, 0.87)",
           "padding": "4px",
           "settings": {
-            "entitiesTitle": "Devices",
+            "entitiesTitle": "设备列表",
             "enableSearch": true,
             "enableSelectColumnDisplay": true,
             "enableStickyHeader": true,
             "enableStickyAction": true,
             "reserveSpaceForHiddenAction": "true",
             "displayEntityName": true,
-            "entityNameColumnTitle": "Device Name",
+            "entityNameColumnTitle": "设备名称",
             "displayEntityLabel": false,
             "displayEntityType": false,
             "displayPagination": true,
@@ -1906,7 +1906,7 @@
             "defaultSortOrder": "entityName",
             "useRowStyleFunction": false
           },
-          "title": "Devices",
+          "title": "设备列表",
           "dropShadow": true,
           "enableFullscreen": true,
           "titleStyle": {
@@ -1925,7 +1925,7 @@
                 {
                   "name": "type",
                   "type": "entityField",
-                  "label": "Device Type",
+                  "label": "设备类型",
                   "color": "#2196f3",
                   "settings": {},
                   "_hash": 0.3129929097366162,
@@ -1945,7 +1945,7 @@
                     "columnWidth": "0px",
                     "useCellStyleFunction": false,
                     "useCellContentFunction": true,
-                    "cellContentFunction": "let cssClass;\r\nswitch (value) {\r\n      case \"Active\":\r\n        cssClass = \"status status-active\";\r\n        break;\r\n      case \"Inactive\":\r\n           default:\r\n        cssClass = \"status status-inactive\";\r\n        break;\r\n    }\r\n    \r\n    return `<span class='${cssClass}'>${value}</span>`;",
+                    "cellContentFunction": "let cssClass;\r\nswitch (value) {\r\n      case \"在线\":\r\n        cssClass = \"status status-active\";\r\n        break;\r\n      case \"离线\":\r\n           default:\r\n        cssClass = \"status status-inactive\";\r\n        break;\r\n    }\r\n    \r\n    return `<span class='${cssClass}'>${value}</span>`;",
                     "defaultColumnVisibility": "visible",
                     "columnSelectionToDisplay": "enabled"
                   },
@@ -1955,12 +1955,12 @@
                   "decimals": null,
                   "funcBody": null,
                   "usePostProcessing": true,
-                  "postFuncBody": "return value == 'true' ? \"Active\": \"Inactive\";"
+                  "postFuncBody": "return value == 'true' ? \"在线\": \"离线\";"
                 },
                 {
                   "name": "connectorName",
                   "type": "attribute",
-                  "label": "Connector Name",
+                  "label": "连接器名称",
                   "color": "#f44336",
                   "settings": {},
                   "_hash": 0.012483045440007778,
@@ -1974,7 +1974,7 @@
                 {
                   "name": "connectorType",
                   "type": "attribute",
-                  "label": "Connector Type",
+                  "label": "连接器类型",
                   "color": "#ffc107",
                   "settings": {},
                   "_hash": 0.6004192233378134,
@@ -2032,14 +2032,14 @@
           "color": "rgba(0, 0, 0, 0.87)",
           "padding": "4px",
           "settings": {
-            "entitiesTitle": "Devices",
+            "entitiesTitle": "设备列表",
             "enableSearch": true,
             "enableSelectColumnDisplay": true,
             "enableStickyHeader": true,
             "enableStickyAction": true,
             "reserveSpaceForHiddenAction": "true",
             "displayEntityName": true,
-            "entityNameColumnTitle": "Device Name",
+            "entityNameColumnTitle": "设备名称",
             "displayEntityLabel": false,
             "displayEntityType": false,
             "displayPagination": true,
@@ -2047,7 +2047,7 @@
             "defaultSortOrder": "entityName",
             "useRowStyleFunction": false
           },
-          "title": "Devices",
+          "title": "设备列表",
           "dropShadow": true,
           "enableFullscreen": true,
           "titleStyle": {
@@ -2066,7 +2066,7 @@
                 {
                   "name": "type",
                   "type": "entityField",
-                  "label": "Device Type",
+                  "label": "设备类型",
                   "color": "#2196f3",
                   "settings": {},
                   "_hash": 0.3129929097366162,
@@ -2086,7 +2086,7 @@
                     "columnWidth": "0px",
                     "useCellStyleFunction": false,
                     "useCellContentFunction": true,
-                    "cellContentFunction": "let cssClass;\r\nswitch (value) {\r\n      case \"Active\":\r\n        cssClass = \"status status-active\";\r\n        break;\r\n      case \"Inactive\":\r\n           default:\r\n        cssClass = \"status status-inactive\";\r\n        break;\r\n    }\r\n    \r\n    return `<span class='${cssClass}'>${value}</span>`;",
+                    "cellContentFunction": "let cssClass;\r\nswitch (value) {\r\n      case \"在线\":\r\n        cssClass = \"status status-active\";\r\n        break;\r\n      case \"离线\":\r\n           default:\r\n        cssClass = \"status status-inactive\";\r\n        break;\r\n    }\r\n    \r\n    return `<span class='${cssClass}'>${value}</span>`;",
                     "defaultColumnVisibility": "visible",
                     "columnSelectionToDisplay": "enabled"
                   },
@@ -2096,12 +2096,12 @@
                   "decimals": null,
                   "funcBody": null,
                   "usePostProcessing": true,
-                  "postFuncBody": "return value == 'true' ? \"Active\": \"Inactive\";"
+                  "postFuncBody": "return value == 'true' ? \"在线\": \"离线\";"
                 },
                 {
                   "name": "connectorName",
                   "type": "attribute",
-                  "label": "Connector Name",
+                  "label": "连接器名称",
                   "color": "#f44336",
                   "settings": {},
                   "_hash": 0.012483045440007778,
@@ -2115,7 +2115,7 @@
                 {
                   "name": "connectorType",
                   "type": "attribute",
-                  "label": "Connector Type",
+                  "label": "连接器类型",
                   "color": "#ffc107",
                   "settings": {},
                   "_hash": 0.6004192233378134,
@@ -2172,14 +2172,14 @@
           "color": "rgba(0, 0, 0, 0.87)",
           "padding": "4px",
           "settings": {
-            "entitiesTitle": "Devices",
+            "entitiesTitle": "设备列表",
             "enableSearch": true,
             "enableSelectColumnDisplay": true,
             "enableStickyHeader": true,
             "enableStickyAction": true,
             "reserveSpaceForHiddenAction": "true",
             "displayEntityName": true,
-            "entityNameColumnTitle": "Device Name",
+            "entityNameColumnTitle": "设备名称",
             "displayEntityLabel": false,
             "displayEntityType": false,
             "displayPagination": true,
@@ -2187,7 +2187,7 @@
             "defaultSortOrder": "entityName",
             "useRowStyleFunction": false
           },
-          "title": "Devices",
+          "title": "设备列表",
           "dropShadow": true,
           "enableFullscreen": true,
           "titleStyle": {
@@ -2206,7 +2206,7 @@
                 {
                   "name": "type",
                   "type": "entityField",
-                  "label": "Device Type",
+                  "label": "设备类型",
                   "color": "#2196f3",
                   "settings": {},
                   "_hash": 0.3129929097366162,
@@ -2226,7 +2226,7 @@
                     "columnWidth": "0px",
                     "useCellStyleFunction": false,
                     "useCellContentFunction": true,
-                    "cellContentFunction": "let cssClass;\r\nswitch (value) {\r\n      case \"Active\":\r\n        cssClass = \"status status-active\";\r\n        break;\r\n      case \"Inactive\":\r\n           default:\r\n        cssClass = \"status status-inactive\";\r\n        break;\r\n    }\r\n    \r\n    return `<span class='${cssClass}'>${value}</span>`;",
+                    "cellContentFunction": "let cssClass;\r\nswitch (value) {\r\n      case \"在线\":\r\n        cssClass = \"status status-active\";\r\n        break;\r\n      case \"离线\":\r\n           default:\r\n        cssClass = \"status status-inactive\";\r\n        break;\r\n    }\r\n    \r\n    return `<span class='${cssClass}'>${value}</span>`;",
                     "defaultColumnVisibility": "visible",
                     "columnSelectionToDisplay": "enabled"
                   },
@@ -2236,12 +2236,12 @@
                   "decimals": null,
                   "funcBody": null,
                   "usePostProcessing": true,
-                  "postFuncBody": "return value == 'true' ? \"Active\": \"Inactive\";"
+                  "postFuncBody": "return value == 'true' ? \"在线\": \"离线\";"
                 },
                 {
                   "name": "connectorName",
                   "type": "attribute",
-                  "label": "Connector Name",
+                  "label": "连接器名称",
                   "color": "#f44336",
                   "settings": {},
                   "_hash": 0.012483045440007778,
@@ -2255,7 +2255,7 @@
                 {
                   "name": "connectorType",
                   "type": "attribute",
-                  "label": "Connector Type",
+                  "label": "连接器类型",
                   "color": "#ffc107",
                   "settings": {},
                   "_hash": 0.6004192233378134,
@@ -2312,14 +2312,14 @@
           "color": "rgba(0, 0, 0, 0.87)",
           "padding": "4px",
           "settings": {
-            "entitiesTitle": "Devices",
+            "entitiesTitle": "设备列表",
             "enableSearch": true,
             "enableSelectColumnDisplay": true,
             "enableStickyHeader": true,
             "enableStickyAction": true,
             "reserveSpaceForHiddenAction": "true",
             "displayEntityName": true,
-            "entityNameColumnTitle": "Device Name",
+            "entityNameColumnTitle": "设备名称",
             "displayEntityLabel": false,
             "displayEntityType": false,
             "displayPagination": true,
@@ -2327,7 +2327,7 @@
             "defaultSortOrder": "entityName",
             "useRowStyleFunction": false
           },
-          "title": "Devices",
+          "title": "设备列表",
           "dropShadow": true,
           "enableFullscreen": true,
           "titleStyle": {
@@ -2346,7 +2346,7 @@
                 {
                   "name": "type",
                   "type": "entityField",
-                  "label": "Device Type",
+                  "label": "设备类型",
                   "color": "#2196f3",
                   "settings": {},
                   "_hash": 0.3129929097366162,
@@ -2366,7 +2366,7 @@
                     "columnWidth": "0px",
                     "useCellStyleFunction": false,
                     "useCellContentFunction": true,
-                    "cellContentFunction": "let cssClass;\r\nswitch (value) {\r\n      case \"Active\":\r\n        cssClass = \"status status-active\";\r\n        break;\r\n      case \"Inactive\":\r\n           default:\r\n        cssClass = \"status status-inactive\";\r\n        break;\r\n    }\r\n    \r\n    return `<span class='${cssClass}'>${value}</span>`;",
+                    "cellContentFunction": "let cssClass;\r\nswitch (value) {\r\n      case \"在线\":\r\n        cssClass = \"status status-active\";\r\n        break;\r\n      case \"离线\":\r\n           default:\r\n        cssClass = \"status status-inactive\";\r\n        break;\r\n    }\r\n    \r\n    return `<span class='${cssClass}'>${value}</span>`;",
                     "defaultColumnVisibility": "visible",
                     "columnSelectionToDisplay": "enabled"
                   },
@@ -2376,12 +2376,12 @@
                   "decimals": null,
                   "funcBody": null,
                   "usePostProcessing": true,
-                  "postFuncBody": "return value == 'true' ? \"Active\": \"Inactive\";"
+                  "postFuncBody": "return value == 'true' ? \"在线\": \"离线\";"
                 },
                 {
                   "name": "connectorName",
                   "type": "attribute",
-                  "label": "Connector Name",
+                  "label": "连接器名称",
                   "color": "#f44336",
                   "settings": {},
                   "_hash": 0.012483045440007778,
@@ -2395,7 +2395,7 @@
                 {
                   "name": "connectorType",
                   "type": "attribute",
-                  "label": "Connector Type",
+                  "label": "连接器类型",
                   "color": "#ffc107",
                   "settings": {},
                   "_hash": 0.6004192233378134,
@@ -2452,14 +2452,14 @@
           "color": "rgba(0, 0, 0, 0.87)",
           "padding": "4px",
           "settings": {
-            "entitiesTitle": "Devices",
+            "entitiesTitle": "设备列表",
             "enableSearch": true,
             "enableSelectColumnDisplay": true,
             "enableStickyHeader": true,
             "enableStickyAction": true,
             "reserveSpaceForHiddenAction": "true",
             "displayEntityName": true,
-            "entityNameColumnTitle": "Device Name",
+            "entityNameColumnTitle": "设备名称",
             "displayEntityLabel": false,
             "displayEntityType": false,
             "displayPagination": true,
@@ -2467,7 +2467,7 @@
             "defaultSortOrder": "entityName",
             "useRowStyleFunction": false
           },
-          "title": "Devices",
+          "title": "设备列表",
           "dropShadow": true,
           "enableFullscreen": true,
           "titleStyle": {
@@ -2486,7 +2486,7 @@
                 {
                   "name": "type",
                   "type": "entityField",
-                  "label": "Device Type",
+                  "label": "设备类型",
                   "color": "#2196f3",
                   "settings": {},
                   "_hash": 0.3129929097366162,
@@ -2506,7 +2506,7 @@
                     "columnWidth": "0px",
                     "useCellStyleFunction": false,
                     "useCellContentFunction": true,
-                    "cellContentFunction": "let cssClass;\r\nswitch (value) {\r\n      case \"Active\":\r\n        cssClass = \"status status-active\";\r\n        break;\r\n      case \"Inactive\":\r\n           default:\r\n        cssClass = \"status status-inactive\";\r\n        break;\r\n    }\r\n    \r\n    return `<span class='${cssClass}'>${value}</span>`;",
+                    "cellContentFunction": "let cssClass;\r\nswitch (value) {\r\n      case \"在线\":\r\n        cssClass = \"status status-active\";\r\n        break;\r\n      case \"离线\":\r\n           default:\r\n        cssClass = \"status status-inactive\";\r\n        break;\r\n    }\r\n    \r\n    return `<span class='${cssClass}'>${value}</span>`;",
                     "defaultColumnVisibility": "visible",
                     "columnSelectionToDisplay": "enabled"
                   },
@@ -2516,12 +2516,12 @@
                   "decimals": null,
                   "funcBody": null,
                   "usePostProcessing": true,
-                  "postFuncBody": "return value == 'true' ? \"Active\": \"Inactive\";"
+                  "postFuncBody": "return value == 'true' ? \"在线\": \"离线\";"
                 },
                 {
                   "name": "connectorName",
                   "type": "attribute",
-                  "label": "Connector Name",
+                  "label": "连接器名称",
                   "color": "#f44336",
                   "settings": {},
                   "_hash": 0.012483045440007778,
@@ -2535,7 +2535,7 @@
                 {
                   "name": "connectorType",
                   "type": "attribute",
-                  "label": "Connector Type",
+                  "label": "连接器类型",
                   "color": "#ffc107",
                   "settings": {},
                   "_hash": 0.6004192233378134,
@@ -2592,14 +2592,14 @@
           "color": "rgba(0, 0, 0, 0.87)",
           "padding": "4px",
           "settings": {
-            "entitiesTitle": "Devices",
+            "entitiesTitle": "设备列表",
             "enableSearch": true,
             "enableSelectColumnDisplay": true,
             "enableStickyHeader": true,
             "enableStickyAction": true,
             "reserveSpaceForHiddenAction": "true",
             "displayEntityName": true,
-            "entityNameColumnTitle": "Device Name",
+            "entityNameColumnTitle": "设备名称",
             "displayEntityLabel": false,
             "displayEntityType": false,
             "displayPagination": true,
@@ -2607,7 +2607,7 @@
             "defaultSortOrder": "entityName",
             "useRowStyleFunction": false
           },
-          "title": "Devices",
+          "title": "设备列表",
           "dropShadow": true,
           "enableFullscreen": true,
           "titleStyle": {
@@ -2626,7 +2626,7 @@
                 {
                   "name": "type",
                   "type": "entityField",
-                  "label": "Device Type",
+                  "label": "设备类型",
                   "color": "#2196f3",
                   "settings": {},
                   "_hash": 0.3129929097366162,
@@ -2646,7 +2646,7 @@
                     "columnWidth": "0px",
                     "useCellStyleFunction": false,
                     "useCellContentFunction": true,
-                    "cellContentFunction": "let cssClass;\r\nswitch (value) {\r\n      case \"Active\":\r\n        cssClass = \"status status-active\";\r\n        break;\r\n      case \"Inactive\":\r\n           default:\r\n        cssClass = \"status status-inactive\";\r\n        break;\r\n    }\r\n    \r\n    return `<span class='${cssClass}'>${value}</span>`;",
+                    "cellContentFunction": "let cssClass;\r\nswitch (value) {\r\n      case \"在线\":\r\n        cssClass = \"status status-active\";\r\n        break;\r\n      case \"离线\":\r\n           default:\r\n        cssClass = \"status status-inactive\";\r\n        break;\r\n    }\r\n    \r\n    return `<span class='${cssClass}'>${value}</span>`;",
                     "defaultColumnVisibility": "visible",
                     "columnSelectionToDisplay": "enabled"
                   },
@@ -2656,12 +2656,12 @@
                   "decimals": null,
                   "funcBody": null,
                   "usePostProcessing": true,
-                  "postFuncBody": "return value == 'true' ? \"Active\": \"Inactive\";"
+                  "postFuncBody": "return value == 'true' ? \"在线\": \"离线\";"
                 },
                 {
                   "name": "connectorName",
                   "type": "attribute",
-                  "label": "Connector Name",
+                  "label": "连接器名称",
                   "color": "#f44336",
                   "settings": {},
                   "_hash": 0.012483045440007778,
@@ -2675,7 +2675,7 @@
                 {
                   "name": "connectorType",
                   "type": "attribute",
-                  "label": "Connector Type",
+                  "label": "连接器类型",
                   "color": "#ffc107",
                   "settings": {},
                   "_hash": 0.6004192233378134,
@@ -2732,14 +2732,14 @@
           "color": "rgba(0, 0, 0, 0.87)",
           "padding": "4px",
           "settings": {
-            "entitiesTitle": "Devices",
+            "entitiesTitle": "设备列表",
             "enableSearch": true,
             "enableSelectColumnDisplay": true,
             "enableStickyHeader": true,
             "enableStickyAction": true,
             "reserveSpaceForHiddenAction": "true",
             "displayEntityName": true,
-            "entityNameColumnTitle": "Device Name",
+            "entityNameColumnTitle": "设备名称",
             "displayEntityLabel": false,
             "displayEntityType": false,
             "displayPagination": true,
@@ -2747,7 +2747,7 @@
             "defaultSortOrder": "entityName",
             "useRowStyleFunction": false
           },
-          "title": "Devices",
+          "title": "设备列表",
           "dropShadow": true,
           "enableFullscreen": true,
           "titleStyle": {
@@ -2766,7 +2766,7 @@
                 {
                   "name": "type",
                   "type": "entityField",
-                  "label": "Device Type",
+                  "label": "设备类型",
                   "color": "#2196f3",
                   "settings": {},
                   "_hash": 0.3129929097366162,
@@ -2786,7 +2786,7 @@
                     "columnWidth": "0px",
                     "useCellStyleFunction": false,
                     "useCellContentFunction": true,
-                    "cellContentFunction": "let cssClass;\r\nswitch (value) {\r\n      case \"Active\":\r\n        cssClass = \"status status-active\";\r\n        break;\r\n      case \"Inactive\":\r\n           default:\r\n        cssClass = \"status status-inactive\";\r\n        break;\r\n    }\r\n    \r\n    return `<span class='${cssClass}'>${value}</span>`;",
+                    "cellContentFunction": "let cssClass;\r\nswitch (value) {\r\n      case \"在线\":\r\n        cssClass = \"status status-active\";\r\n        break;\r\n      case \"离线\":\r\n           default:\r\n        cssClass = \"status status-inactive\";\r\n        break;\r\n    }\r\n    \r\n    return `<span class='${cssClass}'>${value}</span>`;",
                     "defaultColumnVisibility": "visible",
                     "columnSelectionToDisplay": "enabled"
                   },
@@ -2796,12 +2796,12 @@
                   "decimals": null,
                   "funcBody": null,
                   "usePostProcessing": true,
-                  "postFuncBody": "return value == 'true' ? \"Active\": \"Inactive\";"
+                  "postFuncBody": "return value == 'true' ? \"在线\": \"离线\";"
                 },
                 {
                   "name": "connectorName",
                   "type": "attribute",
-                  "label": "Connector Name",
+                  "label": "连接器名称",
                   "color": "#f44336",
                   "settings": {},
                   "_hash": 0.012483045440007778,
@@ -2815,7 +2815,7 @@
                 {
                   "name": "connectorType",
                   "type": "attribute",
-                  "label": "Connector Type",
+                  "label": "连接器类型",
                   "color": "#ffc107",
                   "settings": {},
                   "_hash": 0.6004192233378134,
@@ -2872,14 +2872,14 @@
           "color": "rgba(0, 0, 0, 0.87)",
           "padding": "4px",
           "settings": {
-            "entitiesTitle": "Devices",
+            "entitiesTitle": "设备列表",
             "enableSearch": true,
             "enableSelectColumnDisplay": true,
             "enableStickyHeader": true,
             "enableStickyAction": true,
             "reserveSpaceForHiddenAction": "true",
             "displayEntityName": true,
-            "entityNameColumnTitle": "Device Name",
+            "entityNameColumnTitle": "设备名称",
             "displayEntityLabel": false,
             "displayEntityType": false,
             "displayPagination": true,
@@ -2887,7 +2887,7 @@
             "defaultSortOrder": "entityName",
             "useRowStyleFunction": false
           },
-          "title": "Devices",
+          "title": "设备列表",
           "dropShadow": true,
           "enableFullscreen": true,
           "titleStyle": {
@@ -2906,7 +2906,7 @@
                 {
                   "name": "type",
                   "type": "entityField",
-                  "label": "Device Type",
+                  "label": "设备类型",
                   "color": "#2196f3",
                   "settings": {},
                   "_hash": 0.3129929097366162,
@@ -2926,7 +2926,7 @@
                     "columnWidth": "0px",
                     "useCellStyleFunction": false,
                     "useCellContentFunction": true,
-                    "cellContentFunction": "let cssClass;\r\nswitch (value) {\r\n      case \"Active\":\r\n        cssClass = \"status status-active\";\r\n        break;\r\n      case \"Inactive\":\r\n           default:\r\n        cssClass = \"status status-inactive\";\r\n        break;\r\n    }\r\n    \r\n    return `<span class='${cssClass}'>${value}</span>`;",
+                    "cellContentFunction": "let cssClass;\r\nswitch (value) {\r\n      case \"在线\":\r\n        cssClass = \"status status-active\";\r\n        break;\r\n      case \"离线\":\r\n           default:\r\n        cssClass = \"status status-inactive\";\r\n        break;\r\n    }\r\n    \r\n    return `<span class='${cssClass}'>${value}</span>`;",
                     "defaultColumnVisibility": "visible",
                     "columnSelectionToDisplay": "enabled"
                   },
@@ -2936,12 +2936,12 @@
                   "decimals": null,
                   "funcBody": null,
                   "usePostProcessing": true,
-                  "postFuncBody": "return value == 'true' ? \"Active\": \"Inactive\";"
+                  "postFuncBody": "return value == 'true' ? \"在线\": \"离线\";"
                 },
                 {
                   "name": "connectorName",
                   "type": "attribute",
-                  "label": "Connector Name",
+                  "label": "连接器名称",
                   "color": "#f44336",
                   "settings": {},
                   "_hash": 0.012483045440007778,
@@ -2955,7 +2955,7 @@
                 {
                   "name": "connectorType",
                   "type": "attribute",
-                  "label": "Connector Type",
+                  "label": "连接器类型",
                   "color": "#ffc107",
                   "settings": {},
                   "_hash": 0.6004192233378134,
@@ -3012,14 +3012,14 @@
           "color": "rgba(0, 0, 0, 0.87)",
           "padding": "4px",
           "settings": {
-            "entitiesTitle": "Devices",
+            "entitiesTitle": "设备列表",
             "enableSearch": true,
             "enableSelectColumnDisplay": true,
             "enableStickyHeader": true,
             "enableStickyAction": true,
             "reserveSpaceForHiddenAction": "true",
             "displayEntityName": true,
-            "entityNameColumnTitle": "Device Name",
+            "entityNameColumnTitle": "设备名称",
             "displayEntityLabel": false,
             "displayEntityType": false,
             "displayPagination": true,
@@ -3027,7 +3027,7 @@
             "defaultSortOrder": "entityName",
             "useRowStyleFunction": false
           },
-          "title": "Devices",
+          "title": "设备列表",
           "dropShadow": true,
           "enableFullscreen": true,
           "titleStyle": {
@@ -3046,7 +3046,7 @@
                 {
                   "name": "type",
                   "type": "entityField",
-                  "label": "Device Type",
+                  "label": "设备类型",
                   "color": "#2196f3",
                   "settings": {},
                   "_hash": 0.3129929097366162,
@@ -3066,7 +3066,7 @@
                     "columnWidth": "0px",
                     "useCellStyleFunction": false,
                     "useCellContentFunction": true,
-                    "cellContentFunction": "let cssClass;\r\nswitch (value) {\r\n      case \"Active\":\r\n        cssClass = \"status status-active\";\r\n        break;\r\n      case \"Inactive\":\r\n           default:\r\n        cssClass = \"status status-inactive\";\r\n        break;\r\n    }\r\n    \r\n    return `<span class='${cssClass}'>${value}</span>`;",
+                    "cellContentFunction": "let cssClass;\r\nswitch (value) {\r\n      case \"在线\":\r\n        cssClass = \"status status-active\";\r\n        break;\r\n      case \"离线\":\r\n           default:\r\n        cssClass = \"status status-inactive\";\r\n        break;\r\n    }\r\n    \r\n    return `<span class='${cssClass}'>${value}</span>`;",
                     "defaultColumnVisibility": "visible",
                     "columnSelectionToDisplay": "enabled"
                   },
@@ -3076,12 +3076,12 @@
                   "decimals": null,
                   "funcBody": null,
                   "usePostProcessing": true,
-                  "postFuncBody": "return value == 'true' ? \"Active\": \"Inactive\";"
+                  "postFuncBody": "return value == 'true' ? \"在线\": \"离线\";"
                 },
                 {
                   "name": "connectorName",
                   "type": "attribute",
-                  "label": "Connector Name",
+                  "label": "连接器名称",
                   "color": "#f44336",
                   "settings": {},
                   "_hash": 0.012483045440007778,
@@ -3095,7 +3095,7 @@
                 {
                   "name": "connectorType",
                   "type": "attribute",
-                  "label": "Connector Type",
+                  "label": "连接器类型",
                   "color": "#ffc107",
                   "settings": {},
                   "_hash": 0.6004192233378134,
@@ -3152,14 +3152,14 @@
           "color": "rgba(0, 0, 0, 0.87)",
           "padding": "4px",
           "settings": {
-            "entitiesTitle": "Devices",
+            "entitiesTitle": "设备列表",
             "enableSearch": true,
             "enableSelectColumnDisplay": true,
             "enableStickyHeader": true,
             "enableStickyAction": true,
             "reserveSpaceForHiddenAction": "true",
             "displayEntityName": true,
-            "entityNameColumnTitle": "Device Name",
+            "entityNameColumnTitle": "设备名称",
             "displayEntityLabel": false,
             "displayEntityType": false,
             "displayPagination": true,
@@ -3167,7 +3167,7 @@
             "defaultSortOrder": "entityName",
             "useRowStyleFunction": false
           },
-          "title": "Devices",
+          "title": "设备列表",
           "dropShadow": true,
           "enableFullscreen": true,
           "titleStyle": {
@@ -3186,7 +3186,7 @@
                 {
                   "name": "type",
                   "type": "entityField",
-                  "label": "Device Type",
+                  "label": "设备类型",
                   "color": "#2196f3",
                   "settings": {},
                   "_hash": 0.3129929097366162,
@@ -3206,7 +3206,7 @@
                     "columnWidth": "0px",
                     "useCellStyleFunction": false,
                     "useCellContentFunction": true,
-                    "cellContentFunction": "let cssClass;\r\nswitch (value) {\r\n      case \"Active\":\r\n        cssClass = \"status status-active\";\r\n        break;\r\n      case \"Inactive\":\r\n           default:\r\n        cssClass = \"status status-inactive\";\r\n        break;\r\n    }\r\n    \r\n    return `<span class='${cssClass}'>${value}</span>`;",
+                    "cellContentFunction": "let cssClass;\r\nswitch (value) {\r\n      case \"在线\":\r\n        cssClass = \"status status-active\";\r\n        break;\r\n      case \"离线\":\r\n           default:\r\n        cssClass = \"status status-inactive\";\r\n        break;\r\n    }\r\n    \r\n    return `<span class='${cssClass}'>${value}</span>`;",
                     "defaultColumnVisibility": "visible",
                     "columnSelectionToDisplay": "enabled"
                   },
@@ -3216,12 +3216,12 @@
                   "decimals": null,
                   "funcBody": null,
                   "usePostProcessing": true,
-                  "postFuncBody": "return value == 'true' ? \"Active\": \"Inactive\";"
+                  "postFuncBody": "return value == 'true' ? \"在线\": \"离线\";"
                 },
                 {
                   "name": "connectorName",
                   "type": "attribute",
-                  "label": "Connector Name",
+                  "label": "连接器名称",
                   "color": "#f44336",
                   "settings": {},
                   "_hash": 0.012483045440007778,
@@ -3235,7 +3235,7 @@
                 {
                   "name": "connectorType",
                   "type": "attribute",
-                  "label": "Connector Type",
+                  "label": "连接器类型",
                   "color": "#ffc107",
                   "settings": {},
                   "_hash": 0.6004192233378134,
@@ -3292,14 +3292,14 @@
           "color": "rgba(0, 0, 0, 0.87)",
           "padding": "4px",
           "settings": {
-            "entitiesTitle": "Devices",
+            "entitiesTitle": "设备列表",
             "enableSearch": true,
             "enableSelectColumnDisplay": true,
             "enableStickyHeader": true,
             "enableStickyAction": true,
             "reserveSpaceForHiddenAction": "true",
             "displayEntityName": true,
-            "entityNameColumnTitle": "Device Name",
+            "entityNameColumnTitle": "设备名称",
             "displayEntityLabel": false,
             "displayEntityType": false,
             "displayPagination": true,
@@ -3307,7 +3307,7 @@
             "defaultSortOrder": "entityName",
             "useRowStyleFunction": false
           },
-          "title": "Devices",
+          "title": "设备列表",
           "dropShadow": true,
           "enableFullscreen": true,
           "titleStyle": {
@@ -3326,7 +3326,7 @@
                 {
                   "name": "type",
                   "type": "entityField",
-                  "label": "Device Type",
+                  "label": "设备类型",
                   "color": "#2196f3",
                   "settings": {},
                   "_hash": 0.3129929097366162,
@@ -3346,7 +3346,7 @@
                     "columnWidth": "0px",
                     "useCellStyleFunction": false,
                     "useCellContentFunction": true,
-                    "cellContentFunction": "let cssClass;\r\nswitch (value) {\r\n      case \"Active\":\r\n        cssClass = \"status status-active\";\r\n        break;\r\n      case \"Inactive\":\r\n           default:\r\n        cssClass = \"status status-inactive\";\r\n        break;\r\n    }\r\n    \r\n    return `<span class='${cssClass}'>${value}</span>`;",
+                    "cellContentFunction": "let cssClass;\r\nswitch (value) {\r\n      case \"在线\":\r\n        cssClass = \"status status-active\";\r\n        break;\r\n      case \"离线\":\r\n           default:\r\n        cssClass = \"status status-inactive\";\r\n        break;\r\n    }\r\n    \r\n    return `<span class='${cssClass}'>${value}</span>`;",
                     "defaultColumnVisibility": "visible",
                     "columnSelectionToDisplay": "enabled"
                   },
@@ -3356,12 +3356,12 @@
                   "decimals": null,
                   "funcBody": null,
                   "usePostProcessing": true,
-                  "postFuncBody": "return value == 'true' ? \"Active\": \"Inactive\";"
+                  "postFuncBody": "return value == 'true' ? \"在线\": \"离线\";"
                 },
                 {
                   "name": "connectorName",
                   "type": "attribute",
-                  "label": "Connector Name",
+                  "label": "连接器名称",
                   "color": "#f44336",
                   "settings": {},
                   "_hash": 0.012483045440007778,
@@ -3375,7 +3375,7 @@
                 {
                   "name": "connectorType",
                   "type": "attribute",
-                  "label": "Connector Type",
+                  "label": "连接器类型",
                   "color": "#ffc107",
                   "settings": {},
                   "_hash": 0.6004192233378134,
@@ -3432,14 +3432,14 @@
           "color": "rgba(0, 0, 0, 0.87)",
           "padding": "4px",
           "settings": {
-            "entitiesTitle": "Devices",
+            "entitiesTitle": "设备列表",
             "enableSearch": true,
             "enableSelectColumnDisplay": true,
             "enableStickyHeader": true,
             "enableStickyAction": true,
             "reserveSpaceForHiddenAction": "true",
             "displayEntityName": true,
-            "entityNameColumnTitle": "Device Name",
+            "entityNameColumnTitle": "设备名称",
             "displayEntityLabel": false,
             "displayEntityType": false,
             "displayPagination": true,
@@ -3447,7 +3447,7 @@
             "defaultSortOrder": "entityName",
             "useRowStyleFunction": false
           },
-          "title": "Devices",
+          "title": "设备列表",
           "dropShadow": true,
           "enableFullscreen": true,
           "titleStyle": {
@@ -3466,7 +3466,7 @@
                 {
                   "name": "type",
                   "type": "entityField",
-                  "label": "Device Type",
+                  "label": "设备类型",
                   "color": "#2196f3",
                   "settings": {},
                   "_hash": 0.3129929097366162,
@@ -3486,7 +3486,7 @@
                     "columnWidth": "0px",
                     "useCellStyleFunction": false,
                     "useCellContentFunction": true,
-                    "cellContentFunction": "let cssClass;\r\nswitch (value) {\r\n      case \"Active\":\r\n        cssClass = \"status status-active\";\r\n        break;\r\n      case \"Inactive\":\r\n           default:\r\n        cssClass = \"status status-inactive\";\r\n        break;\r\n    }\r\n    \r\n    return `<span class='${cssClass}'>${value}</span>`;",
+                    "cellContentFunction": "let cssClass;\r\nswitch (value) {\r\n      case \"在线\":\r\n        cssClass = \"status status-active\";\r\n        break;\r\n      case \"离线\":\r\n           default:\r\n        cssClass = \"status status-inactive\";\r\n        break;\r\n    }\r\n    \r\n    return `<span class='${cssClass}'>${value}</span>`;",
                     "defaultColumnVisibility": "visible",
                     "columnSelectionToDisplay": "enabled"
                   },
@@ -3496,12 +3496,12 @@
                   "decimals": null,
                   "funcBody": null,
                   "usePostProcessing": true,
-                  "postFuncBody": "return value == 'true' ? \"Active\": \"Inactive\";"
+                  "postFuncBody": "return value == 'true' ? \"在线\": \"离线\";"
                 },
                 {
                   "name": "connectorName",
                   "type": "attribute",
-                  "label": "Connector Name",
+                  "label": "连接器名称",
                   "color": "#f44336",
                   "settings": {},
                   "_hash": 0.012483045440007778,
@@ -3515,7 +3515,7 @@
                 {
                   "name": "connectorType",
                   "type": "attribute",
-                  "label": "Connector Type",
+                  "label": "连接器类型",
                   "color": "#ffc107",
                   "settings": {},
                   "_hash": 0.6004192233378134,
@@ -3572,14 +3572,14 @@
           "color": "rgba(0, 0, 0, 0.87)",
           "padding": "4px",
           "settings": {
-            "entitiesTitle": "Devices",
+            "entitiesTitle": "设备列表",
             "enableSearch": true,
             "enableSelectColumnDisplay": true,
             "enableStickyHeader": true,
             "enableStickyAction": true,
             "reserveSpaceForHiddenAction": "true",
             "displayEntityName": true,
-            "entityNameColumnTitle": "Device Name",
+            "entityNameColumnTitle": "设备名称",
             "displayEntityLabel": false,
             "displayEntityType": false,
             "displayPagination": true,
@@ -3587,7 +3587,7 @@
             "defaultSortOrder": "entityName",
             "useRowStyleFunction": false
           },
-          "title": "Devices",
+          "title": "设备列表",
           "dropShadow": true,
           "enableFullscreen": true,
           "titleStyle": {
@@ -3606,7 +3606,7 @@
                 {
                   "name": "type",
                   "type": "entityField",
-                  "label": "Device Type",
+                  "label": "设备类型",
                   "color": "#2196f3",
                   "settings": {},
                   "_hash": 0.3129929097366162,
@@ -3626,7 +3626,7 @@
                     "columnWidth": "0px",
                     "useCellStyleFunction": false,
                     "useCellContentFunction": true,
-                    "cellContentFunction": "let cssClass;\r\nswitch (value) {\r\n      case \"Active\":\r\n        cssClass = \"status status-active\";\r\n        break;\r\n      case \"Inactive\":\r\n           default:\r\n        cssClass = \"status status-inactive\";\r\n        break;\r\n    }\r\n    \r\n    return `<span class='${cssClass}'>${value}</span>`;",
+                    "cellContentFunction": "let cssClass;\r\nswitch (value) {\r\n      case \"在线\":\r\n        cssClass = \"status status-active\";\r\n        break;\r\n      case \"离线\":\r\n           default:\r\n        cssClass = \"status status-inactive\";\r\n        break;\r\n    }\r\n    \r\n    return `<span class='${cssClass}'>${value}</span>`;",
                     "defaultColumnVisibility": "visible",
                     "columnSelectionToDisplay": "enabled"
                   },
@@ -3636,12 +3636,12 @@
                   "decimals": null,
                   "funcBody": null,
                   "usePostProcessing": true,
-                  "postFuncBody": "return value == 'true' ? \"Active\": \"Inactive\";"
+                  "postFuncBody": "return value == 'true' ? \"在线\": \"离线\";"
                 },
                 {
                   "name": "connectorName",
                   "type": "attribute",
-                  "label": "Connector Name",
+                  "label": "连接器名称",
                   "color": "#f44336",
                   "settings": {},
                   "_hash": 0.012483045440007778,
@@ -3655,7 +3655,7 @@
                 {
                   "name": "connectorType",
                   "type": "attribute",
-                  "label": "Connector Type",
+                  "label": "连接器类型",
                   "color": "#ffc107",
                   "settings": {},
                   "_hash": 0.6004192233378134,
@@ -3712,14 +3712,14 @@
           "color": "rgba(0, 0, 0, 0.87)",
           "padding": "4px",
           "settings": {
-            "entitiesTitle": "Devices",
+            "entitiesTitle": "设备列表",
             "enableSearch": true,
             "enableSelectColumnDisplay": true,
             "enableStickyHeader": true,
             "enableStickyAction": true,
             "reserveSpaceForHiddenAction": "true",
             "displayEntityName": true,
-            "entityNameColumnTitle": "Device Name",
+            "entityNameColumnTitle": "设备名称",
             "displayEntityLabel": false,
             "displayEntityType": false,
             "displayPagination": true,
@@ -3727,7 +3727,7 @@
             "defaultSortOrder": "entityName",
             "useRowStyleFunction": false
           },
-          "title": "Devices",
+          "title": "设备列表",
           "dropShadow": true,
           "enableFullscreen": true,
           "titleStyle": {
@@ -3746,7 +3746,7 @@
                 {
                   "name": "type",
                   "type": "entityField",
-                  "label": "Device Type",
+                  "label": "设备类型",
                   "color": "#2196f3",
                   "settings": {},
                   "_hash": 0.3129929097366162,
@@ -3766,7 +3766,7 @@
                     "columnWidth": "0px",
                     "useCellStyleFunction": false,
                     "useCellContentFunction": true,
-                    "cellContentFunction": "let cssClass;\r\nswitch (value) {\r\n      case \"Active\":\r\n        cssClass = \"status status-active\";\r\n        break;\r\n      case \"Inactive\":\r\n           default:\r\n        cssClass = \"status status-inactive\";\r\n        break;\r\n    }\r\n    \r\n    return `<span class='${cssClass}'>${value}</span>`;",
+                    "cellContentFunction": "let cssClass;\r\nswitch (value) {\r\n      case \"在线\":\r\n        cssClass = \"status status-active\";\r\n        break;\r\n      case \"离线\":\r\n           default:\r\n        cssClass = \"status status-inactive\";\r\n        break;\r\n    }\r\n    \r\n    return `<span class='${cssClass}'>${value}</span>`;",
                     "defaultColumnVisibility": "visible",
                     "columnSelectionToDisplay": "enabled"
                   },
@@ -3776,12 +3776,12 @@
                   "decimals": null,
                   "funcBody": null,
                   "usePostProcessing": true,
-                  "postFuncBody": "return value == 'true' ? \"Active\": \"Inactive\";"
+                  "postFuncBody": "return value == 'true' ? \"在线\": \"离线\";"
                 },
                 {
                   "name": "connectorName",
                   "type": "attribute",
-                  "label": "Connector Name",
+                  "label": "连接器名称",
                   "color": "#f44336",
                   "settings": {},
                   "_hash": 0.012483045440007778,
@@ -3795,7 +3795,7 @@
                 {
                   "name": "connectorType",
                   "type": "attribute",
-                  "label": "Connector Type",
+                  "label": "连接器类型",
                   "color": "#ffc107",
                   "settings": {},
                   "_hash": 0.6004192233378134,
@@ -3852,14 +3852,14 @@
           "color": "rgba(0, 0, 0, 0.87)",
           "padding": "4px",
           "settings": {
-            "entitiesTitle": "Devices",
+            "entitiesTitle": "设备列表",
             "enableSearch": true,
             "enableSelectColumnDisplay": true,
             "enableStickyHeader": true,
             "enableStickyAction": true,
             "reserveSpaceForHiddenAction": "true",
             "displayEntityName": true,
-            "entityNameColumnTitle": "Device Name",
+            "entityNameColumnTitle": "设备名称",
             "displayEntityLabel": false,
             "displayEntityType": false,
             "displayPagination": true,
@@ -3867,7 +3867,7 @@
             "defaultSortOrder": "entityName",
             "useRowStyleFunction": false
           },
-          "title": "Devices",
+          "title": "设备列表",
           "dropShadow": true,
           "enableFullscreen": true,
           "titleStyle": {
@@ -3886,7 +3886,7 @@
                 {
                   "name": "type",
                   "type": "entityField",
-                  "label": "Device Type",
+                  "label": "设备类型",
                   "color": "#2196f3",
                   "settings": {},
                   "_hash": 0.3129929097366162,
@@ -3906,7 +3906,7 @@
                     "columnWidth": "0px",
                     "useCellStyleFunction": false,
                     "useCellContentFunction": true,
-                    "cellContentFunction": "let cssClass;\r\nswitch (value) {\r\n      case \"Active\":\r\n        cssClass = \"status status-active\";\r\n        break;\r\n      case \"Inactive\":\r\n           default:\r\n        cssClass = \"status status-inactive\";\r\n        break;\r\n    }\r\n    \r\n    return `<span class='${cssClass}'>${value}</span>`;",
+                    "cellContentFunction": "let cssClass;\r\nswitch (value) {\r\n      case \"在线\":\r\n        cssClass = \"status status-active\";\r\n        break;\r\n      case \"离线\":\r\n           default:\r\n        cssClass = \"status status-inactive\";\r\n        break;\r\n    }\r\n    \r\n    return `<span class='${cssClass}'>${value}</span>`;",
                     "defaultColumnVisibility": "visible",
                     "columnSelectionToDisplay": "enabled"
                   },
@@ -3916,12 +3916,12 @@
                   "decimals": null,
                   "funcBody": null,
                   "usePostProcessing": true,
-                  "postFuncBody": "return value == 'true' ? \"Active\": \"Inactive\";"
+                  "postFuncBody": "return value == 'true' ? \"在线\": \"离线\";"
                 },
                 {
                   "name": "connectorName",
                   "type": "attribute",
-                  "label": "Connector Name",
+                  "label": "连接器名称",
                   "color": "#f44336",
                   "settings": {},
                   "_hash": 0.012483045440007778,
@@ -3935,7 +3935,7 @@
                 {
                   "name": "connectorType",
                   "type": "attribute",
-                  "label": "Connector Type",
+                  "label": "连接器类型",
                   "color": "#ffc107",
                   "settings": {},
                   "_hash": 0.6004192233378134,
@@ -3992,14 +3992,14 @@
           "color": "rgba(0, 0, 0, 0.87)",
           "padding": "4px",
           "settings": {
-            "entitiesTitle": "Devices",
+            "entitiesTitle": "设备列表",
             "enableSearch": true,
             "enableSelectColumnDisplay": true,
             "enableStickyHeader": true,
             "enableStickyAction": true,
             "reserveSpaceForHiddenAction": "true",
             "displayEntityName": true,
-            "entityNameColumnTitle": "Device Name",
+            "entityNameColumnTitle": "设备名称",
             "displayEntityLabel": false,
             "displayEntityType": false,
             "displayPagination": true,
@@ -4007,7 +4007,7 @@
             "defaultSortOrder": "entityName",
             "useRowStyleFunction": false
           },
-          "title": "Devices",
+          "title": "设备列表",
           "dropShadow": true,
           "enableFullscreen": true,
           "titleStyle": {
@@ -4026,7 +4026,7 @@
                 {
                   "name": "type",
                   "type": "entityField",
-                  "label": "Device Type",
+                  "label": "设备类型",
                   "color": "#2196f3",
                   "settings": {},
                   "_hash": 0.3129929097366162,
@@ -4046,7 +4046,7 @@
                     "columnWidth": "0px",
                     "useCellStyleFunction": false,
                     "useCellContentFunction": true,
-                    "cellContentFunction": "let cssClass;\r\nswitch (value) {\r\n      case \"Active\":\r\n        cssClass = \"status status-active\";\r\n        break;\r\n      case \"Inactive\":\r\n           default:\r\n        cssClass = \"status status-inactive\";\r\n        break;\r\n    }\r\n    \r\n    return `<span class='${cssClass}'>${value}</span>`;",
+                    "cellContentFunction": "let cssClass;\r\nswitch (value) {\r\n      case \"在线\":\r\n        cssClass = \"status status-active\";\r\n        break;\r\n      case \"离线\":\r\n           default:\r\n        cssClass = \"status status-inactive\";\r\n        break;\r\n    }\r\n    \r\n    return `<span class='${cssClass}'>${value}</span>`;",
                     "defaultColumnVisibility": "visible",
                     "columnSelectionToDisplay": "enabled"
                   },
@@ -4056,12 +4056,12 @@
                   "decimals": null,
                   "funcBody": null,
                   "usePostProcessing": true,
-                  "postFuncBody": "return value == 'true' ? \"Active\": \"Inactive\";"
+                  "postFuncBody": "return value == 'true' ? \"在线\": \"离线\";"
                 },
                 {
                   "name": "connectorName",
                   "type": "attribute",
-                  "label": "Connector Name",
+                  "label": "连接器名称",
                   "color": "#f44336",
                   "settings": {},
                   "_hash": 0.012483045440007778,
@@ -4075,7 +4075,7 @@
                 {
                   "name": "connectorType",
                   "type": "attribute",
-                  "label": "Connector Type",
+                  "label": "连接器类型",
                   "color": "#ffc107",
                   "settings": {},
                   "_hash": 0.6004192233378134,
@@ -6913,14 +6913,14 @@
           "color": "rgba(0, 0, 0, 0.87)",
           "padding": "4px",
           "settings": {
-            "entitiesTitle": "Devices",
+            "entitiesTitle": "设备列表",
             "enableSearch": true,
             "enableSelectColumnDisplay": true,
             "enableStickyHeader": true,
             "enableStickyAction": true,
             "reserveSpaceForHiddenAction": "true",
             "displayEntityName": true,
-            "entityNameColumnTitle": "Device Name",
+            "entityNameColumnTitle": "设备名称",
             "displayEntityLabel": false,
             "displayEntityType": false,
             "displayPagination": true,
@@ -6928,7 +6928,7 @@
             "defaultSortOrder": "entityName",
             "useRowStyleFunction": false
           },
-          "title": "Devices",
+          "title": "设备列表",
           "dropShadow": true,
           "enableFullscreen": true,
           "titleStyle": {
@@ -6947,7 +6947,7 @@
                 {
                   "name": "type",
                   "type": "entityField",
-                  "label": "Device Type",
+                  "label": "设备类型",
                   "color": "#2196f3",
                   "settings": {},
                   "_hash": 0.3129929097366162,
@@ -6967,7 +6967,7 @@
                     "columnWidth": "0px",
                     "useCellStyleFunction": false,
                     "useCellContentFunction": true,
-                    "cellContentFunction": "let cssClass;\r\nswitch (value) {\r\n      case \"Active\":\r\n        cssClass = \"status status-active\";\r\n        break;\r\n      case \"Inactive\":\r\n           default:\r\n        cssClass = \"status status-inactive\";\r\n        break;\r\n    }\r\n    \r\n    return `<span class='${cssClass}'>${value}</span>`;",
+                    "cellContentFunction": "let cssClass;\r\nswitch (value) {\r\n      case \"在线\":\r\n        cssClass = \"status status-active\";\r\n        break;\r\n      case \"离线\":\r\n           default:\r\n        cssClass = \"status status-inactive\";\r\n        break;\r\n    }\r\n    \r\n    return `<span class='${cssClass}'>${value}</span>`;",
                     "defaultColumnVisibility": "visible",
                     "columnSelectionToDisplay": "enabled"
                   },
@@ -6977,12 +6977,12 @@
                   "decimals": null,
                   "funcBody": null,
                   "usePostProcessing": true,
-                  "postFuncBody": "return value == 'true' ? \"Active\": \"Inactive\";"
+                  "postFuncBody": "return value == 'true' ? \"在线\": \"离线\";"
                 },
                 {
                   "name": "connectorName",
                   "type": "attribute",
-                  "label": "Connector Name",
+                  "label": "连接器名称",
                   "color": "#f44336",
                   "settings": {},
                   "_hash": 0.012483045440007778,
@@ -6996,7 +6996,7 @@
                 {
                   "name": "connectorType",
                   "type": "attribute",
-                  "label": "Connector Type",
+                  "label": "连接器类型",
                   "color": "#ffc107",
                   "settings": {},
                   "_hash": 0.6004192233378134,
@@ -7046,7 +7046,7 @@
     },
     "states": {
       "default": {
-        "name": "网关列表",
+        "name": "网关",
         "root": true,
         "layouts": {
           "main": {
@@ -8203,7 +8203,7 @@
           "fetchLastLevelOnly": false,
           "filters": [
             {
-              "relationType": "创建d",
+              "relationType": "Contains",
               "entityTypes": [
                 "DEVICE"
               ]

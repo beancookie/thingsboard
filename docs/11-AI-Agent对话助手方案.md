@@ -1,6 +1,6 @@
 # 11 AI Agent 对话助手方案
 
-> 中铁信科物联网平台文档集｜[总目录](../README.md)｜上一篇 [租户与产品快速使用手册](10-租户与产品快速使用手册.md)｜下一篇 [AI Agent 操作演示](12-AI-Agent操作演示.md)
+> 中国中铁物联网平台文档集｜[总目录](../README.md)｜上一篇 [租户与产品快速使用手册](10-租户与产品快速使用手册.md)｜下一篇 [AI Agent 操作演示](12-AI-Agent操作演示.md)
 
 本文描述前端 AI 对话助手和 Python Agent 后端的实现方案。当前为规划方案，不包含已实现代码。
 
@@ -10,7 +10,7 @@
 
 - 前端增加全局 AI 对话助手。
 - 后端新增一个独立 Python Agent 服务，只暴露一个公开 API。
-- 支持 SYS_ADMIN 和 TENANT_ADMIN。
+- 支持系统管理员和租户管理员。
 - 支持创建租户、租户管理员、产品、设备、用户。
 - 写操作必须由用户确认后执行。
 
@@ -19,7 +19,7 @@
 - 删除、批量修改和批量删除。
 - 聊天记录持久化。
 - SSE 流式输出。
-- 修改 ThingsBoard 后端或数据库结构。
+- 修改中国中铁物联网平台后端或数据库结构。
 
 ## 11.2 总体架构
 
@@ -32,7 +32,7 @@ flowchart TD
   E --> F["前端确认"]
   F -->|"mode=execute"| G["Agent 执行白名单工具"]
   G --> H["thing-model REST API"]
-  G --> I["ThingsBoard REST API"]
+  G --> I["中国中铁物联网平台 REST API"]
   H --> J["返回执行结果"]
   I --> J
 ```
@@ -47,10 +47,10 @@ flowchart TD
 
 Python Agent 是独立服务：
 
-- 不修改 ThingsBoard 后端。
+- 不修改中国中铁物联网平台后端。
 - 不直接访问 `thingmodel` 数据库。
 - 不读取 `plat_vendor_account`。
-- 只调用现有 `thing-model` 和 ThingsBoard REST API。
+- 只调用现有 `thing-model` 和中国中铁物联网平台 REST API。
 
 ## 11.3 前端设计
 
@@ -73,7 +73,7 @@ ui-ngx/src/app/shared/models/ai-agent.models.ts
 
 界面能力：
 
-- 右下角悬浮按钮，仅 SYS_ADMIN / TENANT_ADMIN 显示。
+- 右下角悬浮按钮，仅系统管理员/租户管理员显示。
 - 点击打开聊天面板。
 - 支持文字输入、JSON 文件上传、历史消息展示。
 - 写操作展示待确认动作卡片。
@@ -148,13 +148,13 @@ Docker
 - FastAPI 提供异步 API、Pydantic 校验和 OpenAPI 文档。
 - Pydantic 定义工具参数、请求和响应模型，后端重新校验模型输出。
 - AsyncOpenAI 支持 OpenAI 兼容接口，可接 DeepSeek、通义千问、Ollama 等。
-- httpx 调用现有 `thing-model` 和 ThingsBoard REST。
+- httpx 调用现有 `thing-model` 和中国中铁物联网平台 REST。
 - uv 管理 Python 版本、虚拟环境、依赖和 `uv.lock`。
 - 第一版不使用 LangGraph；后续需要多步骤审批、持久化会话、多 Agent 时再迁移。
 
 ### REST SDK 选择
 
-ThingsBoard 没有官方维护的管理 REST SDK。`tb-mqtt-client` 和 `tb-gateway-mqtt` 只用于设备侧 MQTT。
+中国中铁物联网平台没有官方维护的管理 REST SDK。`tb-mqtt-client` 和 `tb-gateway-mqtt` 只用于设备侧 MQTT。
 
 | 方案 | 结论 |
 | --- | --- |
@@ -162,9 +162,9 @@ ThingsBoard 没有官方维护的管理 REST SDK。`tb-mqtt-client` 和 `tb-gate
 | `requests` | 同步阻塞，不适合异步 Agent |
 | `aiohttp` | 可用，但更底层，需要自行封装 |
 | OpenAPI 生成客户端 | 接口很多时可用，生成代码重，和 TB 版本耦合 |
-| 第三方 ThingsBoard SDK | 不建议，维护和兼容性不确定 |
+| 第三方中国中铁物联网平台 SDK | 不建议，维护和兼容性不确定 |
 
-建议封装 `ThingsBoardClient`：
+建议封装 `中国中铁物联网平台Client`：
 
 ```text
 AsyncClient
@@ -213,9 +213,9 @@ ai-agent/
 POST /chat
 ```
 
-- 校验 ThingsBoard JWT。
-- 允许 `SYS_ADMIN` 和 `TENANT_ADMIN`。
-- 从 ThingsBoard 获取当前用户角色和 tenantId。
+- 校验中国中铁物联网平台 JWT。
+- 允许系统管理员和租户管理员。
+- 从中国中铁物联网平台获取当前用户角色和 tenantId。
 - 不新增登录体系。
 
 JWT 校验：
@@ -225,7 +225,7 @@ GET /api/auth/user
 X-Authorization: Bearer <TB_JWT>
 ```
 
-结果按 token 哈希缓存 60 秒。Python 服务不持久化 JWT，不记录 JWT。
+结果按令牌哈希缓存 60 秒。Python 服务不持久化 JWT，不记录 JWT。
 
 ### AgentService
 
@@ -252,7 +252,7 @@ X-Authorization: Bearer <TB_JWT>
 执行层只调用：
 
 - `thing-model` REST API
-- ThingsBoard REST API
+- 中国中铁物联网平台 REST API
 
 ### OpenAI Client
 
@@ -264,19 +264,19 @@ POST {base-url}/chat/completions
 
 要求模型支持 function calling / tools。DeepSeek、通义千问、OpenAI 等兼容接口可直接使用。
 
-## 11.6 ThingsBoard REST 对接
+## 11.6 中国中铁物联网平台 REST 对接
 
 | 操作 | REST 接口 | 鉴权 |
 | --- | --- | --- |
 | 校验当前用户 | `GET /api/auth/user` | 当前用户 JWT |
-| 查询租户 | `GET /api/tenants` | SYS_ADMIN JWT |
-| 创建租户 | `POST /api/tenant` | SYS_ADMIN JWT |
-| 初始化厂商服务账号 | `POST /api/admin/tenants/{tenantId}/provision-auto` | SYS_ADMIN JWT |
-| 创建租户管理员 | `POST /api/user?sendActivationMail=true` | SYS_ADMIN JWT |
+| 查询租户 | `GET /api/tenants` | 系统管理员 JWT |
+| 创建租户 | `POST /api/tenant` | 系统管理员 JWT |
+| 初始化厂商服务账号 | `POST /api/admin/tenants/{tenantId}/provision-auto` | 系统管理员 JWT |
+| 创建租户管理员 | `POST /api/user?sendActivationMail=true` | 系统管理员 JWT |
 | 查询设备 | `GET /api/tenant/devices` | 当前租户 JWT |
-| 创建设备 | `POST /api/device` | TENANT_ADMIN JWT |
-| 查询产品 | `GET /api/products` | TENANT_ADMIN JWT |
-| 创建产品 | `POST /api/products` | TENANT_ADMIN JWT |
+| 创建设备 | `POST /api/device` | 租户管理员 JWT |
+| 查询产品 | `GET /api/products` | 租户管理员 JWT |
+| 创建产品 | `POST /api/products` | 租户管理员 JWT |
 
 Python 调用示例：
 
@@ -295,35 +295,35 @@ async def current_user(base_url: str, token: str) -> dict:
 
 调用边界：
 
-- 产品、设备、用户由 TENANT_ADMIN 操作本租户。
-- 租户、租户管理员、服务账号由 SYS_ADMIN 操作。
-- SYS_ADMIN 代建产品或设备需要 `thing-model` 额外提供内部管理接口，第一版不做。
-- 设备 Access Token 不在对话中返回，只返回设备 ID 和名称。
+- 产品、设备、用户由租户管理员操作本租户。
+- 租户、租户管理员、服务账号由系统管理员操作。
+- 系统管理员代建产品或设备需要 `thing-model` 额外提供内部管理接口，第一版不做。
+- 设备访问令牌不在对话中返回，只返回设备 ID和名称。
 
 ## 11.7 Agent 工具与权限
 
 | 工具 | 角色 | 实现 |
 | --- | --- | --- |
-| `list_tenants` | SYS_ADMIN | ThingsBoard REST 查询租户 |
-| `list_products` | TENANT_ADMIN | `GET /api/products` |
-| `list_devices` | SYS_ADMIN / TENANT_ADMIN | ThingsBoard REST 查询设备 |
-| `create_tenant` | SYS_ADMIN | ThingsBoard REST，随后调用 `provision-auto` |
-| `create_tenant_admin` | SYS_ADMIN | ThingsBoard REST，角色 `TENANT_ADMIN`，发送激活邮件 |
-| `create_product` | TENANT_ADMIN | `POST /api/products`，由 thing-model 自动规范化 TSL |
-| `create_device` | TENANT_ADMIN | 查询产品设备配置后创建 ThingsBoard Device |
-| `create_user` | SYS_ADMIN / TENANT_ADMIN | 在本租户创建用户并发送激活邮件 |
+| `list_tenants` | 系统管理员 | 中国中铁物联网平台 REST 查询租户 |
+| `list_products` | 租户管理员 | `GET /api/products` |
+| `list_devices` | 系统管理员/租户管理员 | 中国中铁物联网平台 REST 查询设备 |
+| `create_tenant` | 系统管理员 | 中国中铁物联网平台 REST，随后调用 `provision-auto` |
+| `create_tenant_admin` | 系统管理员 | 中国中铁物联网平台 REST，角色租户管理员，发送激活邮件 |
+| `create_product` | 租户管理员 | `POST /api/products`，由 thing-model 自动规范化 TSL |
+| `create_device` | 租户管理员 | 查询产品设备配置后创建中国中铁物联网平台设备 |
+| `create_user` | 系统管理员/租户管理员 | 在本租户创建用户并发送激活邮件 |
 
 约束：
 
-- TENANT_ADMIN 不能指定其他 tenantId。
-- Python Agent 不持久化或记录 ThingsBoard JWT。
+- 租户管理员不能指定其他 tenantId。
+- Python Agent 不持久化或记录中国中铁物联网平台 JWT。
 - Python Agent 不接触数据库密码和 `THINGMODEL_SECRET_KEY`。
 - Python Agent 不直接访问数据库，只调用现有 REST API。
 - 第一版不提供删除和修改工具。
 - 主键、名称和 TSL 由后端重新校验，不信任模型输出。
-- 创建产品由 `thing-model` 自动规范化腾讯 TSL 并同步 ThingsBoard。
-- 创建用户依赖 ThingsBoard SMTP 激活邮件。
-- 设备 Access Token 不在对话中返回，只返回设备 ID 和名称。
+- 创建产品由 `thing-model` 自动规范化腾讯 TSL 并同步中国中铁物联网平台。
+- 创建用户依赖中国中铁物联网平台 SMTP 激活邮件。
+- 设备访问令牌不在对话中返回，只返回设备 ID和名称。
 
 ## 11.8 确认流程
 
@@ -351,13 +351,13 @@ sequenceDiagram
   participant U as 用户
   participant FE as 前端
   participant A as Python Agent
-  participant TB as ThingsBoard REST
+  participant TB as 中国中铁物联网平台 REST
   participant TM as thing-model REST
 
   U->>FE: 点击“确认执行”
   FE->>A: POST /chat，mode=execute + actions
   A->>A: 重新校验角色、参数和租户
-  A->>TB: 执行 ThingsBoard 操作
+  A->>TB: 执行中国中铁物联网平台操作
   A->>TM: 执行 thing-model 操作
   TB-->>A: 返回结果
   TM-->>A: 返回结果
@@ -365,7 +365,7 @@ sequenceDiagram
   FE-->>U: 展示执行结果
 ```
 
-未确认的写操作不会落库或调用 ThingsBoard。
+未确认的写操作不会落库或调用中国中铁物联网平台。
 
 ## 11.9 配置
 
@@ -390,13 +390,13 @@ AI_AGENT_MAX_ACTIONS=10
 
 - `AI_AGENT_OPENAI_API_KEY` 只保存在后端 Secret 中，不返回前端。
 - `AI_AGENT_THING_MODEL_URL` 指向现有 `thing-model` 服务。
-- `AI_AGENT_THINGSBOARD_URL` 指向 ThingsBoard。
+- `AI_AGENT_THINGSBOARD_URL` 指向中国中铁物联网平台。
 - `AI_AGENT_MAX_MESSAGES` 和 `AI_AGENT_MAX_ACTIONS` 采用队列语义：只保留最近 N 条，超出时静默丢弃最早内容，不返回超限错误。
 - Python 服务默认监听 `8000`。
 
 ## 11.10 安全要求
 
-- Agent API 必须校验 ThingsBoard JWT。
+- Agent API 必须校验中国中铁物联网平台 JWT。
 - 每个工具独立校验角色和数据范围。
 - 所有写操作必须二次确认。
 - 消息和动作按队列保留最近 N 条，超出时静默丢弃最早内容；TSL 大小、附件大小和模型输出长度仍需限制。
@@ -408,7 +408,7 @@ AI_AGENT_MAX_ACTIONS=10
 ## 11.11 实施顺序
 
 1. Python Agent 服务骨架、配置和健康检查。
-2. ThingsBoard JWT 校验与 `httpx` 客户端封装。
+2. 中国中铁物联网平台 JWT 校验与 `httpx` 客户端封装。
 3. OpenAI 兼容模型调用和只读工具。
 4. 前端聊天面板和普通对话。
 5. 增加 `create_tenant`、`create_tenant_admin`、`create_product`。
@@ -420,16 +420,16 @@ AI_AGENT_MAX_ACTIONS=10
 
 | # | 场景 | 期望 |
 | --- | --- | --- |
-| 1 | SYS_ADMIN 创建租户 | 租户创建成功，服务账号初始化成功 |
-| 2 | SYS_ADMIN 创建租户管理员 | 用户创建成功并发送激活邮件 |
-| 3 | TENANT_ADMIN 创建本租户产品 | 产品创建并自动同步 ThingsBoard |
-| 4 | TENANT_ADMIN 指定其他租户 | 返回 403 |
+| 1 | 系统管理员创建租户 | 租户创建成功，服务账号初始化成功 |
+| 2 | 系统管理员创建租户管理员 | 用户创建成功并发送激活邮件 |
+| 3 | 租户管理员创建本租户产品 | 产品创建并自动同步中国中铁物联网平台 |
+| 4 | 租户管理员指定其他租户 | 返回 403 |
 | 5 | 上传 `4DZDCQUA2D.json` 创建产品 | 自动规范化 TSL 并创建成功 |
 | 6 | 未确认写操作 | 不创建任何数据 |
 | 7 | 确认创建动作 | 只执行一次，返回动作结果 |
 | 8 | AI 服务不可用 | 返回明确错误，不执行动作 |
 | 9 | 创建用户但 SMTP 未配置 | 返回激活邮件失败原因 |
-| 10 | 创建设备 | Device 创建成功并绑定产品设备配置 |
+| 10 | 创建设备 | 设备创建成功并绑定产品设备配置 |
 
 ## 11.13 设备侧 MQTT SDK 边界
 
@@ -437,7 +437,7 @@ AI_AGENT_MAX_ACTIONS=10
 
 - `tb-mqtt-client`：设备直连，上报遥测、属性、事件和接收 RPC。
 - `tb-gateway-mqtt`：网关代子设备上报。
-- 两者使用设备/网关 Access Token，不使用用户 JWT。
+- 两者使用设备/网关访问令牌，不使用用户 JWT。
 - 两者不能创建租户、产品、设备或用户，不属于 Agent 管理 API。
 
 网关场景示例：

@@ -125,6 +125,26 @@ Gateway 方式使用网关设备 Token 连接 MQTT，由网关代多台预创建
 
 > 当前 `register_devices.py` 只注册产品子设备；网关设备需通过 ThingsBoard UI 或 REST 创建。
 
+一键创建网关与子设备（按物模型目录批量）：
+
+```powershell
+python thing-model/scripts/setup_gateway.py `
+  --tb-url http://localhost:18080 `
+  --thingmodel-url http://localhost:8090 `
+  --username tenant@thingsboard.org `
+  --password tenant `
+  --gateway-name gateway-01 `
+  --products-dir thing-model/migrate/integrated `
+  --count 1 `
+  --site-code SIM `
+  --output-dir .
+```
+
+- 每个物模型创建 1 台子设备，命名 `<ProductId>-01`。
+- 默认关系类型为 `Contains`，与平台标准关系及网关 Dashboard 保持一致。
+- 脚本幂等，可重复执行；生成的 CSV 含 Access Token。
+- 脚本不负责导入/同步产品，需先导入物模型。
+
 注册子设备：
 
 ```powershell
@@ -172,8 +192,31 @@ python thing-model/scripts/simulate_gateway.py `
 - `--events-per-packet` 控制每包事件数量，默认 4。
 - 如果本机 Python 受 `HTTP_PROXY`/`HTTPS_PROXY` 影响导致平台 TSL 获取超时，增加 `--tsl thing-model/migrate/4DZDCQUA2D.tsl.json`。
 
-## 密码
+多产品持续 mock（一个网关、多个产品）：
 
+```powershell
+python thing-model/scripts/simulate_gateway_all.py `
+  --gateway-csv gateway-credentials.csv `
+  --gateway-name gateway-01 `
+  --sub-devices-csv sub-devices.csv `
+  --tsl-dir thing-model/migrate/integrated `
+  --mqtt-host localhost --mqtt-port 1883 `
+  --mode auto --interval 1 --quiet
+```
+
+- 只建立一条 MQTT 连接，网关保持在线。
+- 按 `sub-devices.csv` 的 `product_id` 自动分组，每个产品使用自己的 TSL。
+- `--mode auto`：有事件的产品用 `mixed`，无事件的用 `telemetry`。
+- `--count 0` 默认无限循环，Ctrl+C 发送 disconnect 并退出。
+- `--tsl-dir` 优先使用本地物模型文件，缺失时才回退到 thing-model 获取。
+- 默认同时 mock 网关自身：写入 `Status/Name/Type/Version/active_connectors/general_configuration`，发布 `serviceStats/machineStats/ALL_ERRORS_COUNT`，网关在运行期间保持在线。
+- 网关 mock 需要 `TENANT_ADMIN` 账号；未传 `--password` 时会提示输入。
+- `--no-gateway-mock` 可关闭网关自身 mock。
+- `--gateway-version`、`--gateway-type`、`--connectors` 可自定义网关属性。
+- 先用 `--dry-run --count 1` 检查报文。
+
+
+## 密码
 推荐使用环境变量：
 
 ```powershell

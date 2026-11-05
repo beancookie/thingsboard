@@ -1,6 +1,6 @@
 # 7 API 参考
 
-> 中铁信科物联网平台文档集｜[总目录](../README.md)｜上一篇 [前端与权限](06-前端与权限.md)｜下一篇 [部署与运维](08-部署与运维.md)
+> 中国中铁物联网平台文档集｜[总目录](../README.md)｜上一篇 [前端与权限](06-前端与权限.md)｜下一篇 [部署与运维](08-部署与运维.md)
 
 ## 7.1 访问方式
 
@@ -16,7 +16,7 @@ http://<thing-model-host>:8090
 /api/thing-model/*  ->  thing-model /api/*
 ```
 
-所有接口使用 ThingsBoard JWT：
+所有接口使用中国中铁物联网平台 JWT：
 
 ```http
 X-Authorization: Bearer <TB_JWT>
@@ -32,9 +32,9 @@ Authorization: Bearer <TB_JWT>
 
 | 接口组 | 允许角色 |
 | --- | --- |
-| `/api/auth/me` | 任意已登录 ThingsBoard 用户 |
-| `/api/products/**` | `TENANT_ADMIN` |
-| `/api/admin/**` | `SYS_ADMIN` |
+| `/api/auth/me` | 任意已登录中国中铁物联网平台用户 |
+| `/api/products/**` | 租户管理员 |
+| `/api/admin/**` | 系统管理员 |
 
 产品租户始终来自 JWT。跨租户产品访问返回 `404`；请求体指定其他 tenantId 返回 `403`。
 
@@ -50,10 +50,11 @@ GET /api/auth/me
 {
   "userId": "...",
   "tenantId": "...",
-  "authority": "TENANT_ADMIN",
   "email": "tenant@example.com"
 }
 ```
+
+authority 字段返回租户管理员权限。
 
 ## 7.4 产品接口
 
@@ -62,12 +63,12 @@ GET /api/auth/me
 | GET | `/api/products?keyword=` | 当前租户产品列表 |
 | GET | `/api/products/{productId}` | 产品详情、版本列表、物模型目录 |
 | GET | `/api/products/{productId}/thing-model` | 最新 TSL 原文 |
-| POST | `/api/products` | 创建产品并同步 ThingsBoard |
+| POST | `/api/products` | 创建产品并同步中国中铁物联网平台 |
 | PUT | `/api/products/{productId}/thing-model` | 提交新 TSL 版本并同步 |
 | POST | `/api/products/{productId}/thing-model/validate` | 只校验 TSL，不落库 |
 | GET | `/api/products/{productId}/catalog` | 最新 TSL 的属性/事件/行为目录 |
-| POST | `/api/products/{productId}/sync` | 对最新版本重新同步 ThingsBoard |
-| DELETE | `/api/products/{productId}` | 删除产品及其物模型和 ThingsBoard 资源 |
+| POST | `/api/products/{productId}/sync` | 对最新版本重新同步中国中铁物联网平台 |
+| DELETE | `/api/products/{productId}` | 删除产品及其物模型和中国中铁物联网平台资源 |
 
 ### 创建产品
 
@@ -257,7 +258,7 @@ DELETE /api/products/{productId}
 成功返回 `204`。删除范围：
 
 - `plat_product`、全部 TSL 版本、属性/事件/行为目录、绑定记录；
-- 产品独占的 Device Profile、产品 Asset、产品 Rule Chain。
+- 产品独占的设备配置、产品资产、产品规则链。
 
 产品下仍有设备时返回：
 
@@ -268,24 +269,24 @@ DELETE /api/products/{productId}
 }
 ```
 
-ThingsBoard 资源删除失败返回 `502 TB_DELETE_FAILED`，平台数据保留，可重试。已被删除的资源在重试时按 404 忽略。
+中国中铁物联网平台资源删除失败返回 `502 TB_DELETE_FAILED`，平台数据保留，可重试。已被删除的资源在重试时按 404 忽略。
 
 ## 7.5 租户服务账号接口
 
-仅 `SYS_ADMIN` 可调用。
+仅系统管理员可调用。
 
 | 方法 | 路径 | 说明 |
 | --- | --- | --- |
-| POST | `/api/admin/tenants/{tenantId}/account` | 注册或更新已有 ThingsBoard 账号 |
+| POST | `/api/admin/tenants/{tenantId}/account` | 注册或更新已有中国中铁物联网平台账号 |
 | POST | `/api/admin/tenants/{tenantId}/provision` | 幂等注册已有租户管理员 |
-| POST | `/api/admin/tenants/{tenantId}/provision-auto?force=false` | 自动创建、激活并注册专用 `TENANT_ADMIN` |
-| GET | `/api/admin/tenants/{tenantId}/account` | 查询已注册的 masked 账号 |
+| POST | `/api/admin/tenants/{tenantId}/provision-auto?force=false` | 自动创建、激活并注册专用租户管理员 |
+| GET | `/api/admin/tenants/{tenantId}/account` | 查询已注册的 脱敏账号 |
 
 ### 自动初始化
 
 ```http
 POST /api/admin/tenants/{tenantId}/provision-auto?force=false
-X-Authorization: Bearer <SYS_ADMIN_JWT>
+X-Authorization: Bearer <系统管理员_JWT>
 ```
 
 返回：
@@ -300,7 +301,7 @@ X-Authorization: Bearer <SYS_ADMIN_JWT>
 
 行为：
 
-- 账号已存在且 `force=false`：直接返回已有 masked 账号。
+- 账号已存在且 `force=false`：直接返回已有 脱敏账号。
 - 账号已存在且 `force=true`：删除旧服务账号用户后重建。
 - 创建或激活失败时尽力删除刚创建的用户。
 - 密码不返回，不写日志。
@@ -309,7 +310,7 @@ X-Authorization: Bearer <SYS_ADMIN_JWT>
 
 ```http
 POST /api/admin/tenants/{tenantId}/provision
-X-Authorization: Bearer <SYS_ADMIN_JWT>
+X-Authorization: Bearer <系统管理员_JWT>
 Content-Type: application/json
 
 {
@@ -368,16 +369,16 @@ GET /api/admin/tenants/{tenantId}/account
 | `PRODUCT_NOT_FOUND` | 404 | 产品不存在或不属于当前租户 |
 | `PRODUCT_CONFLICT` | 409 | 产品创建并发冲突 |
 | `PRODUCT_HAS_DEVICES` | 409 | 产品下仍有设备，禁止删除 |
-| `PRODUCT_ID_MISSING` | 400 | 缺少 ProductId |
-| `PRODUCT_ID_MISMATCH` | 400 | 请求 ProductId 与 TSL 不一致 |
+| `PRODUCT_ID_MISSING` | 400 | 缺少 产品 ID |
+| `PRODUCT_ID_MISMATCH` | 400 | 请求 产品 ID 与 TSL 不一致 |
 | `TSL_REQUIRED` | 400 | 缺少 TSL |
 | `TSL_INVALID` | 400 | TSL 校验失败 |
 | `TSL_VERSION_EXISTS` | 409 | 同一版本内容不同 |
 | `VERSION_MISSING` | 400 | 缺少 TSL 版本 |
 | `VERSION_MISMATCH` | 400 | 请求版本与 TSL 内容不一致 |
-| `TB_SYNC_FAILED` | 502 | ThingsBoard 同步失败，可重试 |
-| `TB_DELETE_FAILED` | 502 | ThingsBoard 资源删除失败，可重试 |
-| `TB_UNAVAILABLE` | 502 | ThingsBoard 不可达 |
+| `TB_SYNC_FAILED` | 502 | 中国中铁物联网平台同步失败，可重试 |
+| `TB_DELETE_FAILED` | 502 | 中国中铁物联网平台资源删除失败，可重试 |
+| `TB_UNAVAILABLE` | 502 | 中国中铁物联网平台不可达 |
 | `ITEM_NOT_FOUND` | 404 | 查询对象不存在 |
 
 ## 7.7 接口边界

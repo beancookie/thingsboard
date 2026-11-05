@@ -32,6 +32,8 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="Thing Model AI Agent",
     version="0.1.0",
+    docs_url="/swagger-ui.html",
+    redoc_url=None,
     lifespan=lifespan,
 )
 app.include_router(health.router)

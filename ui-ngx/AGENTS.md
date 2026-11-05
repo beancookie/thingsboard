@@ -94,6 +94,8 @@ yarn install
 以下菜单在 `src/app/core/services/menu.models.ts` 的 `menuFilters` 中返回 `false`，
 因此不可见，但菜单定义、页面、路由和业务代码均保留：
 
+- 仪表盘：`MenuId.dashboards`，路径 `/dashboards`
+- 资源：`MenuId.resources`，路径 `/resources`（含全部子菜单）
 - 实体视图：`MenuId.entity_views`，路径 `/entities/entityViews`
 - Edge 管理：`MenuId.edge_management`
 - Edge 实例：`MenuId.edges`

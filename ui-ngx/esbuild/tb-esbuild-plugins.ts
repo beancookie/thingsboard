@@ -36,7 +36,7 @@ const resolveJQueryPlugin: Plugin = {
   }
 };
 
-const compressFileTypes = ['.js', '.css', '.html', '.svg', '.png', '.jpg', '.ttf', '.gif', '.woff', '.woff2', '.eot', '.json'];
+const compressFileTypes = ['.js', '.css', '.html', '.svg', '.png', '.jpg', '.ttf', '.gif', '.woff', '.woff2', '.eot', '.json', '.md'];
 const compressThreshold = 10240;
 
 const compressorPlugin: Plugin = {

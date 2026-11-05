@@ -37,6 +37,7 @@ import { TenantService } from '@app/core/http/tenant.service';
 import { TenantId } from '@app/shared/models/id/tenant-id';
 import { UserTabsComponent } from '@home/pages/user/user-tabs.component';
 import { isDefinedAndNotNull } from '@core/utils';
+import { isVendorServiceAccountEmail } from '@shared/models/vendor-account.models';
 
 export interface UsersTableRouteData {
   authority: Authority;
@@ -75,7 +76,11 @@ export class UsersTableConfigResolver  {
       new EntityTableColumn<User>('email', 'user.email', '33%')
     );
 
-    this.config.deleteEnabled = user => user && user.id && user.id.id !== this.authUser.id.id;
+    this.config.deleteEnabled = user => user && user.id && user.id.id !== this.authUser.id.id
+      && !this.isVendorServiceAccount(user);
+    this.config.deleteHidden = user => this.isVendorServiceAccount(user);
+    this.config.entitySelectionEnabled = user => !this.isVendorServiceAccount(user);
+    this.config.detailsReadonly = user => this.isVendorServiceAccount(user);
     this.config.deleteEntityTitle = user => this.translate.instant('user.delete-user-title', { userEmail: user.email });
     this.config.deleteEntityContent = () => this.translate.instant('user.delete-user-text');
     this.config.deleteEntitiesTitle = count => this.translate.instant('user.delete-users-title', {count});
@@ -122,6 +127,10 @@ export class UsersTableConfigResolver  {
         return this.config;
       })
     );
+  }
+
+  isVendorServiceAccount(user: User): boolean {
+    return isVendorServiceAccountEmail(user?.email, this.tenantId);
   }
 
   updateActionCellDescriptors(auth: AuthState) {

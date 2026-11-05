@@ -1,0 +1,336 @@
+{
+  "version": "1.0",
+  "properties": [
+    {
+      "id": "UA_V",
+      "name": "A相电压",
+      "desc": "",
+      "mode": "r",
+      "define": {
+        "type": "int",
+        "min": "0",
+        "max": "3000",
+        "start": "2205",
+        "step": "1",
+        "unit": "0.1V"
+      },
+      "required": false
+    },
+    {
+      "id": "UB_V",
+      "name": "B相电压",
+      "desc": "",
+      "mode": "r",
+      "define": {
+        "type": "int",
+        "min": "0",
+        "max": "3000",
+        "start": "2198",
+        "step": "1",
+        "unit": "0.1V"
+      },
+      "required": false
+    },
+    {
+      "id": "UC_V",
+      "name": "C相电压",
+      "desc": "",
+      "mode": "r",
+      "define": {
+        "type": "int",
+        "min": "0",
+        "max": "3000",
+        "start": "2210",
+        "step": "1",
+        "unit": "0.1V"
+      },
+      "required": false
+    },
+    {
+      "id": "IA_A",
+      "name": "A相电流",
+      "desc": "",
+      "mode": "r",
+      "define": {
+        "type": "int",
+        "min": "0",
+        "max": "1000",
+        "start": "122",
+        "step": "1",
+        "unit": "0.1A"
+      },
+      "required": false
+    },
+    {
+      "id": "IB_A",
+      "name": "B相电流",
+      "desc": "",
+      "mode": "r",
+      "define": {
+        "type": "int",
+        "min": "0",
+        "max": "1000",
+        "start": "118",
+        "step": "1",
+        "unit": "0.1A"
+      },
+      "required": false
+    },
+    {
+      "id": "IC_A",
+      "name": "C相电流",
+      "desc": "",
+      "mode": "r",
+      "define": {
+        "type": "int",
+        "min": "0",
+        "max": "1000",
+        "start": "121",
+        "step": "1",
+        "unit": "0.1A"
+      },
+      "required": false
+    },
+    {
+      "id": "P_kW",
+      "name": "有功功率",
+      "desc": "",
+      "mode": "r",
+      "define": {
+        "type": "int",
+        "min": "0",
+        "max": "65535",
+        "start": "15000",
+        "step": "1",
+        "unit": "0.01kW"
+      },
+      "required": false
+    },
+    {
+      "id": "Q_kvar",
+      "name": "无功功率",
+      "desc": "",
+      "mode": "r",
+      "define": {
+        "type": "int",
+        "min": "0",
+        "max": "65535",
+        "start": "5000",
+        "step": "1",
+        "unit": "0.01kvar"
+      },
+      "required": false
+    },
+    {
+      "id": "F_Hz",
+      "name": "频率",
+      "desc": "",
+      "mode": "r",
+      "define": {
+        "type": "int",
+        "min": "4900",
+        "max": "5100",
+        "start": "5000",
+        "step": "1",
+        "unit": "0.01Hz"
+      },
+      "required": false
+    },
+    {
+      "id": "ENERGY_kWh",
+      "name": "累计电量",
+      "desc": "",
+      "mode": "r",
+      "define": {
+        "type": "int",
+        "min": "0",
+        "max": "65535",
+        "start": "0",
+        "step": "1",
+        "unit": "kWh"
+      },
+      "required": false
+    },
+    {
+      "id": "TEMP_C",
+      "name": "温度",
+      "desc": "",
+      "mode": "r",
+      "define": {
+        "type": "int",
+        "min": "-40",
+        "max": "125",
+        "start": "25",
+        "step": "1",
+        "unit": "℃"
+      },
+      "required": false
+    },
+    {
+      "id": "DM100_TAG",
+      "name": "DM100标签",
+      "desc": "",
+      "mode": "r",
+      "define": {
+        "type": "int",
+        "min": "0",
+        "max": "65535",
+        "start": "4660",
+        "step": "1",
+        "unit": ""
+      },
+      "required": false
+    },
+    {
+      "id": "BREAKER1",
+      "name": "断路器1",
+      "desc": "",
+      "mode": "rw",
+      "define": {
+        "type": "bool",
+        "mapping": {
+          "0": "关",
+          "1": "开"
+        }
+      },
+      "required": false
+    },
+    {
+      "id": "BREAKER2",
+      "name": "断路器2",
+      "desc": "",
+      "mode": "rw",
+      "define": {
+        "type": "bool",
+        "mapping": {
+          "0": "关",
+          "1": "开"
+        }
+      },
+      "required": false
+    },
+    {
+      "id": "ALARM",
+      "name": "告警",
+      "desc": "",
+      "mode": "r",
+      "define": {
+        "type": "bool",
+        "mapping": {
+          "0": "正常",
+          "1": "告警"
+        }
+      },
+      "required": false
+    },
+    {
+      "id": "REMOTE_MODE",
+      "name": "远方就地",
+      "desc": "",
+      "mode": "r",
+      "define": {
+        "type": "bool",
+        "mapping": {
+          "0": "就地",
+          "1": "远方"
+        }
+      },
+      "required": false
+    },
+    {
+      "id": "HEARTBEAT_BIT",
+      "name": "心跳位",
+      "desc": "",
+      "mode": "r",
+      "define": {
+        "type": "bool",
+        "mapping": {
+          "0": "0",
+          "1": "1"
+        }
+      },
+      "required": false
+    },
+    {
+      "id": "W0_TAG",
+      "name": "W0标签",
+      "desc": "",
+      "mode": "r",
+      "define": {
+        "type": "int",
+        "min": "0",
+        "max": "65535",
+        "start": "22136",
+        "step": "1",
+        "unit": ""
+      },
+      "required": false
+    },
+    {
+      "id": "W1_COUNTER",
+      "name": "W区计数",
+      "desc": "",
+      "mode": "r",
+      "define": {
+        "type": "int",
+        "min": "0",
+        "max": "65535",
+        "start": "0",
+        "step": "1",
+        "unit": ""
+      },
+      "required": false
+    },
+    {
+      "id": "H0_TAG",
+      "name": "H0标签",
+      "desc": "",
+      "mode": "r",
+      "define": {
+        "type": "int",
+        "min": "0",
+        "max": "65535",
+        "start": "1285",
+        "step": "1",
+        "unit": ""
+      },
+      "required": false
+    },
+    {
+      "id": "AR0_TAG",
+      "name": "AR0标签",
+      "desc": "",
+      "mode": "r",
+      "define": {
+        "type": "int",
+        "min": "0",
+        "max": "65535",
+        "start": "0",
+        "step": "1",
+        "unit": ""
+      },
+      "required": false
+    },
+    {
+      "id": "EM0_TAG",
+      "name": "EM0标签",
+      "desc": "",
+      "mode": "r",
+      "define": {
+        "type": "int",
+        "min": "0",
+        "max": "65535",
+        "start": "43690",
+        "step": "1",
+        "unit": ""
+      },
+      "required": false
+    }
+  ],
+  "events": [],
+  "actions": [],
+  "profile": {
+    "ProductId": "L629A2QNNJ",
+    "CategoryId": "1"
+  }
+}

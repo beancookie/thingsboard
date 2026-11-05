@@ -38,6 +38,11 @@
               "src/thingsboard.ico",
               "src/assets",
               {
+                "glob": "**/*",
+                "input": "../docs",
+                "output": "/assets/docs/"
+              },
+              {
                 "glob": "*.svg",
                 "input": "./node_modules/@mdi/svg/svg/",
                 "output": "/assets/mdi/"

@@ -33,6 +33,7 @@ export interface HomeSection {
 
 export enum MenuId {
   home = 'home',
+  manuals = 'manuals',
   products = 'products',
   tenants = 'tenants',
   tenants_section = 'tenants_section',
@@ -115,6 +116,16 @@ export const menuSectionMap = new Map<MenuId, MenuSection>([
       type: 'link',
       path: '/home',
       icon: 'mdi:home-outline'
+    }
+  ],
+  [
+    MenuId.manuals,
+    {
+      id: MenuId.manuals,
+      name: 'manual.manuals',
+      type: 'link',
+      path: '/manuals',
+      icon: 'menu_book'
     }
   ],
   [
@@ -828,6 +839,12 @@ export const menuSectionMap = new Map<MenuId, MenuSection>([
 
 const menuFilters = new Map<MenuId, MenuFilter>([
   [
+    MenuId.dashboards, () => false
+  ],
+  [
+    MenuId.resources, () => false
+  ],
+  [
     MenuId.entity_views, () => false
   ],
   [
@@ -902,7 +919,8 @@ const defaultUserMenuMap = new Map<Authority, MenuReference[]>([
           {id: MenuId.notification_settings},
           {id: MenuId.queues}
         ]
-      }
+      },
+      {id: MenuId.manuals}
     ]
   ],
   [
@@ -1006,7 +1024,8 @@ const defaultUserMenuMap = new Map<Authority, MenuReference[]>([
           {id: MenuId.edges},
           {id: MenuId.rulechain_templates}
         ]
-      }
+      },
+      {id: MenuId.manuals}
     ]
   ],
   [
@@ -1039,7 +1058,8 @@ const defaultUserMenuMap = new Map<Authority, MenuReference[]>([
           {id: MenuId.entity_views}
         ]
       },
-      {id: MenuId.edge_instances}
+      {id: MenuId.edge_instances},
+      {id: MenuId.manuals}
     ]
   ]
 ]);

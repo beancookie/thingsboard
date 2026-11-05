@@ -200,6 +200,7 @@ export class EntitiesTableComponent extends PageComponent implements IEntitiesTa
           name: this.translate.instant('action.delete'),
           icon: 'delete',
           isEnabled: entity => this.entitiesTableConfig.deleteEnabled(entity),
+          isHidden: entity => this.entitiesTableConfig.deleteHidden(entity),
           onAction: ($event, entity) => this.deleteEntity($event, entity)
         }
       );
