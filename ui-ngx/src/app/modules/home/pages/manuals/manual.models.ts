@@ -6,6 +6,12 @@ export interface ManualEntry {
   path: string;
 }
 
+export interface ApiDocLink {
+  labelKey: string;
+  icon: string;
+  url: string;
+}
+
 export interface ResolvedDocLink {
   path: string;
   hash?: string;

@@ -6,7 +6,7 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 import { MatDrawer } from '@angular/material/sidenav';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MediaBreakpoints } from '@shared/models/constants';
-import { ManualEntry } from './manual.models';
+import { ApiDocLink, ManualEntry } from './manual.models';
 import { ManualsService } from './manuals.service';
 
 @Component({
@@ -22,6 +22,18 @@ export class ManualsComponent implements OnInit {
 
   manuals: ManualEntry[] = [];
   filteredManuals: ManualEntry[] = [];
+  apiDocs: ApiDocLink[] = [
+    {
+      labelKey: 'manual.api-docs-thingsboard',
+      icon: 'api',
+      url: 'https://thingsboard.zhgcloud.com/swagger-ui/index.html'
+    },
+    {
+      labelKey: 'manual.api-docs-thing-model',
+      icon: 'schema',
+      url: 'https://thingsboard.zhgcloud.com/thing-model/swagger-ui/index.html'
+    }
+  ];
   selectedPath: string | null = null;
   selectedTitle = '';
   markdown: string | null = null;

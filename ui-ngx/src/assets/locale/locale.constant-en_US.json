@@ -3707,7 +3707,10 @@
         "retry": "Retry",
         "open-list": "Open manual list",
         "close-list": "Close manual list",
-        "select-manual": "Select a manual from the list"
+        "select-manual": "Select a manual from the list",
+        "api-docs": "API Docs",
+        "api-docs-thingsboard": "Platform API Docs",
+        "api-docs-thing-model": "Thing Model API Docs"
     },
     "home": {
         "home": "Home",

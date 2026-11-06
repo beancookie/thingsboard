@@ -67,6 +67,19 @@
         </div>
       }
     </mat-nav-list>
+    <div class="tb-manuals-api-links">
+      <div class="tb-manuals-api-links-title">{{ 'manual.api-docs' | translate }}</div>
+      @for (doc of apiDocs; track doc.url) {
+        <a class="tb-manuals-api-link"
+           [href]="doc.url"
+           target="_blank"
+           rel="noopener noreferrer">
+          <mat-icon>{{ doc.icon }}</mat-icon>
+          <span class="tb-manuals-api-link-label">{{ doc.labelKey | translate }}</span>
+          <mat-icon class="tb-manuals-api-link-external">open_in_new</mat-icon>
+        </a>
+      }
+    </div>
   </mat-drawer>
   <mat-drawer-content class="tb-manuals-content">
     <div class="tb-manuals-toolbar">

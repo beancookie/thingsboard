@@ -3821,7 +3821,10 @@
     "retry": "重试",
     "open-list": "打开手册列表",
     "close-list": "关闭手册列表",
-    "select-manual": "请选择左侧用户手册"
+    "select-manual": "请选择左侧用户手册",
+    "api-docs": "API 文档",
+    "api-docs-thingsboard": "平台 API 文档",
+    "api-docs-thing-model": "物模型 API 文档"
   },
   "home": {
     "home": "首页",
