@@ -243,11 +243,14 @@ curl -X POST "http://localhost:8090/api/admin/tenants/<tenantId>/provision" \
 
 ## API
 
-所有 `/api/**` 接口使用 ThingsBoard JWT：
+所有 `/api/**` 接口使用 ThingsBoard JWT 或 API Key：
 
 ```http
 X-Authorization: Bearer <TB_JWT>
+X-Authorization: ApiKey <TB_API_KEY>
 ```
+
+API Key 对应用户必须具备所需权限，例如产品接口需要 `TENANT_ADMIN`。
 
 | 方法 | 路径 | 说明 |
 | --- | --- | --- |

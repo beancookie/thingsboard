@@ -186,9 +186,10 @@ PostgreSQL:5432
 
 ## 8. 认证与权限
 
-- 所有 `/api/**` 使用 ThingsBoard JWT：
+- 所有 `/api/**` 使用 ThingsBoard JWT 或 API Key：
   ```http
   X-Authorization: Bearer <TB_JWT>
+  X-Authorization: ApiKey <TB_API_KEY>
   ```
 - `AuthInterceptor` 校验 token，`@RequireAuthority` 声明角色。
 - Controller 继承 `BaseController`，产品租户来自 JWT。

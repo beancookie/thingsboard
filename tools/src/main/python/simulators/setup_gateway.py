@@ -57,6 +57,11 @@ def parse_args() -> argparse.Namespace:
         help="ThingsBoard password; defaults to TB_PASSWORD or prompt",
     )
     parser.add_argument(
+        "--api-key",
+        default=os.getenv("TB_API_KEY"),
+        help="ThingsBoard API key; defaults to TB_API_KEY; takes precedence over password",
+    )
+    parser.add_argument(
         "--gateway-name",
         default="gateway-01",
         help="gateway device name",
@@ -310,10 +315,6 @@ def main() -> int:
         print("error: --count must be greater than 0", file=sys.stderr)
         return 1
 
-    password = args.password
-    if not password:
-        password = getpass.getpass(f"ThingsBoard password for {args.username}: ")
-
     try:
         products = load_products(Path(args.products_dir))
     except ApiError as exc:
@@ -322,9 +323,23 @@ def main() -> int:
 
     client = ThingsBoardClient(args.tb_url, args.thingmodel_url, args.timeout)
     try:
-        token = client.login(args.username, password)
+        if args.api_key:
+            try:
+                token = client.exchange_api_key_for_token(args.api_key)
+            except Exception as exc:
+                print(
+                    "warning: API key to JWT exchange failed; using API key "
+                    f"directly: {exc}", file=sys.stderr)
+                token = client.api_key_token(args.api_key)
+        else:
+            password = args.password
+            if not password:
+                password = getpass.getpass(
+                    f"ThingsBoard password for {args.username}: ")
+            token = client.login(args.username, password)
     except Exception as exc:
-        print(f"error: ThingsBoard login failed: {exc}", file=sys.stderr)
+        print(f"error: ThingsBoard authentication failed: {exc}",
+              file=sys.stderr)
         return 1
 
     contexts: List[Dict[str, Any]] = []

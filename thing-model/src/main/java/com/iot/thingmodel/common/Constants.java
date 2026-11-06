@@ -33,6 +33,9 @@ public final class Constants {
         public static final String HEADER_AUTHORIZATION = "Authorization";
         public static final String BEARER_PREFIX = "Bearer ";
         public static final int BEARER_PREFIX_LENGTH = BEARER_PREFIX.length();
+        public static final String API_KEY_PREFIX = "ApiKey ";
+        public static final int API_KEY_PREFIX_LENGTH = API_KEY_PREFIX.length();
+        public static final String API_KEY_VALUE_PREFIX = "tb_";
         public static final String ROLE_SYS_ADMIN = "SYS_ADMIN";
         public static final String ROLE_TENANT_ADMIN = "TENANT_ADMIN";
         public static final String CURRENT_USER_ATTRIBUTE = "currentUser";

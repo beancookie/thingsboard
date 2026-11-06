@@ -29,7 +29,8 @@ public class TbUserVerifier {
 
     public CurrentUser verify(String rawToken) {
         String token = normalize(rawToken);
-        String key = sha256(token);
+        boolean apiKey = isApiKey(rawToken);
+        String key = sha256((apiKey ? "apiKey:" : "jwt:") + token);
         long now = System.currentTimeMillis();
         CacheEntry entry = cache.get(key);
         if (entry != null && entry.expiresAt() > now) {
@@ -39,11 +40,16 @@ public class TbUserVerifier {
             cache.clear();
         }
         try {
-            ThingsboardClient client = ThingsboardClient.builder()
+            ThingsboardClient.Builder builder = ThingsboardClient.builder()
                     .url(properties.getTb().getBaseUrl())
-                    .retryOnRateLimit(false)
-                    .build();
-            client.setToken(token);
+                    .retryOnRateLimit(false);
+            if (apiKey) {
+                builder.apiKey(token);
+            }
+            ThingsboardClient client = builder.build();
+            if (!apiKey) {
+                client.setToken(token);
+            }
             User user = client.getUser();
             CurrentUser currentUser = toCurrentUser(user);
             cache.put(key, new CacheEntry(
@@ -75,7 +81,7 @@ public class TbUserVerifier {
         return new CurrentUser(userId, tenantId, authority, user.getEmail());
     }
 
-    private String normalize(String token) {
+    static String normalize(String token) {
         if (token == null || token.isBlank()) {
             throw new ApiException(
                     HttpStatus.UNAUTHORIZED, Constants.ErrorCode.UNAUTHORIZED, "缺少访问令牌");
@@ -84,12 +90,35 @@ public class TbUserVerifier {
         if (value.regionMatches(
                 true, 0, Constants.Auth.BEARER_PREFIX, 0, Constants.Auth.BEARER_PREFIX_LENGTH)) {
             value = value.substring(Constants.Auth.BEARER_PREFIX_LENGTH).trim();
+        } else if (value.regionMatches(
+                true, 0, Constants.Auth.API_KEY_PREFIX, 0,
+                Constants.Auth.API_KEY_PREFIX_LENGTH)) {
+            value = value.substring(Constants.Auth.API_KEY_PREFIX_LENGTH).trim();
+        }
+        if (value.equalsIgnoreCase("Bearer") || value.equalsIgnoreCase("ApiKey")) {
+            value = "";
         }
         if (value.isEmpty()) {
             throw new ApiException(
                     HttpStatus.UNAUTHORIZED, Constants.ErrorCode.UNAUTHORIZED, "缺少访问令牌");
         }
         return value;
+    }
+
+    static boolean isApiKey(String token) {
+        if (token == null) {
+            return false;
+        }
+        String value = token.trim();
+        if (value.regionMatches(
+                true, 0, Constants.Auth.API_KEY_PREFIX, 0,
+                Constants.Auth.API_KEY_PREFIX_LENGTH)) {
+            return true;
+        }
+        return !value.regionMatches(
+                true, 0, Constants.Auth.BEARER_PREFIX, 0,
+                Constants.Auth.BEARER_PREFIX_LENGTH)
+                && value.startsWith(Constants.Auth.API_KEY_VALUE_PREFIX);
     }
 
     private String sha256(String value) {

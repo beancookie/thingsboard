@@ -28,6 +28,13 @@ class ThingsBoardClient:
         self.timeout = timeout
         self.session = requests.Session()
 
+    @property
+    def product_api_base(self) -> str:
+        base = self.thingmodel_url
+        if base.endswith("/api/thing-model") or base.endswith("/api"):
+            return f"{base}/products"
+        return f"{base}/api/products"
+
     def login(self, username: str, password: str) -> str:
         response = self.session.post(
             f"{self.tb_url}/api/auth/login",
@@ -37,9 +44,31 @@ class ThingsBoardClient:
         self._check(response)
         return response.json()["token"]
 
+    def exchange_api_key_for_token(self, api_key: str) -> str:
+        api_key_header = self.api_key_token(api_key)
+        user_response = self.session.get(
+            f"{self.tb_url}/api/auth/user",
+            headers=self._auth_headers(api_key_header),
+            timeout=self.timeout,
+        )
+        self._check(user_response)
+        user_id = ((user_response.json() or {}).get("id") or {}).get("id")
+        if not user_id:
+            raise ApiError("ThingsBoard did not return a user id for the API key")
+        token_response = self.session.get(
+            f"{self.tb_url}/api/user/{user_id}/token",
+            headers=self._auth_headers(api_key_header),
+            timeout=self.timeout,
+        )
+        self._check(token_response)
+        token = (token_response.json() or {}).get("token")
+        if not token:
+            raise ApiError("ThingsBoard did not return a JWT for the API key")
+        return token
+
     def get_product(self, token: str, product_id: str) -> Dict[str, Any]:
         response = self.session.get(
-            f"{self.thingmodel_url}/api/products/{product_id}",
+            f"{self.product_api_base}/{product_id}",
             headers=self._auth_headers(token),
             timeout=self.timeout,
         )
@@ -48,7 +77,7 @@ class ThingsBoardClient:
 
     def get_thing_model(self, token: str, product_id: str) -> Dict[str, Any]:
         response = self.session.get(
-            f"{self.thingmodel_url}/api/products/{product_id}/thing-model",
+            f"{self.product_api_base}/{product_id}/thing-model",
             headers=self._auth_headers(token),
             timeout=self.timeout,
         )
@@ -138,8 +167,24 @@ class ThingsBoardClient:
         )
         self._check(response)
 
+    def api_key_token(self, api_key: str) -> str:
+        value = api_key.strip()
+        if not value:
+            raise ApiError("API key is required")
+        if value.lower().startswith("apikey "):
+            value = value[len("ApiKey "):].strip()
+        return f"ApiKey {value}"
+
     def _auth_headers(self, token: str) -> Dict[str, str]:
-        return {"X-Authorization": f"Bearer {token}"}
+        value = token.strip()
+        lower = value.lower()
+        if lower.startswith("apikey "):
+            return {"X-Authorization": f"ApiKey {value[len('ApiKey '):].strip()}"}
+        if lower.startswith("bearer "):
+            return {"X-Authorization": f"Bearer {value[len('Bearer '):].strip()}"}
+        if value.startswith("tb_"):
+            return {"X-Authorization": f"ApiKey {value}"}
+        return {"X-Authorization": f"Bearer {value}"}
 
     def _check(self, response: requests.Response) -> None:
         if response.status_code >= 400:

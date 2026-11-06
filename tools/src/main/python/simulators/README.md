@@ -52,6 +52,71 @@ python tools/src/main/python/simulators/simulate_telemetry.py `
   - 发送真实遥测要求产品已同步（`tbProfileId`、`tbAssetId`、`tsl_schema`）。
   - actions 不模拟，因为行为是平台到设备的 RPC，不是遥测上报。
 
+## 导入产品与物模型
+
+`import_products.py` 把本地物模型 JSON 批量导入 thing-model，并自动发布为产品。产品发布会创建 Device Profile、产品资产和同名规则链。
+
+`thing-model/migrate/integrated` 下的 8 个物模型默认使用：
+
+- 文件名作为产品名称，例如 `CoAP姿态监测仪.json` → `CoAP姿态监测仪`
+- `profile.ProductId` 作为产品 ID 和型号
+- `profile.CategoryId` 作为分类
+- 文件 `version` 作为 TSL 版本
+
+先 dry-run 检查映射：
+
+```powershell
+python tools/src/main/python/simulators/import_products.py `
+  --products-dir thing-model/migrate/integrated `
+  --output-dir . `
+  --dry-run
+```
+
+导入到本地环境：
+
+```powershell
+python tools/src/main/python/simulators/import_products.py `
+  --tb-url http://localhost:18080 `
+  --thingmodel-url http://localhost:8090 `
+  --products-dir thing-model/migrate/integrated `
+  --output-dir . `
+  --password tenant
+```
+
+导入到线上网关：
+
+```powershell
+python tools/src/main/python/simulators/import_products.py `
+  --tb-url https://thingsboard.zhgcloud.com `
+  --thingmodel-url https://thingsboard.zhgcloud.com/api/thing-model `
+  --products-dir thing-model/migrate/integrated `
+  --output-dir .\import-output
+```
+
+使用 ThingsBoard API Key：
+
+```powershell
+$env:TB_API_KEY = "tb_xxx"
+python tools/src/main/python/simulators/import_products.py `
+  --tb-url https://thingsboard.zhgcloud.com `
+  --thingmodel-url https://thingsboard.zhgcloud.com/api/thing-model `
+  --products-dir thing-model/migrate/integrated `
+  --output-dir .\import-output
+```
+
+也可以直接传 `--api-key tb_xxx`。脚本会把密钥作为 `X-Authorization: ApiKey tb_xxx` 发送，不再登录获取 JWT。
+
+说明：
+
+- `--thingmodel-url` 可填 thing-model 服务根地址（如 `http://localhost:8090`），也可填网关前缀（如 `https://thingsboard.zhgcloud.com/api/thing-model`）。
+- 未设置 `--password` 或 `TB_PASSWORD` 时交互式提示输入密码，账号需为 `TENANT_ADMIN`。
+- `--api-key` / `TB_API_KEY` 优先于账号密码；使用前需确认 thing-model 服务端为支持 API Key 的版本，且密钥对应用户具备 `TENANT_ADMIN` 权限。
+- 默认先调用 validate 接口校验物模型，校验失败不会落库。
+- 默认跳过线上已存在的 ProductId；使用 `--update-existing` 重新提交。
+- ProductId 全系统唯一，被其他租户占用时返回 `conflict`。
+- 租户未配置厂商服务账号时会提示 `TENANT_ACCOUNT_MISSING`，需系统管理员先执行 `provision-auto`。
+- 每次执行生成 `product-import-report.csv`，包含产品状态、Device Profile、资产和规则链 ID。
+
 ## 注册设备
 
 `register_devices.py` 按产品 Device Profile 注册设备，写入设备 server 属性，并把 Access Token 导出到 CSV。
@@ -144,7 +209,8 @@ python tools/src/main/python/simulators/setup_gateway.py `
 - 每个物模型创建 1 台子设备，命名 `<ProductId>-01`。
 - 默认关系类型为 `Contains`，与平台标准关系及网关 Dashboard 保持一致。
 - 脚本幂等，可重复执行；生成的 CSV 含 Access Token。
-- 脚本不负责导入/同步产品，需先导入物模型。
+- 脚本不负责导入/同步产品，需先用 `import_products.py` 导入物模型。
+- 可使用 `--api-key` 或 `TB_API_KEY` 代替 `--username` / `--password`。
 
 注册子设备：
 
@@ -331,6 +397,14 @@ python tools/src/main/python/simulators/simulate_telemetry.py --count 10 --inter
 ```
 
 未设置 `TB_PASSWORD` 时脚本会交互式提示输入密码。
+
+`import_products.py` 和 `setup_gateway.py` 也支持 ThingsBoard API Key：
+
+```powershell
+$env:TB_API_KEY = "tb_xxx"
+```
+
+API Key 会以 `X-Authorization: ApiKey tb_xxx` 发送；`import_products.py` 要求 thing-model 服务端支持 API Key 认证。
 
 ## 常用示例
 

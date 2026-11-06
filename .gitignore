@@ -44,3 +44,4 @@ docs/superpowers/
 device-credentials*.csv
 gateway-credentials*.csv
 sub-devices*.csv
+import-output/
