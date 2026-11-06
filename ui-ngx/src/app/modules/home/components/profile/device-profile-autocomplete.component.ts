@@ -14,7 +14,7 @@ import {
   ViewChild
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
-import { Observable, of } from 'rxjs';
+import { merge, Observable, of, Subject } from 'rxjs';
 import { PageLink } from '@shared/models/page/page-link';
 import { Direction } from '@shared/models/page/sort-order';
 import { catchError, debounceTime, distinctUntilChanged, map, share, switchMap, tap } from 'rxjs/operators';
@@ -112,6 +112,8 @@ export class DeviceProfileAutocompleteComponent implements ControlValueAccessor,
 
   filteredDeviceProfiles: Observable<Array<DeviceProfileInfo>>;
 
+  private deviceProfileFilterChanged = new Subject<string>();
+
   searchText = '';
   deviceProfileURL: string;
 
@@ -156,39 +158,43 @@ export class DeviceProfileAutocompleteComponent implements ControlValueAccessor,
   }
 
   ngOnInit() {
-    this.filteredDeviceProfiles = this.selectDeviceProfileFormGroup.get('deviceProfile').valueChanges
-      .pipe(
-        tap((value: DeviceProfileInfo | string) => {
-          let modelValue: DeviceProfileInfo | null;
-          if (typeof value === 'string' || !value) {
-            modelValue = null;
-          } else {
-            modelValue = value;
-          }
-          if (!this.displayAllOnEmpty || modelValue) {
-            this.updateView(modelValue);
-          }
-        }),
-        map(value => {
-          if (value) {
-            if (typeof value === 'string') {
-              return value;
+    this.filteredDeviceProfiles = merge(
+      this.selectDeviceProfileFormGroup.get('deviceProfile').valueChanges
+        .pipe(
+          tap((value: DeviceProfileInfo | string) => {
+            let modelValue: DeviceProfileInfo | null;
+            if (typeof value === 'string' || !value) {
+              modelValue = null;
             } else {
-              if (this.displayAllOnEmpty && value === this.allDeviceProfile) {
-                return '';
-              } else {
-                return value.name;
-              }
+              modelValue = value;
             }
-          } else {
-            return '';
-          }
-        }),
-        debounceTime(150),
-        distinctUntilChanged(),
-        switchMap(name => this.fetchDeviceProfiles(name)),
-        share()
-      );
+            if (!this.displayAllOnEmpty || modelValue) {
+              this.updateView(modelValue);
+            }
+          }),
+          map(value => {
+            if (value) {
+              if (typeof value === 'string') {
+                return value;
+              } else {
+                if (this.displayAllOnEmpty && value === this.allDeviceProfile) {
+                  return '';
+                } else {
+                  return value.name;
+                }
+              }
+            } else {
+              return '';
+            }
+          })
+        ),
+      this.deviceProfileFilterChanged
+    ).pipe(
+      debounceTime(150),
+      distinctUntilChanged(),
+      switchMap(name => this.fetchDeviceProfiles(name)),
+      share()
+    );
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -281,6 +287,7 @@ export class DeviceProfileAutocompleteComponent implements ControlValueAccessor,
       this.selectDeviceProfileFormGroup.get('deviceProfile').updateValueAndValidity({onlySelf: true, emitEvent: true});
       this.dirty = false;
     }
+    this.deviceProfileFilterChanged.next('');
   }
 
   onPanelClosed() {
