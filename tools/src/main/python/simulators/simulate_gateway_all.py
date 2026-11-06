@@ -28,7 +28,7 @@ from protocol_mapping import PROTOCOLS
 from protocol_writers import create_writer, load_mapping
 from simulate_telemetry import ApiError, TelemetryGenerator, ThingsBoardClient
 
-DEFAULT_TSL_DIR = Path(__file__).resolve().parents[4] / "thing-model" / "migrate" / "integrated"
+DEFAULT_TSL_DIR = Path(__file__).resolve().parents[5] / "thing-model" / "migrate" / "integrated"
 
 
 def parse_args() -> argparse.Namespace:

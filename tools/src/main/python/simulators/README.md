@@ -14,13 +14,13 @@
 安装依赖：
 
 ```bash
-python -m pip install -r tools/src/main/python/requirements.txt
+python -m pip install -r tools/src/main/python/simulators/requirements.txt
 ```
 
 ## 基本用法
 
 ```bash
-python tools/src/main/python/simulate_telemetry.py
+python tools/src/main/python/simulators/simulate_telemetry.py
 ```
 
 默认行为：
@@ -37,7 +37,7 @@ python tools/src/main/python/simulate_telemetry.py
 ### 按本地 TSL 生成 4DZDCQUA2D 数据
 
 ```powershell
-python tools/src/main/python/simulate_telemetry.py `
+python tools/src/main/python/simulators/simulate_telemetry.py `
   --product-id 4DZDCQUA2D `
   --tsl thing-model/migrate/4DZDCQUA2D.tsl.json `
   --mode mixed --count 2 --seed 1
@@ -59,7 +59,7 @@ python tools/src/main/python/simulate_telemetry.py `
 单个设备：
 
 ```powershell
-python tools/src/main/python/register_devices.py `
+python tools/src/main/python/simulators/register_devices.py `
   --product-id 4DZDCQUA2D `
   --name 4DZDCQUA2D-0001 `
   --output device-credentials.csv `
@@ -69,7 +69,7 @@ python tools/src/main/python/register_devices.py `
 批量生成：
 
 ```powershell
-python tools/src/main/python/register_devices.py `
+python tools/src/main/python/simulators/register_devices.py `
   --product-id 4DZDCQUA2D `
   --prefix 4DZDCQUA2D --count 10 `
   --site-code SIM `
@@ -99,7 +99,7 @@ status, error, created_at
 使用注册脚本生成的 CSV，按本地 TSL 生成数据并批量发送：
 
 ```powershell
-python tools/src/main/python/simulate_telemetry.py `
+python tools/src/main/python/simulators/simulate_telemetry.py `
   --product-id 4DZDCQUA2D `
   --tsl thing-model/migrate/4DZDCQUA2D.tsl.json `
   --devices-csv device-credentials-4DZDCQUA2D.csv `
@@ -129,7 +129,7 @@ Gateway 方式使用网关设备 Token 连接 MQTT，由网关代多台预创建
 一键创建网关与子设备（按物模型目录批量）：
 
 ```powershell
-python tools/src/main/python/setup_gateway.py `
+python tools/src/main/python/simulators/setup_gateway.py `
   --tb-url http://localhost:18080 `
   --thingmodel-url http://localhost:8090 `
   --username tenant@thingsboard.org `
@@ -149,7 +149,7 @@ python tools/src/main/python/setup_gateway.py `
 注册子设备：
 
 ```powershell
-python tools/src/main/python/register_devices.py `
+python tools/src/main/python/simulators/register_devices.py `
   --product-id 4DZDCQUA2D `
   --prefix 4DZDCQUA2D-gw --count 2 `
   --site-code SIM `
@@ -160,7 +160,7 @@ python tools/src/main/python/register_devices.py `
 运行 Gateway 推送：
 
 ```powershell
-python tools/src/main/python/simulate_gateway.py `
+python tools/src/main/python/simulators/simulate_gateway.py `
   --gateway-csv gateway-credentials.csv `
   --gateway-name gateway-01 `
   --sub-devices-csv sub-devices.csv `
@@ -171,7 +171,7 @@ python tools/src/main/python/simulate_gateway.py `
 两个网关分担多台设备，并按每 10 台合并发送：
 
 ```powershell
-python tools/src/main/python/simulate_gateway.py `
+python tools/src/main/python/simulators/simulate_gateway.py `
   --gateway-csv gateway-credentials.csv `
   --gateway-names gateway-01,gateway-02 `
   --sub-devices-csv sub-devices-50.csv `
@@ -196,7 +196,7 @@ python tools/src/main/python/simulate_gateway.py `
 多产品持续 mock（一个网关、多个产品）：
 
 ```powershell
-python tools/src/main/python/simulate_gateway_all.py `
+python tools/src/main/python/simulators/simulate_gateway_all.py `
   --gateway-csv gateway-credentials.csv `
   --gateway-name gateway-01 `
   --sub-devices-csv sub-devices.csv `
@@ -234,13 +234,40 @@ Windows 主机运行协议模拟器，Docker Desktop 运行 `tb-gateway`。每�
 安装依赖：
 
 ```powershell
-python -m pip install -r tools/src/main/python/requirements.txt
+python -m pip install -r tools/src/main/python/simulators/requirements.txt
 ```
+
+### 脚本运行顺序
+
+模拟器和网关是独立进程，建议按以下顺序启动。以 Modbus 为例：
+
+1. 创建网关和子设备，生成 `gateway-credentials.csv`、`sub-devices.csv`。
+2. 生成当前协议的连接器映射和 `tb-gateway` 配置。
+3. 在 Windows 终端 A 启动协议模拟器，例如 Modbus Slave。
+4. 在终端 B 启动或重启 `tb-gateway`，让它加载第 2 步生成的配置。
+5. 在终端 C 启动数据写入脚本，向模拟器写入数据。
+6. `tb-gateway` 读取模拟器数据，通过 MQTT 上报 ThingsBoard。
+
+数据流：
+
+```text
+simulate_gateway_all.py  ->  Modbus Client，写寄存器
+run_protocol_sim.py      ->  Modbus Slave/Server，保存寄存器
+tb-gateway Modbus 连接器 ->  Modbus Master/Client，轮询读取
+tb-gateway               ->  MQTT Client，上报 ThingsBoard
+```
+
+注意：
+
+- `tb-gateway` 是 Modbus 主站/客户端，不是 Modbus 从设备。
+- Windows 上的 `run_protocol_sim.py` 才是 Modbus 从设备/服务器。
+- 切换协议后必须重新生成配置并重启 `tb-gateway`。
+- 如果 `sub-devices.csv` 已存在，可以跳过第 1 步。
 
 准备网关与子设备 CSV：
 
 ```powershell
-python tools/src/main/python/setup_gateway.py `
+python tools/src/main/python/simulators/setup_gateway.py `
   --gateway-name gateway-01 `
   --products-dir thing-model/migrate/integrated `
   --count 1 `
@@ -250,7 +277,7 @@ python tools/src/main/python/setup_gateway.py `
 生成单协议映射和网关配置：
 
 ```powershell
-python tools/src/main/python/generate_gateway_config.py `
+python tools/src/main/python/simulators/generate_gateway_config.py `
   --protocol modbus `
   --sub-devices-csv sub-devices.csv `
   --output-dir thing-model/docker/gateway-sim/config
@@ -259,7 +286,7 @@ python tools/src/main/python/generate_gateway_config.py `
 启动 Windows 模拟器：
 
 ```powershell
-python tools/src/main/python/run_protocol_sim.py `
+python tools/src/main/python/simulators/run_protocol_sim.py `
   --protocol modbus `
   --mapping thing-model/docker/gateway-sim/config/connector-mapping-modbus.json
 ```
@@ -275,7 +302,7 @@ docker compose -f thing-model/docker/gateway-sim/docker-compose.yml up -d --buil
 发送数据：
 
 ```powershell
-python tools/src/main/python/simulate_gateway_all.py `
+python tools/src/main/python/simulators/simulate_gateway_all.py `
   --protocol modbus `
   --mapping thing-model/docker/gateway-sim/config/connector-mapping-modbus.json `
   --sub-devices-csv sub-devices.csv `
@@ -300,7 +327,7 @@ python tools/src/main/python/simulate_gateway_all.py `
 
 ```powershell
 $env:TB_PASSWORD = "tenant"
-python tools/src/main/python/simulate_telemetry.py --count 10 --interval 2
+python tools/src/main/python/simulators/simulate_telemetry.py --count 10 --interval 2
 ```
 
 未设置 `TB_PASSWORD` 时脚本会交互式提示输入密码。
@@ -310,37 +337,37 @@ python tools/src/main/python/simulate_telemetry.py --count 10 --interval 2
 只发送正常遥测：
 
 ```bash
-python tools/src/main/python/simulate_telemetry.py --mode telemetry --count 20
+python tools/src/main/python/simulators/simulate_telemetry.py --mode telemetry --count 20
 ```
 
 只发送事件：
 
 ```bash
-python tools/src/main/python/simulate_telemetry.py --mode event --count 5
+python tools/src/main/python/simulators/simulate_telemetry.py --mode event --count 5
 ```
 
 只发送非法数据：
 
 ```bash
-python tools/src/main/python/simulate_telemetry.py --mode invalid --count 5
+python tools/src/main/python/simulators/simulate_telemetry.py --mode invalid --count 5
 ```
 
 发送 10 条混合消息，间隔 1 秒：
 
 ```bash
-python tools/src/main/python/simulate_telemetry.py --mode mixed --count 10 --interval 1
+python tools/src/main/python/simulators/simulate_telemetry.py --mode mixed --count 10 --interval 1
 ```
 
 保留测试设备：
 
 ```bash
-python tools/src/main/python/simulate_telemetry.py --keep-device
+python tools/src/main/python/simulators/simulate_telemetry.py --keep-device
 ```
 
 指定产品和设备名：
 
 ```bash
-python tools/src/main/python/simulate_telemetry.py \
+python tools/src/main/python/simulators/simulate_telemetry.py \
   --product-id 9HYN9PJNOY \
   --device-name my-sim-device \
   --count 5

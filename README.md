@@ -143,11 +143,11 @@ yarn build:prod
 ### 6.4 设备模拟
 
 ```bash
-python -m pip install -r tools/src/main/python/requirements.txt
-python tools/src/main/python/simulate_telemetry.py --mode mixed --count 10
+python -m pip install -r tools/src/main/python/simulators/requirements.txt
+python tools/src/main/python/simulators/simulate_telemetry.py --mode mixed --count 10
 ```
 
-详细参数见 [tools/src/main/python/README.md](tools/src/main/python/README.md)。
+详细参数见 [tools/src/main/python/simulators/README.md](tools/src/main/python/simulators/README.md)。
 
 ## 7. 测试
 

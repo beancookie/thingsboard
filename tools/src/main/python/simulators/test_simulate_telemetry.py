@@ -96,7 +96,7 @@ class EventGenerationTest(unittest.TestCase):
 
     def test_telemetry_includes_all_structs_from_tsl(self) -> None:
         tsl_path = (
-            Path(__file__).resolve().parents[4] / "thing-model" / "migrate" / "4DZDCQUA2D.tsl.json"
+            Path(__file__).resolve().parents[5] / "thing-model" / "migrate" / "4DZDCQUA2D.tsl.json"
         )
         with tsl_path.open(encoding="utf-8") as stream:
             tsl = json.load(stream)

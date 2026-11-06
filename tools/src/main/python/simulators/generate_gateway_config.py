@@ -13,7 +13,7 @@ from protocol_mapping import (
     write_json,
 )
 
-DEFAULT_TSL_DIR = Path(__file__).resolve().parents[4] / "thing-model" / "migrate" / "integrated"
+DEFAULT_TSL_DIR = Path(__file__).resolve().parents[5] / "thing-model" / "migrate" / "integrated"
 
 
 def parse_args() -> argparse.Namespace:
