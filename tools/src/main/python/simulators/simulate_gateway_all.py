@@ -55,6 +55,11 @@ def parse_args() -> argparse.Namespace:
         help="ThingsBoard password; defaults to TB_PASSWORD or prompt",
     )
     parser.add_argument(
+        "--api-key",
+        default=os.getenv("TB_API_KEY"),
+        help="ThingsBoard API key; defaults to TB_API_KEY; takes precedence over password",
+    )
+    parser.add_argument(
         "--gateway-csv",
         default=os.getenv("GATEWAY_CSV", "gateway-credentials.csv"),
         help="gateway credentials CSV",
@@ -116,6 +121,11 @@ def parse_args() -> argparse.Namespace:
         type=int,
         default=int(os.getenv("MQTT_PORT", "1883")),
         help="MQTT port",
+    )
+    parser.add_argument(
+        "--mqtt-client-id",
+        default=None,
+        help="MQTT client id; defaults to the gateway name",
     )
     parser.add_argument(
         "--mode",
@@ -230,7 +240,7 @@ def resolve_product_tsl(args: argparse.Namespace,
     local = find_local_tsl(Path(args.tsl_dir), product_id)
     if local is not None:
         return local
-    if args.password is None:
+    if args.password is None and not args.api_key:
         args.password = getpass.getpass(
             f"ThingsBoard password for {args.username}: ")
     return resolve_tsl(args, product_id)
@@ -439,12 +449,22 @@ def main() -> int:
         gateways = load_gateways(args.gateway_csv, gateway_names)
         gateway_name, gateway_token = gateways[0]
         if args.gateway_mock:
-            if args.password is None:
-                args.password = getpass.getpass(
-                    f"ThingsBoard password for {args.username}: ")
             admin_client = ThingsBoardClient(
                 args.tb_url, args.thingmodel_url, args.timeout)
-            admin_token = admin_client.login(args.username, args.password)
+            if args.api_key:
+                try:
+                    admin_token = admin_client.exchange_api_key_for_token(
+                        args.api_key)
+                except Exception as exc:
+                    print(
+                        "warning: API key to JWT exchange failed; using API "
+                        f"key directly: {exc}", file=sys.stderr)
+                    admin_token = admin_client.api_key_token(args.api_key)
+            else:
+                if args.password is None:
+                    args.password = getpass.getpass(
+                        f"ThingsBoard password for {args.username}: ")
+                admin_token = admin_client.login(args.username, args.password)
             gateway_device = admin_client.find_device_by_name(
                 admin_token, gateway_name)
             if not gateway_device or not gateway_device.get("id"):
@@ -494,7 +514,7 @@ def main() -> int:
                             f"{json.dumps(payload, ensure_ascii=False)}")
         return 0
 
-    client = create_mqtt_client(gateway_name)
+    client = create_mqtt_client(args.mqtt_client_id or gateway_name)
     client.username_pw_set(gateway_token, "")
     errors = 0
     batches = 0

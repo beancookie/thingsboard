@@ -236,13 +236,22 @@ def resolve_tsl(args: argparse.Namespace, product_id: str) -> Dict[str, Any]:
                 f"--product-id {product_id}")
         return tsl
 
-    password = args.password
-    if not password:
-        password = getpass.getpass(
-            f"ThingsBoard password for {args.username}: ")
-
     client = ThingsBoardClient(args.tb_url, args.thingmodel_url, args.timeout)
-    token = client.login(args.username, password)
+    api_key = getattr(args, "api_key", None)
+    if api_key:
+        try:
+            token = client.exchange_api_key_for_token(api_key)
+        except Exception as exc:
+            print(
+                "warning: API key to JWT exchange failed; using API key "
+                f"directly: {exc}", file=sys.stderr)
+            token = client.api_key_token(api_key)
+    else:
+        password = args.password
+        if not password:
+            password = getpass.getpass(
+                f"ThingsBoard password for {args.username}: ")
+        token = client.login(args.username, password)
     product = client.get_product(token, product_id)
     product_info = product.get("product") or {}
     try:

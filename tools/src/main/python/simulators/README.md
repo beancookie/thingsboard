@@ -277,10 +277,28 @@ python tools/src/main/python/simulators/simulate_gateway_all.py `
 - `--count 0` 默认无限循环，Ctrl+C 发送 disconnect 并退出。
 - `--tsl-dir` 优先使用本地物模型文件，缺失时才回退到 thing-model 获取。
 - 默认同时 mock 网关自身：写入 `Status/Name/Type/Version/active_connectors/general_configuration`，发布 `serviceStats/machineStats/ALL_ERRORS_COUNT`，网关在运行期间保持在线。
-- 网关 mock 需要 `TENANT_ADMIN` 账号；未传 `--password` 时会提示输入。
+- 网关 mock 需要 `TENANT_ADMIN` 账号；可用 `--password` / `TB_PASSWORD`，也可用 `--api-key` / `TB_API_KEY`。
+- `--mqtt-client-id` 可覆盖 MQTT Client ID，默认使用网关名。
 - `--no-gateway-mock` 可关闭网关自身 mock。
 - `--gateway-version`、`--gateway-type`、`--connectors` 可自定义网关属性。
 - 先用 `--dry-run --count 1` 检查报文。
+
+线上 MQTT 持续 mock：
+
+```powershell
+$env:TB_API_KEY = "tb_xxx"
+
+python tools/src/main/python/simulators/simulate_gateway_all.py `
+  --tb-url https://thingsboard.zhgcloud.com `
+  --thingmodel-url https://thingsboard.zhgcloud.com/api/thing-model `
+  --gateway-csv .\import-output\gateway-credentials.csv `
+  --gateway-name "中铁物联网融合终端" `
+  --sub-devices-csv .\import-output\sub-devices.csv `
+  --tsl-dir thing-model/migrate/integrated `
+  --mqtt-host 129.211.241.31 --mqtt-port 1883 `
+  --mqtt-client-id zhgcloud-gw-mock `
+  --mode auto --count 0 --interval 1 --quiet
+```
 
 ## Windows 协议连接器模拟
 
