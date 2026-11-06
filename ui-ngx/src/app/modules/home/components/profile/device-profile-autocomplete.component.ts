@@ -204,9 +204,15 @@ export class DeviceProfileAutocompleteComponent implements ControlValueAccessor,
 
   selectDefaultDeviceProfileIfNeeded(): void {
     if (this.selectDefaultProfile && !this.modelValue) {
-      this.deviceProfileService.getDefaultDeviceProfileInfo().subscribe(
-        (profile) => {
-          if (profile && (!this.transportType || (profile.transportType === this.transportType))) {
+      const pageLink = new PageLink(10, 0, null, {
+        property: 'createdTime',
+        direction: Direction.DESC
+      });
+      this.deviceProfileService.getDeviceProfileInfos(pageLink, this.transportType, {ignoreLoading: true}).subscribe(
+        (pageData) => {
+          const data = pageData.data;
+          const profile = data.find(deviceProfile => deviceProfile.name !== 'default') || data[0];
+          if (profile) {
             this.selectDeviceProfileFormGroup.get('deviceProfile').patchValue(profile, {emitEvent: false});
             this.updateView(profile);
           } else {

@@ -7,8 +7,8 @@
 | 文件名 | 页面/内容 |
 | --- | --- |
 | `00-integration-flow.png` | 接入流程总览 |
-| `01-device-profile-list.png` | 设备配置列表 |
-| `02-create-device-profile.png` | 新增设备配置 |
+| `01-device-profile-list.png` | 产品配置列表 |
+| `02-create-device-profile.png` | 新增产品配置 |
 | `03-create-gateway.png` | 新增网关设备 |
 | `04-is-gateway.png` | 是否网关开关 |
 | `05-gateway-list.png` | 网关列表 |

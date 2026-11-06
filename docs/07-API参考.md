@@ -63,12 +63,11 @@ authority 字段返回租户管理员权限。
 | GET | `/api/products?keyword=` | 当前租户产品列表 |
 | GET | `/api/products/{productId}` | 产品详情、版本列表、物模型目录 |
 | GET | `/api/products/{productId}/thing-model` | 最新 TSL 原文 |
-| POST | `/api/products` | 创建产品并同步中国中铁物联网平台 |
-| PUT | `/api/products/{productId}/thing-model` | 提交新 TSL 版本并同步 |
+| POST | `/api/products` | 创建产品 |
+| PUT | `/api/products/{productId}/thing-model` | 提交新 TSL 版本 |
 | POST | `/api/products/{productId}/thing-model/validate` | 只校验 TSL，不落库 |
 | GET | `/api/products/{productId}/catalog` | 最新 TSL 的属性/事件/行为目录 |
-| POST | `/api/products/{productId}/sync` | 对最新版本重新同步中国中铁物联网平台 |
-| DELETE | `/api/products/{productId}` | 删除产品及其物模型和中国中铁物联网平台资源 |
+| DELETE | `/api/products/{productId}` | 删除产品及其物模型和平台资源 |
 
 ### 创建产品
 
@@ -237,18 +236,6 @@ GET /api/products/{productId}/thing-model
 }
 ```
 
-### 重新同步
-
-```http
-POST /api/products/{productId}/sync
-```
-
-同步失败返回 `502`，响应中的 `retry` 为：
-
-```text
-/api/products/{productId}/sync
-```
-
 ### 删除产品
 
 ```http
@@ -258,7 +245,7 @@ DELETE /api/products/{productId}
 成功返回 `204`。删除范围：
 
 - `plat_product`、全部 TSL 版本、属性/事件/行为目录、绑定记录；
-- 产品独占的设备配置、产品资产、产品规则链。
+- 产品独占的产品配置、产品资产、产品规则链。
 
 产品下仍有设备时返回：
 
@@ -350,11 +337,10 @@ GET /api/admin/tenants/{tenantId}/account
       "message": "属性标识重复: rssi"
     }
   ],
-  "retry": "/api/products/9HYN9PJNOY/sync"
 }
 ```
 
-字段按需省略，`issues` 为空时可能不返回，`retry` 只用于可重试的同步失败。
+字段按需省略，`issues` 为空时可能不返回。
 
 常见错误码：
 
@@ -376,9 +362,8 @@ GET /api/admin/tenants/{tenantId}/account
 | `TSL_VERSION_EXISTS` | 409 | 同一版本内容不同 |
 | `VERSION_MISSING` | 400 | 缺少 TSL 版本 |
 | `VERSION_MISMATCH` | 400 | 请求版本与 TSL 内容不一致 |
-| `TB_SYNC_FAILED` | 502 | 中国中铁物联网平台同步失败，可重试 |
-| `TB_DELETE_FAILED` | 502 | 中国中铁物联网平台资源删除失败，可重试 |
-| `TB_UNAVAILABLE` | 502 | 中国中铁物联网平台不可达 |
+| `TB_DELETE_FAILED` | 502 | 平台资源删除失败，可重试 |
+| `TB_UNAVAILABLE` | 502 | 平台资源不可达 |
 | `ITEM_NOT_FOUND` | 404 | 查询对象不存在 |
 
 ## 7.7 接口边界

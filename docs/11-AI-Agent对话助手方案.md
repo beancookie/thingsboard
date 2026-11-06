@@ -19,7 +19,7 @@
 - 删除、批量修改和批量删除。
 - 聊天记录持久化。
 - SSE 流式输出。
-- 修改中国中铁物联网平台后端或数据库结构。
+- 修改平台后端或数据库结构。
 
 ## 11.2 总体架构
 
@@ -31,8 +31,8 @@ flowchart TD
   D --> E["生成待确认动作"]
   E --> F["前端确认"]
   F -->|"mode=execute"| G["Agent 执行白名单工具"]
-  G --> H["thing-model REST API"]
-  G --> I["中国中铁物联网平台 REST API"]
+  G --> H["产品 API"]
+  G --> I["平台 API"]
   H --> J["返回执行结果"]
   I --> J
 ```
@@ -47,10 +47,10 @@ flowchart TD
 
 Python Agent 是独立服务：
 
-- 不修改中国中铁物联网平台后端。
+- 不修改平台后端。
 - 不直接访问 `thingmodel` 数据库。
 - 不读取 `plat_vendor_account`。
-- 只调用现有 `thing-model` 和中国中铁物联网平台 REST API。
+- 只调用平台 REST API。
 
 ## 11.3 前端设计
 
@@ -148,23 +148,23 @@ Docker
 - FastAPI 提供异步 API、Pydantic 校验和 OpenAPI 文档。
 - Pydantic 定义工具参数、请求和响应模型，后端重新校验模型输出。
 - AsyncOpenAI 支持 OpenAI 兼容接口，可接 DeepSeek、通义千问、Ollama 等。
-- httpx 调用现有 `thing-model` 和中国中铁物联网平台 REST。
+- httpx 调用平台 REST。
 - uv 管理 Python 版本、虚拟环境、依赖和 `uv.lock`。
 - 第一版不使用 LangGraph；后续需要多步骤审批、持久化会话、多 Agent 时再迁移。
 
 ### REST SDK 选择
 
-中国中铁物联网平台没有官方维护的管理 REST SDK。`tb-mqtt-client` 和 `tb-gateway-mqtt` 只用于设备侧 MQTT。
+平台没有官方维护的管理 REST SDK。`tb-mqtt-client` 和 `tb-gateway-mqtt` 只用于设备侧 MQTT。
 
 | 方案 | 结论 |
 | --- | --- |
 | `httpx` | 第一版推荐，异步、超时、连接池、类型友好 |
-| `requests` | 同步阻塞，不适合异步 Agent |
+| `requests` | 阻塞式，不适合异步 Agent |
 | `aiohttp` | 可用，但更底层，需要自行封装 |
 | OpenAPI 生成客户端 | 接口很多时可用，生成代码重，和 TB 版本耦合 |
-| 第三方中国中铁物联网平台 SDK | 不建议，维护和兼容性不确定 |
+| 第三方平台 SDK | 不建议，维护和兼容性不确定 |
 
-建议封装 `中国中铁物联网平台Client`：
+建议封装 `平台Client`：
 
 ```text
 AsyncClient
@@ -213,9 +213,9 @@ ai-agent/
 POST /chat
 ```
 
-- 校验中国中铁物联网平台 JWT。
+- 校验平台 JWT。
 - 允许系统管理员和租户管理员。
-- 从中国中铁物联网平台获取当前用户角色和 tenantId。
+- 从平台获取当前用户角色和 tenantId。
 - 不新增登录体系。
 
 JWT 校验：
@@ -251,8 +251,8 @@ X-Authorization: Bearer <TB_JWT>
 
 执行层只调用：
 
-- `thing-model` REST API
-- 中国中铁物联网平台 REST API
+- 产品 API
+- 平台 REST API
 
 ### OpenAI Client
 
@@ -264,7 +264,7 @@ POST {base-url}/chat/completions
 
 要求模型支持 function calling / tools。DeepSeek、通义千问、OpenAI 等兼容接口可直接使用。
 
-## 11.6 中国中铁物联网平台 REST 对接
+## 11.6 平台 REST 对接
 
 | 操作 | REST 接口 | 鉴权 |
 | --- | --- | --- |
@@ -304,25 +304,25 @@ async def current_user(base_url: str, token: str) -> dict:
 
 | 工具 | 角色 | 实现 |
 | --- | --- | --- |
-| `list_tenants` | 系统管理员 | 中国中铁物联网平台 REST 查询租户 |
+| `list_tenants` | 系统管理员 | 平台 REST 查询租户 |
 | `list_products` | 租户管理员 | `GET /api/products` |
-| `list_devices` | 系统管理员/租户管理员 | 中国中铁物联网平台 REST 查询设备 |
-| `create_tenant` | 系统管理员 | 中国中铁物联网平台 REST，随后调用 `provision-auto` |
-| `create_tenant_admin` | 系统管理员 | 中国中铁物联网平台 REST，角色租户管理员，发送激活邮件 |
-| `create_product` | 租户管理员 | `POST /api/products`，由 thing-model 自动规范化 TSL |
-| `create_device` | 租户管理员 | 查询产品设备配置后创建中国中铁物联网平台设备 |
+| `list_devices` | 系统管理员/租户管理员 | 平台 REST 查询设备 |
+| `create_tenant` | 系统管理员 | 平台 REST，随后初始化平台服务账号 |
+| `create_tenant_admin` | 系统管理员 | 平台 REST，角色租户管理员，发送激活邮件 |
+| `create_product` | 租户管理员 | `POST /api/products`，由平台自动处理物模型 |
+| `create_device` | 租户管理员 | 查询产品配置后创建平台设备 |
 | `create_user` | 系统管理员/租户管理员 | 在本租户创建用户并发送激活邮件 |
 
 约束：
 
 - 租户管理员不能指定其他 tenantId。
-- Python Agent 不持久化或记录中国中铁物联网平台 JWT。
+- Python Agent 不持久化或记录平台 JWT。
 - Python Agent 不接触数据库密码和 `THINGMODEL_SECRET_KEY`。
 - Python Agent 不直接访问数据库，只调用现有 REST API。
 - 第一版不提供删除和修改工具。
 - 主键、名称和 TSL 由后端重新校验，不信任模型输出。
-- 创建产品由 `thing-model` 自动规范化腾讯 TSL 并同步中国中铁物联网平台。
-- 创建用户依赖中国中铁物联网平台 SMTP 激活邮件。
+- 创建产品由平台自动处理物模型并生成相关资源。
+- 创建用户依赖平台 SMTP 激活邮件。
 - 设备访问令牌不在对话中返回，只返回设备 ID和名称。
 
 ## 11.8 确认流程
@@ -351,21 +351,21 @@ sequenceDiagram
   participant U as 用户
   participant FE as 前端
   participant A as Python Agent
-  participant TB as 中国中铁物联网平台 REST
-  participant TM as thing-model REST
+  participant TB as 平台 REST
+  participant TM as 产品 API
 
   U->>FE: 点击“确认执行”
   FE->>A: POST /chat，mode=execute + actions
   A->>A: 重新校验角色、参数和租户
-  A->>TB: 执行中国中铁物联网平台操作
-  A->>TM: 执行 thing-model 操作
+  A->>TB: 执行平台操作
+  A->>TM: 执行产品操作
   TB-->>A: 返回结果
   TM-->>A: 返回结果
   A-->>FE: AgentActionResult
   FE-->>U: 展示执行结果
 ```
 
-未确认的写操作不会落库或调用中国中铁物联网平台。
+未确认的写操作不会落库或调用平台。
 
 ## 11.9 配置
 
@@ -389,14 +389,14 @@ AI_AGENT_MAX_ACTIONS=10
 说明：
 
 - `AI_AGENT_OPENAI_API_KEY` 只保存在后端 Secret 中，不返回前端。
-- `AI_AGENT_THING_MODEL_URL` 指向现有 `thing-model` 服务。
-- `AI_AGENT_THINGSBOARD_URL` 指向中国中铁物联网平台。
+- `AI_AGENT_THING_MODEL_URL` 指向产品与物模型模块。
+- `AI_AGENT_THINGSBOARD_URL` 指向平台核心服务。
 - `AI_AGENT_MAX_MESSAGES` 和 `AI_AGENT_MAX_ACTIONS` 采用队列语义：只保留最近 N 条，超出时静默丢弃最早内容，不返回超限错误。
 - Python 服务默认监听 `8000`。
 
 ## 11.10 安全要求
 
-- Agent API 必须校验中国中铁物联网平台 JWT。
+- Agent API 必须校验平台 JWT。
 - 每个工具独立校验角色和数据范围。
 - 所有写操作必须二次确认。
 - 消息和动作按队列保留最近 N 条，超出时静默丢弃最早内容；TSL 大小、附件大小和模型输出长度仍需限制。
@@ -408,7 +408,7 @@ AI_AGENT_MAX_ACTIONS=10
 ## 11.11 实施顺序
 
 1. Python Agent 服务骨架、配置和健康检查。
-2. 中国中铁物联网平台 JWT 校验与 `httpx` 客户端封装。
+2. 平台 JWT 校验与 `httpx` 客户端封装。
 3. OpenAI 兼容模型调用和只读工具。
 4. 前端聊天面板和普通对话。
 5. 增加 `create_tenant`、`create_tenant_admin`、`create_product`。
@@ -422,14 +422,14 @@ AI_AGENT_MAX_ACTIONS=10
 | --- | --- | --- |
 | 1 | 系统管理员创建租户 | 租户创建成功，服务账号初始化成功 |
 | 2 | 系统管理员创建租户管理员 | 用户创建成功并发送激活邮件 |
-| 3 | 租户管理员创建本租户产品 | 产品创建并自动同步中国中铁物联网平台 |
+| 3 | 租户管理员创建本租户产品 | 产品创建并自动生效 |
 | 4 | 租户管理员指定其他租户 | 返回 403 |
 | 5 | 上传 `4DZDCQUA2D.json` 创建产品 | 自动规范化 TSL 并创建成功 |
 | 6 | 未确认写操作 | 不创建任何数据 |
 | 7 | 确认创建动作 | 只执行一次，返回动作结果 |
 | 8 | AI 服务不可用 | 返回明确错误，不执行动作 |
 | 9 | 创建用户但 SMTP 未配置 | 返回激活邮件失败原因 |
-| 10 | 创建设备 | 设备创建成功并绑定产品设备配置 |
+| 10 | 创建设备 | 设备创建成功并绑定产品配置 |
 
 ## 11.13 设备侧 MQTT SDK 边界
 

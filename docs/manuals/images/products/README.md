@@ -12,7 +12,7 @@
 | `04-import-json.png` | 导入物模型 JSON |
 | `05-validate.png` | 校验物模型 |
 | `06-product-detail.png` | 产品详情概览 |
-| `07-product-links.png` | 设备配置/产品资产/规则引擎入口 |
+| `07-product-links.png` | 产品配置/产品资产/规则引擎入口 |
 | `08-product-tabs.png` | 属性/事件/行为/物模型/版本页签 |
 | `09-edit-thing-model.png` | 编辑物模型 |
 | `10-product-versions.png` | 版本列表 |
