@@ -30,7 +30,7 @@ CSV_FIELDS = [
 ]
 
 DEFAULT_RELATION_TYPE = "Contains"
-DEFAULT_PRODUCTS_DIR = Path(__file__).resolve().parent.parent / "migrate" / "integrated"
+DEFAULT_PRODUCTS_DIR = Path(__file__).resolve().parents[4] / "thing-model" / "migrate" / "integrated"
 
 
 def parse_args() -> argparse.Namespace:

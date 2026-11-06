@@ -8,7 +8,6 @@ import json
 import os
 import re
 import sys
-from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 from urllib.parse import quote, urlparse
@@ -92,11 +91,6 @@ def parse_args() -> argparse.Namespace:
         help="attribute displays the mock Type attribute; entity displays the device profile type",
     )
     parser.add_argument(
-        "--backup-dir",
-        default="tb-dashboard-backups",
-        help="Directory for backup files",
-    )
-    parser.add_argument(
         "--timeout",
         type=float,
         default=30.0,
@@ -108,11 +102,6 @@ def parse_args() -> argparse.Namespace:
         help="Disable TLS certificate verification",
     )
     parser.add_argument(
-        "--no-backup",
-        action="store_true",
-        help="Do not write a backup file",
-    )
-    parser.add_argument(
         "--force",
         action="store_true",
         help="Upload even if the dashboard is already fixed",
@@ -121,7 +110,7 @@ def parse_args() -> argparse.Namespace:
         "--rollback",
         default=None,
         metavar="FILE",
-        help="Restore the given backup file",
+        help="Restore the given dashboard JSON file",
     )
     parser.add_argument(
         "--verbose",
@@ -374,18 +363,6 @@ def apply_gateway_fix(
     }
 
 
-def save_backup(
-        backup_dir: str,
-        resource_key: str,
-        content: bytes) -> Path:
-    directory = Path(backup_dir)
-    directory.mkdir(parents=True, exist_ok=True)
-    stamp = datetime.now().strftime("%Y%m%d-%H%M%S-%f")
-    path = directory / f"{Path(resource_key).stem}.{stamp}.json"
-    path.write_bytes(content)
-    return path
-
-
 class TbClient:
 
     def __init__(
@@ -479,7 +456,6 @@ def print_summary(
         old_etag: str,
         new_etag: str,
         changes: List[str],
-        backup_path: Optional[Path],
         applied: bool,
         verbose: bool,
         report: Dict[str, Any]) -> None:
@@ -487,8 +463,6 @@ def print_summary(
     print(f"old etag: {old_etag or '<none>'}")
     print(f"changes: {', '.join(changes) if changes else 'none'}")
     print(f"new etag: {new_etag}")
-    if backup_path is not None:
-        print(f"backup: {backup_path}")
     if not applied:
         print("dry run: no changes uploaded; use --apply to upload")
     if verbose:
@@ -531,17 +505,10 @@ def main() -> int:
                 print_summary(
                     resource_id, args.resource_key, info.get("etag", ""),
                     hashlib.sha256(rollback_content).hexdigest(),
-                    ["rollback"], None, False, args.verbose,
+                    ["rollback"], False, args.verbose,
                     {"markdown": ""})
                 print(f"dry run: would restore {rollback_path}")
                 return 0
-
-            backup_path = None
-            if not args.no_backup:
-                current, _ = client.get_resource_data(
-                    token, args.resource_type, args.scope, args.resource_key)
-                backup_path = save_backup(
-                    args.backup_dir, args.resource_key, current)
 
             result = client.put_resource_data(
                 token, resource_id, file_name, rollback_content)
@@ -549,7 +516,7 @@ def main() -> int:
                 resource_id, args.resource_key, info.get("etag", ""),
                 result.get("etag", hashlib.sha256(
                     rollback_content).hexdigest()),
-                ["rollback"], backup_path, True, args.verbose,
+                ["rollback"], True, args.verbose,
                 {"markdown": ""})
             return 0
 
@@ -564,20 +531,15 @@ def main() -> int:
         if not report["changes"] and not args.force:
             print_summary(
                 resource_id, args.resource_key, old_etag, new_etag,
-                [], None, args.apply, args.verbose, report)
+                [], args.apply, args.verbose, report)
             print("already fixed")
             return 0
 
         if not args.apply:
             print_summary(
                 resource_id, args.resource_key, old_etag, new_etag,
-                report["changes"], None, False, args.verbose, report)
+                report["changes"], False, args.verbose, report)
             return 0
-
-        backup_path = None
-        if not args.no_backup:
-            backup_path = save_backup(
-                args.backup_dir, args.resource_key, data_bytes)
 
         result = client.put_resource_data(
             token, resource_id, file_name, new_content)
@@ -595,7 +557,7 @@ def main() -> int:
 
         print_summary(
             resource_id, args.resource_key, old_etag, verify_etag,
-            report["changes"], backup_path, True, args.verbose, report)
+            report["changes"], True, args.verbose, report)
         print(f"uploaded etag: {uploaded_etag}")
         print("verification: ok")
         return 0

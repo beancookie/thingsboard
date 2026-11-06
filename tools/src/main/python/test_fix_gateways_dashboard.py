@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import json
 import sys
-import tempfile
 import unittest
 from pathlib import Path
 
@@ -17,7 +16,6 @@ from fix_gateways_dashboard import (
     apply_gateway_fix,
     dump_json,
     load_json,
-    save_backup,
 )
 
 
@@ -229,14 +227,6 @@ class JsonHelpersTest(unittest.TestCase):
         loaded = load_json(content, "test")
 
         self.assertEqual(data, loaded)
-
-    def test_save_backup(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
-            path = save_backup(tmp, "gateways_dashboard.json", b"{}")
-
-            self.assertTrue(path.is_file())
-            self.assertEqual(b"{}", path.read_bytes())
-
 
 class FakeResponse:
 

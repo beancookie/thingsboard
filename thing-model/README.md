@@ -52,11 +52,11 @@ mvn -f thing-model/pom.xml -DskipTests compile
 `scripts/` 提供 Python 模拟上报脚本，会自动创建测试设备、写入物模型属性并循环发送遥测、事件和非法数据：
 
 ```bash
-python -m pip install -r thing-model/scripts/requirements.txt
-python thing-model/scripts/simulate_telemetry.py --mode mixed --count 10
+python -m pip install -r tools/src/main/python/requirements.txt
+python tools/src/main/python/simulate_telemetry.py --mode mixed --count 10
 ```
 
-详细说明见 [scripts/README.md](scripts/README.md)。
+详细说明见 [tools/src/main/python/README.md](../tools/src/main/python/README.md)。
 
 ## 前端代理
 
