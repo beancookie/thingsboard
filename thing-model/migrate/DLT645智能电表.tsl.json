@@ -1,0 +1,617 @@
+{
+  "version": "1.0",
+  "profile": {
+    "ProductId": "YUMRMRPOGP",
+    "CategoryId": "1"
+  },
+  "properties": [
+    {
+      "id": "meterInfo",
+      "name": "电表信息",
+      "desc": "DLT645 智能电表静态信息",
+      "mode": "r",
+      "required": false,
+      "define": {
+        "type": "struct",
+        "specs": {
+          "meterNo": {
+            "name": "电表通信地址",
+            "type": "string"
+          },
+          "manufacturer": {
+            "name": "厂商",
+            "type": "string"
+          },
+          "model": {
+            "name": "型号",
+            "type": "string"
+          },
+          "protocolVersion": {
+            "name": "协议版本",
+            "type": "string"
+          },
+          "softwareVersion": {
+            "name": "软件版本",
+            "type": "string"
+          },
+          "hardwareVersion": {
+            "name": "硬件版本",
+            "type": "string"
+          },
+          "assetNo": {
+            "name": "资产编号",
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "id": "UA_V",
+      "name": "A相电压",
+      "desc": "A相电压",
+      "mode": "r",
+      "required": false,
+      "define": {
+        "type": "float",
+        "min": 0,
+        "max": 300,
+        "start": 220,
+        "step": 0.1,
+        "unit": "V"
+      }
+    },
+    {
+      "id": "UB_V",
+      "name": "B相电压",
+      "desc": "B相电压",
+      "mode": "r",
+      "required": false,
+      "define": {
+        "type": "float",
+        "min": 0,
+        "max": 300,
+        "start": 220,
+        "step": 0.1,
+        "unit": "V"
+      }
+    },
+    {
+      "id": "UC_V",
+      "name": "C相电压",
+      "desc": "C相电压",
+      "mode": "r",
+      "required": false,
+      "define": {
+        "type": "float",
+        "min": 0,
+        "max": 300,
+        "start": 220,
+        "step": 0.1,
+        "unit": "V"
+      }
+    },
+    {
+      "id": "IA_A",
+      "name": "A相电流",
+      "desc": "A相电流",
+      "mode": "r",
+      "required": false,
+      "define": {
+        "type": "float",
+        "min": 0,
+        "max": 100,
+        "start": 5,
+        "step": 0.01,
+        "unit": "A"
+      }
+    },
+    {
+      "id": "IB_A",
+      "name": "B相电流",
+      "desc": "B相电流",
+      "mode": "r",
+      "required": false,
+      "define": {
+        "type": "float",
+        "min": 0,
+        "max": 100,
+        "start": 5,
+        "step": 0.01,
+        "unit": "A"
+      }
+    },
+    {
+      "id": "IC_A",
+      "name": "C相电流",
+      "desc": "C相电流",
+      "mode": "r",
+      "required": false,
+      "define": {
+        "type": "float",
+        "min": 0,
+        "max": 100,
+        "start": 5,
+        "step": 0.01,
+        "unit": "A"
+      }
+    },
+    {
+      "id": "P_kW",
+      "name": "总有功功率",
+      "desc": "三相总有功功率",
+      "mode": "r",
+      "required": false,
+      "define": {
+        "type": "float",
+        "min": 0,
+        "max": 1000,
+        "start": 3,
+        "step": 0.01,
+        "unit": "kW"
+      }
+    },
+    {
+      "id": "Q_kvar",
+      "name": "总无功功率",
+      "desc": "三相总无功功率",
+      "mode": "r",
+      "required": false,
+      "define": {
+        "type": "float",
+        "min": 0,
+        "max": 1000,
+        "start": 1,
+        "step": 0.01,
+        "unit": "kvar"
+      }
+    },
+    {
+      "id": "S_kVA",
+      "name": "总视在功率",
+      "desc": "三相总视在功率",
+      "mode": "r",
+      "required": false,
+      "define": {
+        "type": "float",
+        "min": 0,
+        "max": 1000,
+        "start": 3,
+        "step": 0.01,
+        "unit": "kVA"
+      }
+    },
+    {
+      "id": "PF",
+      "name": "总功率因数",
+      "desc": "三相总功率因数",
+      "mode": "r",
+      "required": false,
+      "define": {
+        "type": "float",
+        "min": 0,
+        "max": 1,
+        "start": 0.95,
+        "step": 0.001,
+        "unit": ""
+      }
+    },
+    {
+      "id": "F_Hz",
+      "name": "频率",
+      "desc": "电网频率",
+      "mode": "r",
+      "required": false,
+      "define": {
+        "type": "float",
+        "min": 45,
+        "max": 65,
+        "start": 50,
+        "step": 0.01,
+        "unit": "Hz"
+      }
+    },
+    {
+      "id": "forwardActiveEnergy_kWh",
+      "name": "正向有功总电能",
+      "desc": "正向有功总电能",
+      "mode": "r",
+      "required": false,
+      "define": {
+        "type": "float",
+        "min": 0,
+        "max": 99999999,
+        "start": 0,
+        "step": 0.01,
+        "unit": "kWh"
+      }
+    },
+    {
+      "id": "reverseActiveEnergy_kWh",
+      "name": "反向有功总电能",
+      "desc": "反向有功总电能",
+      "mode": "r",
+      "required": false,
+      "define": {
+        "type": "float",
+        "min": 0,
+        "max": 99999999,
+        "start": 0,
+        "step": 0.01,
+        "unit": "kWh"
+      }
+    },
+    {
+      "id": "combinedActiveEnergy_kWh",
+      "name": "组合有功总电能",
+      "desc": "组合有功总电能",
+      "mode": "r",
+      "required": false,
+      "define": {
+        "type": "float",
+        "min": 0,
+        "max": 99999999,
+        "start": 0,
+        "step": 0.01,
+        "unit": "kWh"
+      }
+    },
+    {
+      "id": "forwardReactiveEnergy_kvarh",
+      "name": "正向无功总电能",
+      "desc": "正向无功总电能",
+      "mode": "r",
+      "required": false,
+      "define": {
+        "type": "float",
+        "min": 0,
+        "max": 99999999,
+        "start": 0,
+        "step": 0.01,
+        "unit": "kvarh"
+      }
+    },
+    {
+      "id": "reverseReactiveEnergy_kvarh",
+      "name": "反向无功总电能",
+      "desc": "反向无功总电能",
+      "mode": "r",
+      "required": false,
+      "define": {
+        "type": "float",
+        "min": 0,
+        "max": 99999999,
+        "start": 0,
+        "step": 0.01,
+        "unit": "kvarh"
+      }
+    },
+    {
+      "id": "meterStatus",
+      "name": "电表状态",
+      "desc": "电表运行状态",
+      "mode": "r",
+      "required": false,
+      "define": {
+        "type": "enum",
+        "mapping": {
+          "0": "正常",
+          "1": "告警",
+          "2": "故障",
+          "3": "离线"
+        }
+      }
+    },
+    {
+      "id": "relayState",
+      "name": "继电器状态",
+      "desc": "继电器当前状态",
+      "mode": "rw",
+      "required": false,
+      "define": {
+        "type": "bool"
+      }
+    },
+    {
+      "id": "reportInterval",
+      "name": "上报周期",
+      "desc": "电表数据上报周期",
+      "mode": "rw",
+      "required": false,
+      "define": {
+        "type": "int",
+        "min": 5,
+        "max": 3600,
+        "start": 60,
+        "step": 1,
+        "unit": "s"
+      }
+    },
+    {
+      "id": "lastReadTime",
+      "name": "最近抄表时间",
+      "desc": "最近一次抄表时间",
+      "mode": "r",
+      "required": false,
+      "define": {
+        "type": "timestamp"
+      }
+    }
+  ],
+  "events": [
+    {
+      "id": "powerFailure",
+      "name": "停电事件",
+      "desc": "电表检测到停电",
+      "type": "alert",
+      "params": [
+        {
+          "id": "phase",
+          "name": "相别",
+          "define": {
+            "type": "enum_string",
+            "mapping": {
+              "A": "A相",
+              "B": "B相",
+              "C": "C相",
+              "ALL": "全部"
+            }
+          }
+        },
+        {
+          "id": "eventTs",
+          "name": "事件时间",
+          "define": {
+            "type": "timestamp"
+          }
+        }
+      ]
+    },
+    {
+      "id": "phaseLoss",
+      "name": "缺相事件",
+      "desc": "电表检测到缺相",
+      "type": "alert",
+      "params": [
+        {
+          "id": "phase",
+          "name": "相别",
+          "define": {
+            "type": "enum_string",
+            "mapping": {
+              "A": "A相",
+              "B": "B相",
+              "C": "C相",
+              "ALL": "全部"
+            }
+          }
+        },
+        {
+          "id": "eventTs",
+          "name": "事件时间",
+          "define": {
+            "type": "timestamp"
+          }
+        }
+      ]
+    },
+    {
+      "id": "overVoltage",
+      "name": "过压事件",
+      "desc": "电压超过阈值",
+      "type": "alert",
+      "params": [
+        {
+          "id": "phase",
+          "name": "相别",
+          "define": {
+            "type": "enum_string",
+            "mapping": {
+              "A": "A相",
+              "B": "B相",
+              "C": "C相",
+              "ALL": "全部"
+            }
+          }
+        },
+        {
+          "id": "voltage",
+          "name": "当前电压",
+          "define": {
+            "type": "float",
+            "min": 0,
+            "max": 300,
+            "unit": "V"
+          }
+        },
+        {
+          "id": "threshold",
+          "name": "电压阈值",
+          "define": {
+            "type": "float",
+            "min": 0,
+            "max": 300,
+            "unit": "V"
+          }
+        }
+      ]
+    },
+    {
+      "id": "underVoltage",
+      "name": "欠压事件",
+      "desc": "电压低于阈值",
+      "type": "alert",
+      "params": [
+        {
+          "id": "phase",
+          "name": "相别",
+          "define": {
+            "type": "enum_string",
+            "mapping": {
+              "A": "A相",
+              "B": "B相",
+              "C": "C相",
+              "ALL": "全部"
+            }
+          }
+        },
+        {
+          "id": "voltage",
+          "name": "当前电压",
+          "define": {
+            "type": "float",
+            "min": 0,
+            "max": 300,
+            "unit": "V"
+          }
+        },
+        {
+          "id": "threshold",
+          "name": "电压阈值",
+          "define": {
+            "type": "float",
+            "min": 0,
+            "max": 300,
+            "unit": "V"
+          }
+        }
+      ]
+    },
+    {
+      "id": "overCurrent",
+      "name": "过流事件",
+      "desc": "电流超过阈值",
+      "type": "alert",
+      "params": [
+        {
+          "id": "phase",
+          "name": "相别",
+          "define": {
+            "type": "enum_string",
+            "mapping": {
+              "A": "A相",
+              "B": "B相",
+              "C": "C相",
+              "ALL": "全部"
+            }
+          }
+        },
+        {
+          "id": "current",
+          "name": "当前电流",
+          "define": {
+            "type": "float",
+            "min": 0,
+            "max": 100,
+            "unit": "A"
+          }
+        },
+        {
+          "id": "threshold",
+          "name": "电流阈值",
+          "define": {
+            "type": "float",
+            "min": 0,
+            "max": 100,
+            "unit": "A"
+          }
+        }
+      ]
+    },
+    {
+      "id": "meterFault",
+      "name": "电表故障",
+      "desc": "电表检测到故障",
+      "type": "fault",
+      "params": [
+        {
+          "id": "code",
+          "name": "故障码",
+          "define": {
+            "type": "string"
+          }
+        },
+        {
+          "id": "message",
+          "name": "故障描述",
+          "define": {
+            "type": "string"
+          }
+        }
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "id": "setRelay",
+      "name": "控制继电器",
+      "desc": "控制电表继电器开关",
+      "input": [
+        {
+          "id": "on",
+          "name": "开关状态",
+          "define": {
+            "type": "bool"
+          }
+        }
+      ],
+      "output": [
+        {
+          "id": "success",
+          "name": "是否成功",
+          "define": {
+            "type": "bool"
+          }
+        }
+      ]
+    },
+    {
+      "id": "applyConfig",
+      "name": "应用上报配置",
+      "desc": "应用电表上报周期",
+      "input": [
+        {
+          "id": "reportInterval",
+          "name": "上报周期",
+          "define": {
+            "type": "int",
+            "min": 5,
+            "max": 3600,
+            "unit": "s"
+          }
+        }
+      ],
+      "output": [
+        {
+          "id": "success",
+          "name": "是否成功",
+          "define": {
+            "type": "bool"
+          }
+        }
+      ]
+    },
+    {
+      "id": "syncTime",
+      "name": "同步电表时间",
+      "desc": "同步电表时钟",
+      "input": [
+        {
+          "id": "time",
+          "name": "目标时间",
+          "define": {
+            "type": "timestamp"
+          }
+        }
+      ],
+      "output": [
+        {
+          "id": "success",
+          "name": "是否成功",
+          "define": {
+            "type": "bool"
+          }
+        }
+      ]
+    }
+  ]
+}

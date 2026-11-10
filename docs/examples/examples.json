@@ -1,0 +1,762 @@
+{
+  "examples": [
+    {
+      "id": "dlt645-meter-simulator",
+      "title": "DLT645 电表 MQTT 模拟器",
+      "description": "模拟 DLT645 电表通过 MQTT 上报遥测和事件，处理共享属性与 RPC。",
+      "category": "设备接入",
+      "protocol": "MQTT",
+      "readme": "examples/dlt645-meter-simulator/README.md",
+      "entry": "examples/dlt645-meter-simulator/dlt645_meter_simulator.py",
+      "files": [
+        {
+          "name": "dlt645_meter_simulator.py",
+          "path": "examples/dlt645-meter-simulator/dlt645_meter_simulator.py",
+          "language": "python",
+          "group": "python"
+        },
+        {
+          "name": "README.md",
+          "path": "examples/dlt645-meter-simulator/README.md",
+          "language": "markdown",
+          "group": "shared"
+        },
+        {
+          "name": "requirements.txt",
+          "path": "examples/dlt645-meter-simulator/requirements.txt",
+          "language": "text",
+          "group": "python"
+        },
+        {
+          "name": "dlt645_meter_thing_model.tsl.json",
+          "path": "examples/dlt645-meter-simulator/dlt645_meter_thing_model.tsl.json",
+          "language": "json",
+          "group": "python"
+        },
+        {
+          "name": "pom.xml",
+          "path": "examples/dlt645-meter-simulator/java/pom.xml",
+          "language": "xml",
+          "group": "java"
+        },
+        {
+          "name": "Dlt645MeterSimulator.java",
+          "path": "examples/dlt645-meter-simulator/java/src/main/java/org/thingsboard/examples/Dlt645MeterSimulator.java",
+          "language": "java",
+          "group": "java"
+        }
+      ]
+    },
+    {
+      "id": "dlt645-meter-http",
+      "title": "DLT645 电表 HTTP 模拟器",
+      "description": "模拟 DLT645 电表通过 HTTP 上报遥测和事件，处理共享属性与 RPC。",
+      "category": "设备接入",
+      "protocol": "HTTP",
+      "readme": "examples/dlt645-meter-http/README.md",
+      "entry": "examples/dlt645-meter-http/dlt645_meter_http.py",
+      "files": [
+        {
+          "name": "dlt645_meter_http.py",
+          "path": "examples/dlt645-meter-http/dlt645_meter_http.py",
+          "language": "python",
+          "group": "python"
+        },
+        {
+          "name": "README.md",
+          "path": "examples/dlt645-meter-http/README.md",
+          "language": "markdown",
+          "group": "shared"
+        },
+        {
+          "name": "requirements.txt",
+          "path": "examples/dlt645-meter-http/requirements.txt",
+          "language": "text",
+          "group": "python"
+        },
+        {
+          "name": "dlt645_meter_thing_model.tsl.json",
+          "path": "examples/dlt645-meter-http/dlt645_meter_thing_model.tsl.json",
+          "language": "json",
+          "group": "python"
+        },
+        {
+          "name": "pom.xml",
+          "path": "examples/dlt645-meter-http/java/pom.xml",
+          "language": "xml",
+          "group": "java"
+        },
+        {
+          "name": "Dlt645MeterHttp.java",
+          "path": "examples/dlt645-meter-http/java/src/main/java/org/thingsboard/examples/Dlt645MeterHttp.java",
+          "language": "java",
+          "group": "java"
+        }
+      ]
+    },
+    {
+      "id": "dlt645-meter-coap",
+      "title": "DLT645 电表 CoAP 模拟器",
+      "description": "模拟 DLT645 电表通过 CoAP 上报遥测和事件，处理共享属性与 RPC。",
+      "category": "设备接入",
+      "protocol": "CoAP",
+      "readme": "examples/dlt645-meter-coap/README.md",
+      "entry": "examples/dlt645-meter-coap/dlt645_meter_coap.py",
+      "files": [
+        {
+          "name": "dlt645_meter_coap.py",
+          "path": "examples/dlt645-meter-coap/dlt645_meter_coap.py",
+          "language": "python",
+          "group": "python"
+        },
+        {
+          "name": "README.md",
+          "path": "examples/dlt645-meter-coap/README.md",
+          "language": "markdown",
+          "group": "shared"
+        },
+        {
+          "name": "requirements.txt",
+          "path": "examples/dlt645-meter-coap/requirements.txt",
+          "language": "text",
+          "group": "python"
+        },
+        {
+          "name": "dlt645_meter_thing_model.tsl.json",
+          "path": "examples/dlt645-meter-coap/dlt645_meter_thing_model.tsl.json",
+          "language": "json",
+          "group": "python"
+        },
+        {
+          "name": "pom.xml",
+          "path": "examples/dlt645-meter-coap/java/pom.xml",
+          "language": "xml",
+          "group": "java"
+        },
+        {
+          "name": "Dlt645MeterCoap.java",
+          "path": "examples/dlt645-meter-coap/java/src/main/java/org/thingsboard/examples/Dlt645MeterCoap.java",
+          "language": "java",
+          "group": "java"
+        }
+      ]
+    },
+    {
+      "id": "device-downlink-client",
+      "title": "设备下行接收示例",
+      "description": "订阅共享属性与 RPC，演示设备端处理平台下发命令。",
+      "category": "设备接入",
+      "protocol": "MQTT",
+      "readme": "examples/device-downlink-client/README.md",
+      "entry": "examples/device-downlink-client/device_downlink_client.py",
+      "files": [
+        {
+          "name": "device_downlink_client.py",
+          "path": "examples/device-downlink-client/device_downlink_client.py",
+          "language": "python",
+          "group": "python"
+        },
+        {
+          "name": "README.md",
+          "path": "examples/device-downlink-client/README.md",
+          "language": "markdown",
+          "group": "shared"
+        },
+        {
+          "name": "requirements.txt",
+          "path": "examples/device-downlink-client/requirements.txt",
+          "language": "text",
+          "group": "python"
+        },
+        {
+          "name": "pom.xml",
+          "path": "examples/device-downlink-client/java/pom.xml",
+          "language": "xml",
+          "group": "java"
+        },
+        {
+          "name": "DeviceDownlinkClient.java",
+          "path": "examples/device-downlink-client/java/src/main/java/org/thingsboard/examples/DeviceDownlinkClient.java",
+          "language": "java",
+          "group": "java"
+        }
+      ]
+    },
+    {
+      "id": "device-bulk-registrar",
+      "title": "设备批量注册工具",
+      "description": "为指定产品批量创建设备、获取凭证并可选绑定到网关。",
+      "category": "设备接入",
+      "protocol": "REST",
+      "readme": "examples/device-bulk-registrar/README.md",
+      "entry": "examples/device-bulk-registrar/device_bulk_registrar.py",
+      "files": [
+        {
+          "name": "device_bulk_registrar.py",
+          "path": "examples/device-bulk-registrar/device_bulk_registrar.py",
+          "language": "python",
+          "group": "python"
+        },
+        {
+          "name": "README.md",
+          "path": "examples/device-bulk-registrar/README.md",
+          "language": "markdown",
+          "group": "shared"
+        },
+        {
+          "name": "requirements.txt",
+          "path": "examples/device-bulk-registrar/requirements.txt",
+          "language": "text",
+          "group": "python"
+        },
+        {
+          "name": "pom.xml",
+          "path": "examples/device-bulk-registrar/java/pom.xml",
+          "language": "xml",
+          "group": "java"
+        },
+        {
+          "name": "Args.java",
+          "path": "examples/device-bulk-registrar/java/src/main/java/org/thingsboard/examples/Args.java",
+          "language": "java",
+          "group": "java"
+        },
+        {
+          "name": "DeviceBulkRegistrar.java",
+          "path": "examples/device-bulk-registrar/java/src/main/java/org/thingsboard/examples/DeviceBulkRegistrar.java",
+          "language": "java",
+          "group": "java"
+        },
+        {
+          "name": "TbClient.java",
+          "path": "examples/device-bulk-registrar/java/src/main/java/org/thingsboard/examples/TbClient.java",
+          "language": "java",
+          "group": "java"
+        }
+      ]
+    },
+    {
+      "id": "gateway-subdevice-simulator",
+      "title": "网关子设备 MQTT 模拟器",
+      "description": "使用网关令牌模拟多个子设备上线、遥测、属性与下线。",
+      "category": "设备接入",
+      "protocol": "MQTT",
+      "readme": "examples/gateway-subdevice-simulator/README.md",
+      "entry": "examples/gateway-subdevice-simulator/gateway_subdevice_simulator.py",
+      "files": [
+        {
+          "name": "gateway_subdevice_simulator.py",
+          "path": "examples/gateway-subdevice-simulator/gateway_subdevice_simulator.py",
+          "language": "python",
+          "group": "python"
+        },
+        {
+          "name": "README.md",
+          "path": "examples/gateway-subdevice-simulator/README.md",
+          "language": "markdown",
+          "group": "shared"
+        },
+        {
+          "name": "requirements.txt",
+          "path": "examples/gateway-subdevice-simulator/requirements.txt",
+          "language": "text",
+          "group": "python"
+        },
+        {
+          "name": "pom.xml",
+          "path": "examples/gateway-subdevice-simulator/java/pom.xml",
+          "language": "xml",
+          "group": "java"
+        },
+        {
+          "name": "GatewaySubdeviceSimulator.java",
+          "path": "examples/gateway-subdevice-simulator/java/src/main/java/org/thingsboard/examples/GatewaySubdeviceSimulator.java",
+          "language": "java",
+          "group": "java"
+        }
+      ]
+    },
+    {
+      "id": "thing-model-product-exporter",
+      "title": "物模型产品导出工具",
+      "description": "从 ThingsBoard / thing-model 平台导出产品列表与完整 TSL 物模型。",
+      "category": "产品管理",
+      "protocol": "REST",
+      "readme": "examples/thing-model-product-exporter/README.md",
+      "entry": "examples/thing-model-product-exporter/thing_model_product_exporter.py",
+      "files": [
+        {
+          "name": "thing_model_product_exporter.py",
+          "path": "examples/thing-model-product-exporter/thing_model_product_exporter.py",
+          "language": "python",
+          "group": "python"
+        },
+        {
+          "name": "README.md",
+          "path": "examples/thing-model-product-exporter/README.md",
+          "language": "markdown",
+          "group": "shared"
+        },
+        {
+          "name": "requirements.txt",
+          "path": "examples/thing-model-product-exporter/requirements.txt",
+          "language": "text",
+          "group": "python"
+        },
+        {
+          "name": "pom.xml",
+          "path": "examples/thing-model-product-exporter/java/pom.xml",
+          "language": "xml",
+          "group": "java"
+        },
+        {
+          "name": "ThingModelProductExporter.java",
+          "path": "examples/thing-model-product-exporter/java/src/main/java/org/thingsboard/examples/ThingModelProductExporter.java",
+          "language": "java",
+          "group": "java"
+        }
+      ]
+    },
+    {
+      "id": "product-crud-tool",
+      "title": "产品增删改查工具",
+      "description": "查询、创建、更新、校验和删除产品，管理 TSL 版本。",
+      "category": "产品管理",
+      "protocol": "REST",
+      "readme": "examples/product-crud-tool/README.md",
+      "entry": "examples/product-crud-tool/product_crud_tool.py",
+      "files": [
+        {
+          "name": "product_crud_tool.py",
+          "path": "examples/product-crud-tool/product_crud_tool.py",
+          "language": "python",
+          "group": "python"
+        },
+        {
+          "name": "README.md",
+          "path": "examples/product-crud-tool/README.md",
+          "language": "markdown",
+          "group": "shared"
+        },
+        {
+          "name": "requirements.txt",
+          "path": "examples/product-crud-tool/requirements.txt",
+          "language": "text",
+          "group": "python"
+        },
+        {
+          "name": "pom.xml",
+          "path": "examples/product-crud-tool/java/pom.xml",
+          "language": "xml",
+          "group": "java"
+        },
+        {
+          "name": "ProductCrudTool.java",
+          "path": "examples/product-crud-tool/java/src/main/java/org/thingsboard/examples/ProductCrudTool.java",
+          "language": "java",
+          "group": "java"
+        }
+      ]
+    },
+    {
+      "id": "device-crud-tool",
+      "title": "设备增删改查工具",
+      "description": "查询、创建、更新、删除设备并查询设备凭证。",
+      "category": "产品管理",
+      "protocol": "REST",
+      "readme": "examples/device-crud-tool/README.md",
+      "entry": "examples/device-crud-tool/device_crud_tool.py",
+      "files": [
+        {
+          "name": "device_crud_tool.py",
+          "path": "examples/device-crud-tool/device_crud_tool.py",
+          "language": "python",
+          "group": "python"
+        },
+        {
+          "name": "README.md",
+          "path": "examples/device-crud-tool/README.md",
+          "language": "markdown",
+          "group": "shared"
+        },
+        {
+          "name": "requirements.txt",
+          "path": "examples/device-crud-tool/requirements.txt",
+          "language": "text",
+          "group": "python"
+        },
+        {
+          "name": "pom.xml",
+          "path": "examples/device-crud-tool/java/pom.xml",
+          "language": "xml",
+          "group": "java"
+        },
+        {
+          "name": "DeviceCrudTool.java",
+          "path": "examples/device-crud-tool/java/src/main/java/org/thingsboard/examples/DeviceCrudTool.java",
+          "language": "java",
+          "group": "java"
+        }
+      ]
+    },
+    {
+      "id": "gateway-config-tool",
+      "title": "网关与子设备配置工具",
+      "description": "创建网关/子设备、绑定 Contains 关系、查询状态并写入网关配置。",
+      "category": "产品管理",
+      "protocol": "REST",
+      "readme": "examples/gateway-config-tool/README.md",
+      "entry": "examples/gateway-config-tool/gateway_config_tool.py",
+      "files": [
+        {
+          "name": "gateway_config_tool.py",
+          "path": "examples/gateway-config-tool/gateway_config_tool.py",
+          "language": "python",
+          "group": "python"
+        },
+        {
+          "name": "README.md",
+          "path": "examples/gateway-config-tool/README.md",
+          "language": "markdown",
+          "group": "shared"
+        },
+        {
+          "name": "requirements.txt",
+          "path": "examples/gateway-config-tool/requirements.txt",
+          "language": "text",
+          "group": "python"
+        },
+        {
+          "name": "pom.xml",
+          "path": "examples/gateway-config-tool/java/pom.xml",
+          "language": "xml",
+          "group": "java"
+        },
+        {
+          "name": "Args.java",
+          "path": "examples/gateway-config-tool/java/src/main/java/org/thingsboard/examples/Args.java",
+          "language": "java",
+          "group": "java"
+        },
+        {
+          "name": "GatewayConfigTool.java",
+          "path": "examples/gateway-config-tool/java/src/main/java/org/thingsboard/examples/GatewayConfigTool.java",
+          "language": "java",
+          "group": "java"
+        },
+        {
+          "name": "TbClient.java",
+          "path": "examples/gateway-config-tool/java/src/main/java/org/thingsboard/examples/TbClient.java",
+          "language": "java",
+          "group": "java"
+        }
+      ]
+    },
+    {
+      "id": "rulechain-crud-tool",
+      "title": "规则链增删改查工具",
+      "description": "管理规则链、节点元数据、根规则链以及导入导出。",
+      "category": "产品管理",
+      "protocol": "REST",
+      "readme": "examples/rulechain-crud-tool/README.md",
+      "entry": "examples/rulechain-crud-tool/rulechain_crud_tool.py",
+      "files": [
+        {
+          "name": "rulechain_crud_tool.py",
+          "path": "examples/rulechain-crud-tool/rulechain_crud_tool.py",
+          "language": "python",
+          "group": "python"
+        },
+        {
+          "name": "README.md",
+          "path": "examples/rulechain-crud-tool/README.md",
+          "language": "markdown",
+          "group": "shared"
+        },
+        {
+          "name": "requirements.txt",
+          "path": "examples/rulechain-crud-tool/requirements.txt",
+          "language": "text",
+          "group": "python"
+        },
+        {
+          "name": "pom.xml",
+          "path": "examples/rulechain-crud-tool/java/pom.xml",
+          "language": "xml",
+          "group": "java"
+        },
+        {
+          "name": "Args.java",
+          "path": "examples/rulechain-crud-tool/java/src/main/java/org/thingsboard/examples/Args.java",
+          "language": "java",
+          "group": "java"
+        },
+        {
+          "name": "RuleChainCrudTool.java",
+          "path": "examples/rulechain-crud-tool/java/src/main/java/org/thingsboard/examples/RuleChainCrudTool.java",
+          "language": "java",
+          "group": "java"
+        },
+        {
+          "name": "TbClient.java",
+          "path": "examples/rulechain-crud-tool/java/src/main/java/org/thingsboard/examples/TbClient.java",
+          "language": "java",
+          "group": "java"
+        }
+      ]
+    },
+    {
+      "id": "tsl-validator",
+      "title": "物模型 TSL 校验工具",
+      "description": "离线校验 TSL 结构、类型、范围和命名，提交前提前发现问题。",
+      "category": "开发辅助",
+      "protocol": "Native",
+      "readme": "examples/tsl-validator/README.md",
+      "entry": "examples/tsl-validator/tsl_validator.py",
+      "files": [
+        {
+          "name": "tsl_validator.py",
+          "path": "examples/tsl-validator/tsl_validator.py",
+          "language": "python",
+          "group": "python"
+        },
+        {
+          "name": "README.md",
+          "path": "examples/tsl-validator/README.md",
+          "language": "markdown",
+          "group": "shared"
+        },
+        {
+          "name": "requirements.txt",
+          "path": "examples/tsl-validator/requirements.txt",
+          "language": "text",
+          "group": "python"
+        },
+        {
+          "name": "pom.xml",
+          "path": "examples/tsl-validator/java/pom.xml",
+          "language": "xml",
+          "group": "java"
+        },
+        {
+          "name": "TslValidator.java",
+          "path": "examples/tsl-validator/java/src/main/java/org/thingsboard/examples/TslValidator.java",
+          "language": "java",
+          "group": "java"
+        }
+      ]
+    },
+    {
+      "id": "tenant-provisioner",
+      "title": "租户初始化工具",
+      "description": "创建租户、租户管理员并初始化平台服务账号。",
+      "category": "组织与权限",
+      "protocol": "REST",
+      "readme": "examples/tenant-provisioner/README.md",
+      "entry": "examples/tenant-provisioner/tenant_provisioner.py",
+      "files": [
+        {
+          "name": "tenant_provisioner.py",
+          "path": "examples/tenant-provisioner/tenant_provisioner.py",
+          "language": "python",
+          "group": "python"
+        },
+        {
+          "name": "README.md",
+          "path": "examples/tenant-provisioner/README.md",
+          "language": "markdown",
+          "group": "shared"
+        },
+        {
+          "name": "requirements.txt",
+          "path": "examples/tenant-provisioner/requirements.txt",
+          "language": "text",
+          "group": "python"
+        },
+        {
+          "name": "pom.xml",
+          "path": "examples/tenant-provisioner/java/pom.xml",
+          "language": "xml",
+          "group": "java"
+        },
+        {
+          "name": "Args.java",
+          "path": "examples/tenant-provisioner/java/src/main/java/org/thingsboard/examples/Args.java",
+          "language": "java",
+          "group": "java"
+        },
+        {
+          "name": "TbClient.java",
+          "path": "examples/tenant-provisioner/java/src/main/java/org/thingsboard/examples/TbClient.java",
+          "language": "java",
+          "group": "java"
+        },
+        {
+          "name": "TenantProvisioner.java",
+          "path": "examples/tenant-provisioner/java/src/main/java/org/thingsboard/examples/TenantProvisioner.java",
+          "language": "java",
+          "group": "java"
+        }
+      ]
+    },
+    {
+      "id": "customer-user-provisioner",
+      "title": "客户与用户初始化工具",
+      "description": "创建客户、客户用户并分配设备或资产。",
+      "category": "组织与权限",
+      "protocol": "REST",
+      "readme": "examples/customer-user-provisioner/README.md",
+      "entry": "examples/customer-user-provisioner/customer_user_provisioner.py",
+      "files": [
+        {
+          "name": "customer_user_provisioner.py",
+          "path": "examples/customer-user-provisioner/customer_user_provisioner.py",
+          "language": "python",
+          "group": "python"
+        },
+        {
+          "name": "README.md",
+          "path": "examples/customer-user-provisioner/README.md",
+          "language": "markdown",
+          "group": "shared"
+        },
+        {
+          "name": "requirements.txt",
+          "path": "examples/customer-user-provisioner/requirements.txt",
+          "language": "text",
+          "group": "python"
+        },
+        {
+          "name": "pom.xml",
+          "path": "examples/customer-user-provisioner/java/pom.xml",
+          "language": "xml",
+          "group": "java"
+        },
+        {
+          "name": "Args.java",
+          "path": "examples/customer-user-provisioner/java/src/main/java/org/thingsboard/examples/Args.java",
+          "language": "java",
+          "group": "java"
+        },
+        {
+          "name": "TbClient.java",
+          "path": "examples/customer-user-provisioner/java/src/main/java/org/thingsboard/examples/TbClient.java",
+          "language": "java",
+          "group": "java"
+        },
+        {
+          "name": "CustomerUserProvisioner.java",
+          "path": "examples/customer-user-provisioner/java/src/main/java/org/thingsboard/examples/CustomerUserProvisioner.java",
+          "language": "java",
+          "group": "java"
+        }
+      ]
+    },
+    {
+      "id": "alarm-notification-tool",
+      "title": "告警与通知工具",
+      "description": "查询与处理告警，预览和发送通知请求。",
+      "category": "规则与告警",
+      "protocol": "REST",
+      "readme": "examples/alarm-notification-tool/README.md",
+      "entry": "examples/alarm-notification-tool/alarm_notification_tool.py",
+      "files": [
+        {
+          "name": "alarm_notification_tool.py",
+          "path": "examples/alarm-notification-tool/alarm_notification_tool.py",
+          "language": "python",
+          "group": "python"
+        },
+        {
+          "name": "README.md",
+          "path": "examples/alarm-notification-tool/README.md",
+          "language": "markdown",
+          "group": "shared"
+        },
+        {
+          "name": "requirements.txt",
+          "path": "examples/alarm-notification-tool/requirements.txt",
+          "language": "text",
+          "group": "python"
+        },
+        {
+          "name": "pom.xml",
+          "path": "examples/alarm-notification-tool/java/pom.xml",
+          "language": "xml",
+          "group": "java"
+        },
+        {
+          "name": "Args.java",
+          "path": "examples/alarm-notification-tool/java/src/main/java/org/thingsboard/examples/Args.java",
+          "language": "java",
+          "group": "java"
+        },
+        {
+          "name": "TbClient.java",
+          "path": "examples/alarm-notification-tool/java/src/main/java/org/thingsboard/examples/TbClient.java",
+          "language": "java",
+          "group": "java"
+        },
+        {
+          "name": "AlarmNotificationTool.java",
+          "path": "examples/alarm-notification-tool/java/src/main/java/org/thingsboard/examples/AlarmNotificationTool.java",
+          "language": "java",
+          "group": "java"
+        }
+      ]
+    },
+    {
+      "id": "calculated-field-manager",
+      "title": "计算字段管理工具",
+      "description": "管理计算字段，测试脚本并查看调试事件。",
+      "category": "规则与告警",
+      "protocol": "REST",
+      "readme": "examples/calculated-field-manager/README.md",
+      "entry": "examples/calculated-field-manager/calculated_field_manager.py",
+      "files": [
+        {
+          "name": "calculated_field_manager.py",
+          "path": "examples/calculated-field-manager/calculated_field_manager.py",
+          "language": "python",
+          "group": "python"
+        },
+        {
+          "name": "README.md",
+          "path": "examples/calculated-field-manager/README.md",
+          "language": "markdown",
+          "group": "shared"
+        },
+        {
+          "name": "requirements.txt",
+          "path": "examples/calculated-field-manager/requirements.txt",
+          "language": "text",
+          "group": "python"
+        },
+        {
+          "name": "pom.xml",
+          "path": "examples/calculated-field-manager/java/pom.xml",
+          "language": "xml",
+          "group": "java"
+        },
+        {
+          "name": "Args.java",
+          "path": "examples/calculated-field-manager/java/src/main/java/org/thingsboard/examples/Args.java",
+          "language": "java",
+          "group": "java"
+        },
+        {
+          "name": "TbClient.java",
+          "path": "examples/calculated-field-manager/java/src/main/java/org/thingsboard/examples/TbClient.java",
+          "language": "java",
+          "group": "java"
+        },
+        {
+          "name": "CalculatedFieldManager.java",
+          "path": "examples/calculated-field-manager/java/src/main/java/org/thingsboard/examples/CalculatedFieldManager.java",
+          "language": "java",
+          "group": "java"
+        }
+      ]
+    }
+  ]
+}

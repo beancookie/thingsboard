@@ -75,10 +75,11 @@
   }
 }
 
-.tb-manuals-list {
+.tb-manuals-sections {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
-  padding: 8px 10px 20px;
+  padding-bottom: 8px;
 
   &::-webkit-scrollbar {
     width: 8px;
@@ -88,6 +89,10 @@
     border-radius: 4px;
     background: rgba(15, 22, 29, 0.16);
   }
+}
+
+.tb-manuals-list {
+  padding: 8px 10px 12px;
 }
 
 .tb-manual-list-item {
@@ -222,17 +227,6 @@
   font-weight: 600;
   line-height: 26px;
   color: rgba(15, 22, 29, 0.9);
-}
-
-.tb-manuals-print-button {
-  flex: 0 0 auto;
-
-  mat-icon {
-    margin-right: 6px;
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
-  }
 }
 
 .tb-manuals-content-scroll {
@@ -437,13 +431,6 @@
     box-shadow: none;
   }
 
-  .tb-manuals-print-button span {
-    display: none;
-  }
-
-  .tb-manuals-print-button mat-icon {
-    margin-right: 0;
-  }
 }
 
 @media print {
@@ -457,8 +444,7 @@
   }
 
   .tb-manuals-drawer,
-  .tb-manuals-toolbar,
-  .tb-manuals-print-button {
+  .tb-manuals-toolbar {
     display: none !important;
   }
 

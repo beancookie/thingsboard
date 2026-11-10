@@ -4,10 +4,11 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, shareReplay, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { ManualEntry, ResolvedDocLink } from './manual.models';
+import { ExampleEntry, ExamplesManifest, ManualEntry, ResolvedDocLink } from './manual.models';
 
 const DOCS_BASE_PATH = '/assets/docs/';
 const MANUALS_INDEX_PATH = 'manuals/README.md';
+const EXAMPLES_INDEX_PATH = 'examples/examples.json';
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +16,7 @@ const MANUALS_INDEX_PATH = 'manuals/README.md';
 export class ManualsService {
 
   private index$: Observable<ManualEntry[]> | null = null;
+  private examples$: Observable<ExampleEntry[]> | null = null;
   private readonly contentCache = new Map<string, Observable<string>>();
 
   constructor(private http: HttpClient) {
@@ -32,6 +34,20 @@ export class ManualsService {
       );
     }
     return this.index$!;
+  }
+
+  getExamples(): Observable<ExampleEntry[]> {
+    if (!this.examples$) {
+      this.examples$ = this.http.get(`${DOCS_BASE_PATH}${EXAMPLES_INDEX_PATH}`).pipe(
+        map((manifest: ExamplesManifest) => (manifest?.examples || []).filter((example) => !!example?.id && !!example?.readme)),
+        catchError((error) => {
+          this.examples$ = null;
+          return throwError(() => error);
+        }),
+        shareReplay({bufferSize: 1, refCount: false})
+      );
+    }
+    return this.examples$!;
   }
 
   getContent(path: string): Observable<string> {

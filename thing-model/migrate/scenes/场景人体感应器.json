@@ -1,0 +1,46 @@
+{
+  "version": "1.0",
+  "profile": {
+    "ProductId": "SCENE_MOTION",
+    "CategoryId": "SCENE"
+  },
+  "properties": [
+    {
+      "id": "motion",
+      "name": "人体感应",
+      "desc": "检测到人体移动时为 true",
+      "mode": "r",
+      "required": false,
+      "define": {
+        "type": "bool"
+      }
+    },
+    {
+      "id": "battery",
+      "name": "电量",
+      "desc": "",
+      "mode": "r",
+      "required": false,
+      "define": {
+        "type": "int",
+        "min": 0,
+        "max": 100,
+        "start": 100,
+        "step": 1,
+        "unit": "%"
+      }
+    },
+    {
+      "id": "online",
+      "name": "在线状态",
+      "desc": "",
+      "mode": "r",
+      "required": false,
+      "define": {
+        "type": "bool"
+      }
+    }
+  ],
+  "events": [],
+  "actions": []
+}

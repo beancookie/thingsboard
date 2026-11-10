@@ -1,0 +1,51 @@
+{
+  "version": "1.0",
+  "profile": {
+    "ProductId": "SCENE_LIGHT_SENSOR",
+    "CategoryId": "SCENE"
+  },
+  "properties": [
+    {
+      "id": "illuminance",
+      "name": "光照度",
+      "desc": "",
+      "mode": "r",
+      "required": false,
+      "define": {
+        "type": "float",
+        "min": 0,
+        "max": 100000,
+        "start": 0,
+        "step": 1,
+        "unit": "lux"
+      }
+    },
+    {
+      "id": "battery",
+      "name": "电量",
+      "desc": "",
+      "mode": "r",
+      "required": false,
+      "define": {
+        "type": "int",
+        "min": 0,
+        "max": 100,
+        "start": 100,
+        "step": 1,
+        "unit": "%"
+      }
+    },
+    {
+      "id": "online",
+      "name": "在线状态",
+      "desc": "",
+      "mode": "r",
+      "required": false,
+      "define": {
+        "type": "bool"
+      }
+    }
+  ],
+  "events": [],
+  "actions": []
+}

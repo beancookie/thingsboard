@@ -72,8 +72,6 @@ export class DeviceCheckConnectivityDialogComponent extends
 
   private currentTime = Date.now();
 
-  private transportTypes = [...Object.keys(BasicTransportType), ...Object.keys(DeviceTransportType)] as Array<NetworkTransportType>;
-
   constructor(protected store: Store<AppState>,
               protected router: Router,
               @Inject(MAT_DIALOG_DATA) private data: DeviceCheckConnectivityDialogData,
@@ -133,18 +131,9 @@ export class DeviceCheckConnectivityDialogComponent extends
     this.deviceService.getDevicePublishTelemetryCommands(this.data.deviceId.id).subscribe(
       commands => {
         this.commands = commands;
-        if (this.data.afterAdd && commands.mqtt) {
+        if (commands.mqtt) {
           this.allowTransportType.add(DeviceTransportType.MQTT);
           this.selectTransportType = DeviceTransportType.MQTT;
-        } else {
-          const commandsProtocols = Object.keys(commands);
-          this.transportTypes.forEach(transport => {
-            const findCommand = commandsProtocols.find(item => item.toUpperCase().startsWith(transport));
-            if (findCommand) {
-              this.allowTransportType.add(transport);
-            }
-          });
-          this.selectTransportType = this.allowTransportType.values().next().value;
         }
         this.selectTabIndexForUserOS();
         this.loadedCommand = true;

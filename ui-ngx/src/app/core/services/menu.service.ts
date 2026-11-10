@@ -103,7 +103,7 @@ export class MenuService {
   }
 
   private updateActiveMenuSections() {
-    const url = this.router.url;
+    const url = this.router.url.split('?')[0].split('#')[0];
     const activeMenuSection = this._availableMenuSections.find(section => section.path === url);
     this._availableMenuSections.forEach((section: MenuSection) => {
       section.active = this.isSectionActive(section, activeMenuSection);

@@ -1,0 +1,59 @@
+<!--
+
+    SPDX-FileCopyrightText: Copyright The Thingsboard Authors
+    SPDX-License-Identifier: Apache-2.0
+
+-->
+<div class="tb-service-info">
+  <div class="tb-service-info-header">
+    <div class="tb-service-info-icon">
+      <mat-icon>dns</mat-icon>
+    </div>
+    <div class="tb-service-info-heading">
+      <div class="tb-service-info-title">{{ 'service-info.service-info' | translate }}</div>
+      <div class="tb-service-info-subtitle">{{ 'service-info.subtitle' | translate }}</div>
+    </div>
+  </div>
+
+  <section class="tb-service-info-section">
+    <div class="tb-service-info-section-title">{{ 'service-info.device-access' | translate }}</div>
+    <div class="tb-service-info-grid">
+      @for (endpoint of deviceEndpoints; track endpoint.address) {
+        <div class="tb-service-info-card">
+          <div class="tb-service-info-card-head">
+            <span class="tb-service-info-protocol">{{ endpoint.protocol }}</span>
+            <span class="tb-service-info-transport">{{ endpoint.transport }}</span>
+          </div>
+          <div class="tb-service-info-label">{{ ('service-info.' + endpoint.key) | translate }}</div>
+          <div class="tb-service-info-address">
+            <span class="tb-service-info-address-value">{{ endpoint.address }}</span>
+            <tb-copy-button [copyText]="endpoint.address"
+                            [tooltipText]="'service-info.copy' | translate"
+                            tooltipPosition="above"></tb-copy-button>
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+
+  <section class="tb-service-info-section">
+    <div class="tb-service-info-section-title">{{ 'service-info.rest-api' | translate }}</div>
+    <div class="tb-service-info-grid tb-service-info-grid-wide">
+      @for (endpoint of apiEndpoints; track endpoint.address) {
+        <div class="tb-service-info-card">
+          <div class="tb-service-info-card-head">
+            <span class="tb-service-info-protocol">{{ endpoint.protocol }}</span>
+            <span class="tb-service-info-transport">{{ endpoint.transport }}</span>
+          </div>
+          <div class="tb-service-info-label">{{ ('service-info.' + endpoint.key) | translate }}</div>
+          <div class="tb-service-info-address">
+            <span class="tb-service-info-address-value">{{ endpoint.address }}</span>
+            <tb-copy-button [copyText]="endpoint.address"
+                            [tooltipText]="'service-info.copy' | translate"
+                            tooltipPosition="above"></tb-copy-button>
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+</div>

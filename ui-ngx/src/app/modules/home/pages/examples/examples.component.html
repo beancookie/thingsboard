@@ -1,0 +1,205 @@
+<!--
+
+    SPDX-FileCopyrightText: Copyright The Thingsboard Authors
+    SPDX-License-Identifier: Apache-2.0
+
+-->
+<mat-drawer-container class="tb-manuals-container" [hasBackdrop]="drawerMode === 'over'" autosize>
+  <mat-drawer #drawer
+              class="tb-manuals-drawer"
+              [mode]="drawerMode"
+              [opened]="drawerOpen"
+              (openedChange)="drawerOpen = $event">
+    <div class="tb-manuals-drawer-header">
+      <div class="tb-manuals-brand-icon">
+        <mat-icon>code</mat-icon>
+      </div>
+      <div class="tb-manuals-brand-text">
+        <div class="tb-manuals-title">{{ 'manual.examples' | translate }}</div>
+        <div class="tb-manuals-subtitle">{{ 'manual.total-examples' | translate:{count: examples.length} }}</div>
+      </div>
+      <span class="flex-1"></span>
+      <button mat-icon-button
+              type="button"
+              class="tb-manuals-menu-button"
+              (click)="toggleDrawer()"
+              [matTooltip]="'manual.close-list' | translate"
+              matTooltipPosition="above">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    <div class="tb-manuals-search">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="mat-block">
+        <mat-icon matPrefix>search</mat-icon>
+        <input matInput
+               [ngModel]="searchText"
+               (ngModelChange)="onSearch($event)"
+               [placeholder]="'manual.search-examples' | translate">
+        @if (searchText) {
+          <button mat-icon-button
+                  matSuffix
+                  type="button"
+                  (click)="onSearch('')"
+                  [matTooltip]="'action.clear-search' | translate"
+                  matTooltipPosition="above">
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+      </mat-form-field>
+    </div>
+    @if (examplesLoading) {
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    }
+    <div class="tb-manuals-sections">
+      @if (!examplesLoading && !filteredExamples.length) {
+        <div class="tb-manuals-empty-list">
+          <mat-icon>code_off</mat-icon>
+          <span>{{ (searchText ? 'manual.no-results-examples' : 'manual.no-examples') | translate }}</span>
+        </div>
+      }
+      @for (group of exampleGroups; track group.category) {
+        <div class="tb-example-group-title">
+          <span>{{ group.category }}</span>
+          <span class="tb-manuals-section-count">{{ group.examples.length }}</span>
+        </div>
+        <mat-nav-list class="tb-manuals-list">
+          @for (example of group.examples; track example.id) {
+            <button mat-list-item
+                    type="button"
+                    class="tb-manual-list-item"
+                    [class.tb-manual-list-item-active]="example.id === selectedExample?.id"
+                    (click)="selectExample(example)">
+              <span matListItemTitle>{{ example.title }}</span>
+              @if (example.protocol) {
+                <span matListItemMeta class="tb-example-protocol">{{ example.protocol }}</span>
+              }
+            </button>
+          }
+        </mat-nav-list>
+      }
+    </div>
+  </mat-drawer>
+  <mat-drawer-content class="tb-manuals-content">
+    <div class="tb-manuals-toolbar">
+      <button mat-icon-button
+              type="button"
+              class="tb-manuals-menu-button"
+              (click)="toggleDrawer()"
+              [matTooltip]="'manual.open-list' | translate"
+              matTooltipPosition="above">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <div class="tb-manuals-toolbar-heading">
+        <div class="tb-manuals-breadcrumb">{{ 'manual.examples' | translate }}</div>
+        <div class="tb-manuals-selected-title">{{ selectedExample?.title }}</div>
+      </div>
+      <span class="flex-1"></span>
+    </div>
+    @if (exampleContentLoading) {
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    }
+    <div #contentScroller class="tb-manuals-content-scroll">
+      <div class="tb-manuals-document">
+        @if (error) {
+          <div class="tb-manuals-message">
+            <mat-icon class="tb-manuals-message-icon">error_outline</mat-icon>
+            <div class="tb-manuals-message-text">{{ error | translate }}</div>
+            <button mat-stroked-button color="primary" type="button" (click)="retry()">
+              {{ 'manual.retry' | translate }}
+            </button>
+          </div>
+        } @else if (selectedExample) {
+          <div class="tb-example">
+            <div class="tb-example-header">
+              <div class="tb-example-heading">
+                <div class="tb-example-meta">
+                  @if (selectedExample.category) {
+                    <span class="tb-example-category">{{ selectedExample.category }}</span>
+                  }
+                  @if (selectedExample.protocol) {
+                    <span class="tb-example-protocol">{{ selectedExample.protocol }}</span>
+                  }
+                </div>
+                <div class="tb-example-title">{{ selectedExample.title }}</div>
+                <div class="tb-example-description">{{ selectedExample.description }}</div>
+              </div>
+              <button mat-stroked-button
+                      type="button"
+                      class="tb-example-download"
+                      [disabled]="downloading || !hasFilesForCurrentTab"
+                      (click)="downloadExample()">
+                <mat-icon>{{ downloading ? 'hourglass_top' : 'download' }}</mat-icon>
+                <span>{{ 'manual.download-zip' | translate }}</span>
+              </button>
+            </div>
+            <mat-tab-group class="tb-example-tabs"
+                           animationDuration="0ms"
+                           [selectedIndex]="exampleTabIndex"
+                           (selectedIndexChange)="onExampleTabChange($event)">
+              <mat-tab [label]="'manual.usage' | translate">
+                @if (exampleReadme) {
+                  <div class="tb-manuals-markdown" (click)="onMarkdownClick($event)">
+                    <tb-markdown [data]="exampleReadme"
+                                 [usePlainMarkdown]="true"
+                                 markdownClass="tb-manual-markdown"></tb-markdown>
+                  </div>
+                }
+              </mat-tab>
+              <mat-tab [label]="'manual.python-code' | translate">
+                <ng-container *ngTemplateOutlet="sourceViewer; context: {files: pythonFiles, emptyKey: 'manual.no-python-code'}"></ng-container>
+              </mat-tab>
+              <mat-tab [label]="'manual.java-code' | translate">
+                <ng-container *ngTemplateOutlet="sourceViewer; context: {files: javaFiles, emptyKey: 'manual.no-java-code'}"></ng-container>
+              </mat-tab>
+            </mat-tab-group>
+            <ng-template #sourceViewer let-files="files" let-emptyKey="emptyKey">
+              @if (!files.length) {
+                <div class="tb-example-code-empty">{{ emptyKey | translate }}</div>
+              } @else {
+                <div class="tb-example-source">
+                  <div class="tb-example-file-list">
+                    @for (file of files; track file.path) {
+                      <button mat-button
+                              type="button"
+                              class="tb-example-file"
+                              [class.tb-example-file-active]="selectedExampleFile?.path === file.path"
+                              (click)="selectExampleFile(file)">
+                        <mat-icon>{{ file.language === 'python' || file.language === 'java' ? 'code' : 'description' }}</mat-icon>
+                        <span>{{ file.name }}</span>
+                      </button>
+                    }
+                  </div>
+                  <div class="tb-example-code">
+                    @if (selectedExampleFile) {
+                      <div class="tb-example-code-toolbar">
+                        <span class="tb-example-code-name">{{ selectedExampleFile.name }}</span>
+                        <tb-copy-button [copyText]="exampleSource || ''"
+                                        [tooltipText]="'action.copy' | translate"
+                                        tooltipPosition="above"></tb-copy-button>
+                      </div>
+                    }
+                    @if (exampleSource) {
+                      <div class="tb-manuals-markdown">
+                        <tb-markdown [data]="exampleSourceMarkdown"
+                                     [usePlainMarkdown]="true"
+                                     [lineNumbers]="true"
+                                     markdownClass="tb-manual-markdown"></tb-markdown>
+                      </div>
+                    } @else if (!exampleContentLoading) {
+                      <div class="tb-example-code-empty">{{ 'manual.select-file' | translate }}</div>
+                    }
+                  </div>
+                </div>
+              }
+            </ng-template>
+          </div>
+        } @else if (!exampleContentLoading) {
+          <div class="tb-manuals-message">
+            <mat-icon class="tb-manuals-message-icon">code</mat-icon>
+            <div class="tb-manuals-message-text">{{ 'manual.select-example' | translate }}</div>
+          </div>
+        }
+      </div>
+    </div>
+  </mat-drawer-content>
+</mat-drawer-container>

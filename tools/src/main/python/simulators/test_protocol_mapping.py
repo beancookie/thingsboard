@@ -15,6 +15,7 @@ from generate_gateway_config import (
     build_odbc_config,
     build_opcua_config,
     build_s7_config,
+    build_tb_gateway,
 )
 from protocol_mapping import build_mapping
 from protocol_writers import _float_words, _int_words
@@ -112,6 +113,14 @@ class MappingTest(unittest.TestCase):
     def test_writer_encoding_helpers(self) -> None:
         self.assertEqual(2, len(_float_words(1.5)))
         self.assertEqual(2, len(_int_words(42)))
+
+    def test_tb_gateway_uses_separate_tb_host_and_token(self) -> None:
+        config = build_tb_gateway(
+            "modbus", "129.211.241.31", "gateway-token")
+        thingsboard = config["thingsboard"]
+        self.assertEqual("129.211.241.31", thingsboard["host"])
+        self.assertEqual("gateway-token", thingsboard["security"]["accessToken"])
+        self.assertEqual("modbus", config["connectors"][0]["type"])
 
 
 if __name__ == "__main__":

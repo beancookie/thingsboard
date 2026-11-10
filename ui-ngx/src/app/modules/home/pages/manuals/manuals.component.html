@@ -15,7 +15,7 @@
         <mat-icon>menu_book</mat-icon>
       </div>
       <div class="tb-manuals-brand-text">
-        <div class="tb-manuals-title">{{ 'manual.manuals' | translate }}</div>
+        <div class="tb-manuals-title">{{ 'manual.manuals-docs' | translate }}</div>
         <div class="tb-manuals-subtitle">{{ 'manual.total' | translate:{count: manuals.length} }}</div>
       </div>
       <span class="flex-1"></span>
@@ -50,23 +50,25 @@
     @if (indexLoading) {
       <mat-progress-bar mode="indeterminate"></mat-progress-bar>
     }
-    <mat-nav-list class="tb-manuals-list">
-      @for (manual of filteredManuals; track manual.path) {
-        <button mat-list-item
-                type="button"
-                class="tb-manual-list-item"
-                [class.tb-manual-list-item-active]="manual.path === selectedPath"
-                (click)="selectManual(manual)">
-          <span matListItemTitle>{{ manual.title }}</span>
-        </button>
-      }
-      @if (!indexLoading && !filteredManuals.length) {
-        <div class="tb-manuals-empty-list">
-          <mat-icon>search_off</mat-icon>
-          <span>{{ (searchText ? 'manual.no-results' : 'manual.no-manuals') | translate }}</span>
-        </div>
-      }
-    </mat-nav-list>
+    <div class="tb-manuals-sections">
+      <mat-nav-list class="tb-manuals-list">
+        @for (manual of filteredManuals; track manual.path) {
+          <button mat-list-item
+                  type="button"
+                  class="tb-manual-list-item"
+                  [class.tb-manual-list-item-active]="manual.path === selectedPath"
+                  (click)="selectManual(manual)">
+            <span matListItemTitle>{{ manual.title }}</span>
+          </button>
+        }
+        @if (!indexLoading && !filteredManuals.length) {
+          <div class="tb-manuals-empty-list">
+            <mat-icon>search_off</mat-icon>
+            <span>{{ (searchText ? 'manual.no-results' : 'manual.no-manuals') | translate }}</span>
+          </div>
+        }
+      </mat-nav-list>
+    </div>
     <div class="tb-manuals-api-links">
       <div class="tb-manuals-api-links-title">{{ 'manual.api-docs' | translate }}</div>
       @for (doc of apiDocs; track doc.url) {
@@ -92,19 +94,10 @@
         <mat-icon>menu</mat-icon>
       </button>
       <div class="tb-manuals-toolbar-heading">
-        <div class="tb-manuals-breadcrumb">{{ 'manual.manuals' | translate }}</div>
+        <div class="tb-manuals-breadcrumb">{{ 'manual.manuals-docs' | translate }}</div>
         <div class="tb-manuals-selected-title">{{ selectedTitle }}</div>
       </div>
       <span class="flex-1"></span>
-      @if (markdown) {
-        <button mat-stroked-button
-                type="button"
-                class="tb-manuals-print-button"
-                (click)="printManual()">
-          <mat-icon>print</mat-icon>
-          <span>{{ 'action.print' | translate }}</span>
-        </button>
-      }
     </div>
     @if (contentLoading) {
       <mat-progress-bar mode="indeterminate"></mat-progress-bar>

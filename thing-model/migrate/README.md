@@ -2,17 +2,27 @@
 
 `convert_tencent_tsl.py` 将腾讯 IoT 物模型转换为 `thing-model` 使用的 TSL。
 
+`convert_tsl_to_tencent.py` 将标准 TSL 转换为腾讯 IoT 物模型格式，便于导入物联网开发平台。
+
+命名约定：
+
+- 平台 TSL：`<名称>.tsl.json`
+- 腾讯 IoT：`<名称>.tencent.json`
+
 ## 用法
 
 ```powershell
 # 单文件，输出到同目录 <name>.tsl.json
-python thing-model/migrate/convert_tencent_tsl.py thing-model/migrate/4DZDCQUA2D.json
+python thing-model/migrate/convert_tencent_tsl.py thing-model/migrate/4DZDCQUA2D.tencent.json
 
 # 指定输出；样例文件保留字符串 min/max
-python thing-model/migrate/convert_tencent_tsl.py thing-model/migrate/4DZDCQUA2D.json -o thing-model/migrate/4DZDCQUA2D.tsl.json --keep-string-ranges
+python thing-model/migrate/convert_tencent_tsl.py thing-model/migrate/4DZDCQUA2D.tencent.json -o thing-model/migrate/4DZDCQUA2D.tsl.json --keep-string-ranges
 
 # 批量转换目录
 python thing-model/migrate/convert_tencent_tsl.py thing-model/migrate --output-dir thing-model/migrate/converted
+
+# 标准 TSL 转腾讯 IoT 物模型，默认输出 <name>.tencent.json
+python thing-model/migrate/convert_tsl_to_tencent.py thing-model/migrate/DLT645智能电表.tsl.json
 ```
 
 ## 参数

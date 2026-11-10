@@ -2,8 +2,9 @@
 from __future__ import annotations
 
 import argparse
+import os
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from protocol_mapping import (
     DEFAULT_PORTS,
@@ -48,7 +49,17 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--gateway-host",
         default="host.docker.internal",
-        help="host used by the Dockerized tb-gateway",
+        help="host used by the Dockerized tb-gateway to reach protocol devices",
+    )
+    parser.add_argument(
+        "--tb-host",
+        default=os.getenv("TB_GW_HOST", "host.docker.internal"),
+        help="ThingsBoard MQTT host used by the gateway; defaults to TB_GW_HOST",
+    )
+    parser.add_argument(
+        "--access-token",
+        default=os.getenv("TB_GW_ACCESS_TOKEN"),
+        help="gateway access token written to tb_gateway.json; defaults to TB_GW_ACCESS_TOKEN",
     )
     parser.add_argument(
         "--odbc-host",
@@ -62,10 +73,13 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def build_tb_gateway(protocol: str, gateway_host: str) -> Dict[str, Any]:
+def build_tb_gateway(
+        protocol: str,
+        tb_host: str,
+        access_token: Optional[str] = None) -> Dict[str, Any]:
     return {
         "thingsboard": {
-            "host": gateway_host,
+            "host": tb_host,
             "port": 1883,
             "remoteShell": False,
             "remoteConfiguration": True,
@@ -75,7 +89,7 @@ def build_tb_gateway(protocol: str, gateway_host: str) -> Dict[str, Any]:
             },
             "security": {
                 "type": "accessToken",
-                "accessToken": "ACCESS_TOKEN_FROM_TB_GW_ACCESS_TOKEN",
+                "accessToken": access_token or "ACCESS_TOKEN_FROM_TB_GW_ACCESS_TOKEN",
             },
             "qos": 1,
         },
@@ -329,7 +343,10 @@ def main() -> int:
 
     output = Path(args.output_dir)
     write_json(output / f"connector-mapping-{args.protocol}.json", mapping)
-    write_json(output / "tb_gateway.json", build_tb_gateway(args.protocol, args.gateway_host))
+    write_json(
+        output / "tb_gateway.json",
+        build_tb_gateway(args.protocol, args.tb_host, args.access_token),
+    )
 
     if args.protocol == "modbus":
         config = build_modbus_config(mapping)

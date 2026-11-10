@@ -14,7 +14,7 @@ from convert_tencent_tsl import convert_document
 class ConvertTencentTslTest(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.sample_path = Path(__file__).parent / "4DZDCQUA2D.json"
+        self.sample_path = Path(__file__).parent / "4DZDCQUA2D.tencent.json"
         with self.sample_path.open(encoding="utf-8") as stream:
             self.source = json.load(stream)
 

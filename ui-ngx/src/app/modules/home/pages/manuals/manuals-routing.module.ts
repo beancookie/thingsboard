@@ -12,7 +12,7 @@ const routes: Routes = [
     component: ManualsComponent,
     data: {
       auth: [Authority.SYS_ADMIN, Authority.TENANT_ADMIN, Authority.CUSTOMER_USER],
-      title: 'manual.manuals',
+      title: 'manual.manuals-docs',
       breadcrumb: {
         menuId: MenuId.manuals
       }

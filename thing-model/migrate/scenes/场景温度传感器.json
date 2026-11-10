@@ -1,0 +1,66 @@
+{
+  "version": "1.0",
+  "profile": {
+    "ProductId": "SCENE_TEMPERATURE",
+    "CategoryId": "SCENE"
+  },
+  "properties": [
+    {
+      "id": "temperature",
+      "name": "温度",
+      "desc": "",
+      "mode": "r",
+      "required": false,
+      "define": {
+        "type": "float",
+        "min": -40,
+        "max": 125,
+        "start": 25,
+        "step": 0.1,
+        "unit": "℃"
+      }
+    },
+    {
+      "id": "humidity",
+      "name": "湿度",
+      "desc": "",
+      "mode": "r",
+      "required": false,
+      "define": {
+        "type": "float",
+        "min": 0,
+        "max": 100,
+        "start": 50,
+        "step": 0.1,
+        "unit": "%RH"
+      }
+    },
+    {
+      "id": "battery",
+      "name": "电量",
+      "desc": "",
+      "mode": "r",
+      "required": false,
+      "define": {
+        "type": "int",
+        "min": 0,
+        "max": 100,
+        "start": 100,
+        "step": 1,
+        "unit": "%"
+      }
+    },
+    {
+      "id": "online",
+      "name": "在线状态",
+      "desc": "",
+      "mode": "r",
+      "required": false,
+      "define": {
+        "type": "bool"
+      }
+    }
+  ],
+  "events": [],
+  "actions": []
+}

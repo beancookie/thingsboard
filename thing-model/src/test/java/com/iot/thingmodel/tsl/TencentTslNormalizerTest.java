@@ -17,7 +17,7 @@ class TencentTslNormalizerTest {
 
     @Test
     void normalizesTencentSampleToCanonicalTsl() throws Exception {
-        JsonNode source = load("4DZDCQUA2D.json");
+        JsonNode source = load("4DZDCQUA2D.tencent.json");
         JsonNode expected = load("4DZDCQUA2D.tsl.json");
 
         assertTrue(normalizer.isTencentFormat(source));

@@ -6,7 +6,7 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 import { MatDrawer } from '@angular/material/sidenav';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MediaBreakpoints } from '@shared/models/constants';
-import { ApiDocLink, ManualEntry } from './manual.models';
+import { ApiDocLink, ExampleEntry, ManualEntry } from './manual.models';
 import { ManualsService } from './manuals.service';
 
 @Component({
@@ -22,6 +22,7 @@ export class ManualsComponent implements OnInit {
 
   manuals: ManualEntry[] = [];
   filteredManuals: ManualEntry[] = [];
+  examples: ExampleEntry[] = [];
   apiDocs: ApiDocLink[] = [
     {
       labelKey: 'manual.api-docs-thingsboard',
@@ -70,6 +71,7 @@ export class ManualsComponent implements OnInit {
     });
 
     this.loadIndex();
+    this.loadExampleRoutes();
   }
 
   loadIndex(): void {
@@ -87,7 +89,7 @@ export class ManualsComponent implements OnInit {
           if (selected) {
             this.selectedTitle = selected.title;
           }
-        } else if (manuals.length) {
+        } else if (manuals.length && !this.route.snapshot.queryParamMap.get('doc')) {
           this.router.navigate([], {
             relativeTo: this.route,
             queryParams: {doc: manuals[0].path},
@@ -98,6 +100,19 @@ export class ManualsComponent implements OnInit {
       error: () => {
         this.indexLoading = false;
         this.error = 'manual.load-failed';
+      }
+    });
+  }
+
+  loadExampleRoutes(): void {
+    this.manualsService.getExamples().pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
+      next: (examples) => {
+        this.examples = examples;
+      },
+      error: () => {
+        this.examples = [];
       }
     });
   }
@@ -163,10 +178,6 @@ export class ManualsComponent implements OnInit {
     this.drawer.toggle();
   }
 
-  printManual(): void {
-    window.print();
-  }
-
   retry(): void {
     if (!this.manuals.length) {
       this.loadIndex();
@@ -175,6 +186,10 @@ export class ManualsComponent implements OnInit {
       this.markdown = null;
       this.loadDoc(this.selectedPath);
     }
+  }
+
+  assetUrl(path: string): string {
+    return this.manualsService.assetUrl(path);
   }
 
   onMarkdownClick(event: MouseEvent): void {
@@ -196,10 +211,17 @@ export class ManualsComponent implements OnInit {
     }
     event.preventDefault();
     if (resolved.path.toLowerCase().endsWith('.md')) {
-      this.router.navigate([], {
-        relativeTo: this.route,
-        queryParams: {doc: resolved.path}
-      });
+      const example = this.examples.find((item) => item.readme === resolved.path);
+      if (example) {
+        this.router.navigate(['/examples'], {
+          queryParams: {example: example.id}
+        });
+      } else {
+        this.router.navigate([], {
+          relativeTo: this.route,
+          queryParams: {doc: resolved.path}
+        });
+      }
     } else {
       window.open(this.manualsService.assetUrl(resolved.path), '_blank', 'noopener');
     }

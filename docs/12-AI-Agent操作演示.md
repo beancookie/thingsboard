@@ -52,7 +52,7 @@ curl http://localhost:8090/actuator/health
 演示物模型：
 
 ```text
-thing-model/migrate/4DZDCQUA2D.json
+thing-model/migrate/4DZDCQUA2D.tencent.json
 thing-model/migrate/4DZDCQUA2D.tsl.json
 ```
 
@@ -196,7 +196,7 @@ flowchart LR
 
 准备 TSL：
 
-- 点击 AI 面板中的附件按钮上传 `4DZDCQUA2D.json`。
+- 点击 AI 面板中的附件按钮上传 `4DZDCQUA2D.tencent.json`。
 - 也可以点击 JSON 按钮粘贴 TSL。
 - 上传成功后输入框上方显示 TSL 文件名。
 

@@ -45,3 +45,6 @@ device-credentials*.csv
 gateway-credentials*.csv
 sub-devices*.csv
 import-output/
+product-export/
+**/product-export-tool/export_products.py
+product-import-report*.csv

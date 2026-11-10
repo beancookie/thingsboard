@@ -35,6 +35,8 @@ import { GatewaysModule } from '@home/pages/gateways/gateways.module';
 import { AiModelModule } from '@home/pages/ai-model/ai-model.module';
 import { ProductModule } from '@home/pages/product/product.module';
 import { ManualsModule } from '@home/pages/manuals/manuals.module';
+import { ExamplesModule } from '@home/pages/examples/examples.module';
+import { ServiceInfoModule } from '@home/pages/service-info/service-info.module';
 
 @NgModule({
   exports: [
@@ -71,6 +73,8 @@ import { ManualsModule } from '@home/pages/manuals/manuals.module';
     AiModelModule,
     ProductModule,
     ManualsModule,
+    ExamplesModule,
+    ServiceInfoModule,
   ]
 })
 export class HomePagesModule { }

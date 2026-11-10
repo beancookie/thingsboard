@@ -1,0 +1,70 @@
+{
+  "version": "1.0",
+  "profile": {
+    "ProductId": "SCENE_LIGHT",
+    "CategoryId": "SCENE"
+  },
+  "properties": [
+    {
+      "id": "state",
+      "name": "开关状态",
+      "desc": "",
+      "mode": "rw",
+      "required": false,
+      "define": {
+        "type": "enum_string",
+        "mapping": {
+          "ON": "开",
+          "OFF": "关"
+        }
+      }
+    },
+    {
+      "id": "brightness",
+      "name": "亮度",
+      "desc": "",
+      "mode": "rw",
+      "required": false,
+      "define": {
+        "type": "int",
+        "min": 0,
+        "max": 100,
+        "start": 100,
+        "step": 1,
+        "unit": "%"
+      }
+    },
+    {
+      "id": "online",
+      "name": "在线状态",
+      "desc": "",
+      "mode": "r",
+      "required": false,
+      "define": {
+        "type": "bool"
+      }
+    }
+  ],
+  "events": [],
+  "actions": [
+    {
+      "id": "setState",
+      "name": "设置开关",
+      "desc": "",
+      "input": [
+        {
+          "id": "state",
+          "name": "状态",
+          "desc": "",
+          "define": {
+            "type": "enum_string",
+            "mapping": {
+              "ON": "开",
+              "OFF": "关"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

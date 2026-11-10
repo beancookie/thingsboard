@@ -34,6 +34,9 @@ export interface HomeSection {
 export enum MenuId {
   home = 'home',
   manuals = 'manuals',
+  manuals_section = 'manuals_section',
+  examples = 'examples',
+  service_info = 'service_info',
   products = 'products',
   tenants = 'tenants',
   tenants_section = 'tenants_section',
@@ -119,13 +122,43 @@ export const menuSectionMap = new Map<MenuId, MenuSection>([
     }
   ],
   [
+    MenuId.manuals_section,
+    {
+      id: MenuId.manuals_section,
+      name: 'manual.manuals',
+      type: 'toggle',
+      path: '/manuals',
+      icon: 'menu_book'
+    }
+  ],
+  [
     MenuId.manuals,
     {
       id: MenuId.manuals,
-      name: 'manual.manuals',
+      name: 'manual.manuals-docs',
       type: 'link',
       path: '/manuals',
       icon: 'menu_book'
+    }
+  ],
+  [
+    MenuId.examples,
+    {
+      id: MenuId.examples,
+      name: 'manual.examples',
+      type: 'link',
+      path: '/examples',
+      icon: 'code'
+    }
+  ],
+  [
+    MenuId.service_info,
+    {
+      id: MenuId.service_info,
+      name: 'service-info.service-info',
+      type: 'link',
+      path: '/service-info',
+      icon: 'dns'
     }
   ],
   [
@@ -920,7 +953,14 @@ const defaultUserMenuMap = new Map<Authority, MenuReference[]>([
           {id: MenuId.queues}
         ]
       },
-      {id: MenuId.manuals}
+      {
+        id: MenuId.manuals_section,
+        pages: [
+          {id: MenuId.manuals},
+          {id: MenuId.examples}
+        ]
+      },
+      {id: MenuId.service_info}
     ]
   ],
   [
@@ -1025,7 +1065,14 @@ const defaultUserMenuMap = new Map<Authority, MenuReference[]>([
           {id: MenuId.rulechain_templates}
         ]
       },
-      {id: MenuId.manuals}
+      {
+        id: MenuId.manuals_section,
+        pages: [
+          {id: MenuId.manuals},
+          {id: MenuId.examples}
+        ]
+      },
+      {id: MenuId.service_info}
     ]
   ],
   [
@@ -1059,7 +1106,14 @@ const defaultUserMenuMap = new Map<Authority, MenuReference[]>([
         ]
       },
       {id: MenuId.edge_instances},
-      {id: MenuId.manuals}
+      {
+        id: MenuId.manuals_section,
+        pages: [
+          {id: MenuId.manuals},
+          {id: MenuId.examples}
+        ]
+      },
+      {id: MenuId.service_info}
     ]
   ]
 ]);

@@ -1,4 +1,4 @@
-# ThingsBoard 数据模拟与设备工具
+﻿# ThingsBoard 数据模拟与设备工具
 
 用于向 ThingsBoard 模拟上报物模型数据，验证 Device Profile、规则链和 Kafka 出口。
 
@@ -116,6 +116,165 @@ python tools/src/main/python/simulators/import_products.py `
 - ProductId 全系统唯一，被其他租户占用时返回 `conflict`。
 - 租户未配置厂商服务账号时会提示 `TENANT_ACCOUNT_MISSING`，需系统管理员先执行 `provision-auto`。
 - 每次执行生成 `product-import-report.csv`，包含产品状态、Device Profile、资产和规则链 ID。
+
+## 导出产品与物模型
+
+`export_products.py` 从运行中的平台导出产品列表和完整 TSL，适合备份或迁移。
+
+```powershell
+$env:TB_API_KEY = "tb_xxx"
+
+python tools/src/main/python/simulators/export_products.py `
+  --tb-url https://thingsboard.zhgcloud.com `
+  --thingmodel-url https://thingsboard.zhgcloud.com/api/thing-model `
+  --output-dir .\product-export
+```
+
+默认导出全部产品；只导出指定产品时重复传 `--product-id`：
+
+```powershell
+python tools/src/main/python/simulators/export_products.py `
+  --product-id YUMRMRPOGPA `
+  --product-id SCENE_LIGHT `
+  --output-dir .\product-export
+```
+
+输出：
+
+```text
+product-export/
+├── products.csv              # 产品元数据汇总（utf-8-sig）
+├── products.json             # 产品列表与详情
+└── tsl/
+    └── <productId>.tsl.json  # 每个产品的完整 TSL
+```
+
+说明：
+
+- 未传 `--api-key`/`TB_API_KEY` 时回退到用户名密码，可用 `--username` / `--password` / `TB_PASSWORD`。
+- API Key 会先换取 JWT；产品接口不接受裸 ApiKey 头。
+- `--no-detail` 可跳过每个产品的详情请求，只导出列表与 TSL。
+- 单个产品失败会记录到 CSV 的 `error` 列并继续，最终以非 0 退出码结束。
+
+## 场景联动演示
+
+`thing-model/migrate/scenes` 提供多设备场景联动演示物模型：
+
+```text
+场景人体感应器.json    SCENE_MOTION
+场景光照传感器.json    SCENE_LIGHT_SENSOR
+场景灯.json            SCENE_LIGHT
+场景温度传感器.json    SCENE_TEMPERATURE
+场景空调.json          SCENE_AIR_CONDITIONER
+```
+
+### 1. 导入演示产品
+
+```powershell
+$env:TB_API_KEY = "tb_xxx"
+
+python tools/src/main/python/simulators/import_products.py `
+  --tb-url https://thingsboard.zhgcloud.com `
+  --thingmodel-url https://thingsboard.zhgcloud.com/api/thing-model `
+  --products-dir thing-model/migrate/scenes `
+  --output-dir .\import-output\scene-demo
+```
+
+### 2. 创建设备和关系
+
+```powershell
+python tools/src/main/python/simulators/create_scene_demo.py `
+  --tb-url https://thingsboard.zhgcloud.com `
+  --thingmodel-url https://thingsboard.zhgcloud.com/api/thing-model `
+  --output-dir .\import-output\scene-demo
+```
+
+脚本会创建：
+
+```text
+motion-01
+light-sensor-01
+light-01
+temperature-01
+air-conditioner-01
+```
+
+并创建关系：
+
+```text
+motion-01        --Controls-->     light-01
+motion-01        --ConnectedTo-->  light-sensor-01
+temperature-01   --Controls-->     air-conditioner-01
+```
+
+生成 `import-output/scene-demo/scene-devices.csv`，包含设备 Access Token。
+
+### 3. 运行场景模拟器
+
+```powershell
+python tools/src/main/python/simulators/simulate_scene_demo.py `
+  --devices-csv .\import-output\scene-demo\scene-devices.csv `
+  --mqtt-host 129.211.241.31 --mqtt-port 1883 `
+  --interval 3
+```
+
+- 传感器设备持续上报遥测；
+- `light-01` 订阅 RPC，支持 `setState`；
+- `air-conditioner-01` 订阅 RPC，支持 `setMode`；
+- 收到 RPC 后更新状态、上报遥测并回复响应。
+
+## 电表设备 MQTT Mock
+
+电表模拟器已移至 `tools/src/main/python/meter-simulator/`，`simulate_meter.py` 按 `meter-thing-model.tsl.json` 模拟一台 DLT645 智能电表，使用设备 Access Token 直连 MQTT：
+
+- 持续上报电压、电流、功率、电能、继电器状态等属性；
+- 按周期上报过压、欠压、过流、缺相、停电、电表故障等事件；
+- 订阅共享属性和 RPC，处理 `setRelay`、`applyConfig`、`syncTime` 和通用 `set`；
+- 断线自动重连。
+
+脚本默认连接 `129.211.241.31:1883`，默认 Token 已写入脚本；可用 `--token` 或 `ACCESS_TOKEN` 覆盖。
+
+先检查报文：
+
+```powershell
+python tools/src/main/python/meter-simulator/simulate_meter.py --dry-run
+```
+
+短时发送 3 轮：
+
+```powershell
+python tools/src/main/python/meter-simulator/simulate_meter.py --count 3 --interval 5
+```
+
+持续运行，每 5 秒上报遥测，每 30 秒上报一个事件：
+
+```powershell
+python tools/src/main/python/meter-simulator/simulate_meter.py --interval 5 --event-interval 30
+```
+
+常用参数：
+
+| 参数 | 默认值 | 说明 |
+| --- | --- | --- |
+| `--mqtt-host` | `129.211.241.31` | MQTT 地址 |
+| `--mqtt-port` | `1883` | MQTT 端口 |
+| `--token` | `ACCESS_TOKEN` 或脚本内置 Token | 设备 Access Token |
+| `--client-id` | `meter-YUMRMRPOGPA` | MQTT Client ID |
+| `--tsl` | `meter-thing-model.tsl.json` | 物模型文件 |
+| `--interval` | `5` | 遥测上报周期秒数，最小 5 |
+| `--event-interval` | `30` | 事件上报周期秒数，0 表示关闭 |
+| `--count` | `0` | 遥测轮数，0 表示持续运行 |
+| `--relay-off` | 关闭 | 启动时继电器为断开状态 |
+| `--tls` / `--ca-cert` | 关闭 | 使用 8883 TLS 时启用 |
+| `--dry-run` | 关闭 | 只打印报文，不连接 MQTT |
+
+平台侧验证：
+
+- 设备详情「遥测」页签可看到属性数据；
+- 事件页面可看到 `overVoltage`、`underVoltage` 等事件；
+- 下发 RPC `setRelay`、`applyConfig`、`syncTime` 后，脚本会回复 `{"success": true}` 并立即上报最新状态。
+
+> 脚本内置了真实 Access Token，仅用于本地联调，请勿提交到公开仓库或对外分享。
 
 ## 注册设备
 
