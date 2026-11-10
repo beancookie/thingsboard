@@ -79,7 +79,7 @@ flowchart TD
 - `ai-agent` 负责鉴权、会话上下文、权限校验、工具执行和动作确认。
 - DSH 负责模型规划、工具选择和对话生成。
 - DSH 只拿到不可猜测的 `session_id`，不接触 ThingsBoard JWT。
-- 模型只传 `operation_id` 和参数，不能传 URL、HTTP 方法或后端地址。
+- 模型只传 `operation_id` 和参数，或 `execute_code` 的代码、语言和 `allowed_operations`；不能传 URL、HTTP 方法或后端地址。
 - 代码执行只进入 `code-runner` 沙箱；沙箱不能直连 ThingsBoard、thing-model 或互联网。
 - 沙箱通过 `code-api-proxy` 访问两个业务服务；proxy 只放行 `execution_token` 授权的操作。
 - 代码写操作必须先经过执行级确认；未确认的代码不会运行。
@@ -308,6 +308,7 @@ ai-agent/
 | `aliases` | 否 | 搜索别名，支持中文 |
 | `tags` | 否 | 搜索和分组标签 |
 | `mode` | 是 | `read` 立即执行；`write` 生成待确认动作 |
+| `code_access` | 是 | `read`、`write`、`none`；控制代码沙箱可调用的接口 |
 | `permission` | 是 | `ANY`、`TENANT_ADMIN`、`SYS_ADMIN` |
 | `risk` | 是 | `low`、`medium`、`high` |
 | `enabled` | 是 | 是否允许模型调用 |
@@ -519,26 +520,43 @@ DSH 插件只注册三个工具。
 4. DSH 工具回调时用 `exec.agent.id` 查找上下文。
 5. 请求结束后读取并清空 proposals，然后删除会话。
 
+代码执行额外保存：
+
+- `execution_id`
+- `execution_token` 哈希
+- `mode: read|write`
+- `allowed_operations`
+- `max_requests`
+- `max_write_operations`
+- `expires_at`
+- `jti`
+
 约束：
 
 - JWT 只保存在内存中，不写入磁盘、不写日志。
-- session_id 必须不可猜测。
+- session_id 和 execution_token 必须不可猜测。
 - 并发请求使用独立 session，不共享可变状态。
 - 同一 session 的 proposals 使用锁保护。
+- `execution_token` 只保存哈希，执行结束立即吊销。
+- 多副本部署时用 Redis 保存 `jti`、使用次数和吊销状态。
 
 ### 13.7.2 内部接口
 
 ```text
 POST /internal/dsh/api/search
 POST /internal/dsh/api/call
+POST /internal/dsh/code/execute
+POST /internal/dsh/code/authorize
+POST /internal/dsh/code/proxy
 ```
 
 要求：
 
 - 仅监听集群内部地址，不经过 Ingress。
-- 使用 `AI_AGENT_INTERNAL_TOOL_TOKEN` 共享密钥。
-- 校验 `X-Internal-Token`。
-- 只接受 DSH runtime 所在 Pod 的访问。
+- DSH 回调使用 `AI_AGENT_INTERNAL_TOOL_TOKEN` 共享密钥，并校验 `X-Internal-Token`。
+- `code-api-proxy` 回调使用 `AI_AGENT_CODE_PROXY_SECRET`，并与 DSH 内部 token 分离。
+- 代码执行接口额外校验 `execution_token`。
+- 只接受 DSH runtime、`code-api-proxy` 所在 Pod 的访问。
 - 不返回 JWT、密码、API Key、完整 TSL。
 
 ### 13.7.3 写操作执行
@@ -771,8 +789,9 @@ python scripts/import_openapi.py \
 | `operationId` | `id = service.operationId` |
 | `summary` | `summary`，可被 overrides 覆盖 |
 | `tags` | `tags` |
-| `GET` | `mode: read` |
-| `POST/PUT/PATCH/DELETE` | `mode: write` |
+| `GET` | `mode: read`、`code_access: read` |
+| `POST/PUT/PATCH/DELETE` | `mode: write`、`code_access: write` |
+| 认证、密码、Token、管理员控制台 | `code_access: none` |
 | `DELETE`、批量、管理员路径 | `risk: high` |
 | 其他写操作 | `risk: medium` |
 | 查询类操作 | `risk: low` |
@@ -804,18 +823,20 @@ thingsboard.listTenants:
   aliases: [租户, 厂商, tenant]
   permission: SYS_ADMIN
   risk: low
+  code_access: read
 
 thing_model.updateThingModel:
   summary: 更新物模型
   aliases: [物模型, TSL, 更新产品]
   permission: TENANT_ADMIN
   handler: update_thing_model
+  code_access: write
 ```
 
 合并规则：
 
 - 自动生成字段可以被覆盖。
-- `enabled`、`permission`、`risk`、`handler`、`aliases` 始终以 overrides 为准。
+- `enabled`、`permission`、`risk`、`code_access`、`handler`、`aliases` 始终以 overrides 为准。
 - 自动导入不得删除人工新增的目录项。
 - 删除接口时先生成 diff，人工确认后再删除。
 
@@ -1156,6 +1177,7 @@ AI_AGENT_CODE_NETWORK=proxy-only
   aliases: [设备, 设备列表, device]
   tags: [device, tenant]
   mode: read
+  code_access: read
   permission: TENANT_ADMIN
   risk: low
   enabled: true
@@ -1177,6 +1199,7 @@ AI_AGENT_CODE_NETWORK=proxy-only
   aliases: [删除租户, 移除厂商]
   tags: [tenant, delete]
   mode: write
+  code_access: write
   permission: SYS_ADMIN
   risk: high
   enabled: true
@@ -1186,3 +1209,24 @@ AI_AGENT_CODE_NETWORK=proxy-only
       type: string
       required: true
 ```
+
+### 13.14.4 代码沙箱威胁模型
+
+| 威胁 | 攻击面 | 控制 |
+| --- | --- | --- |
+| 沙箱逃逸 | 语言运行时、内核 | gVisor/Firecracker/nsjail、非 root、seccomp、AppArmor |
+| 宿主机文件访问 | 挂载、路径穿越 | 无 hostPath、无 Docker socket、只读根、tmpfs |
+| 读取密钥 | 环境变量、文件、网络 | 不注入 JWT/API Key、无 ServiceAccount Token |
+| 直连业务服务 | Pod 网络 | NetworkPolicy 只允许 `code-api-proxy` |
+| 访问互联网 | Pod 网络 | 默认拒绝全部公网出口 |
+| SSRF | proxy 路径 | 固定服务前缀，不接受 host/绝对 URL/IP |
+| token 泄漏 | 代码读取 env | 短期、只读或白名单写、执行后吊销 |
+| token 重放 | 网络重放 | `jti` 一次性使用 + TTL |
+| 未批准写操作 | 代码自行调用 | proxy 与 ai-agent 双层 `allowed_operations` 校验 |
+| 批量写入 | 循环调用 | `max_write_operations`、`max_requests`、限流 |
+| 数据外泄 | 输出、参数 | 无互联网、输出限制、字段脱敏、审计 |
+| 资源耗尽 | 无限循环、内存炸弹 | 超时、CPU/内存/进程数限制 |
+| 恶意依赖 | 运行时安装 | 固定镜像、无包管理器、禁止动态安装 |
+| 用户误确认 | 确认页信息不足 | 展示完整代码、操作列表、风险等级、高危提示 |
+| 提示词注入 | 模型输出 | 系统提示词、工具白名单、服务端二次校验 |
+| 供应链攻击 | DSH/runtime/镜像 | 固定版本、镜像签名、漏洞扫描 |
