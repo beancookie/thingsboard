@@ -225,56 +225,9 @@ python tools/src/main/python/simulators/simulate_scene_demo.py `
 
 ## 电表设备 MQTT Mock
 
-电表模拟器已移至 `tools/src/main/python/meter-simulator/`，`simulate_meter.py` 按 `meter-thing-model.tsl.json` 模拟一台 DLT645 智能电表，使用设备 Access Token 直连 MQTT：
+电表模拟器已迁移为文档示例：[DLT645 电表 MQTT 模拟器](../../../../docs/examples/dlt645-meter-simulator/README.md)。
 
-- 持续上报电压、电流、功率、电能、继电器状态等属性；
-- 按周期上报过压、欠压、过流、缺相、停电、电表故障等事件；
-- 订阅共享属性和 RPC，处理 `setRelay`、`applyConfig`、`syncTime` 和通用 `set`；
-- 断线自动重连。
-
-脚本默认连接 `129.211.241.31:1883`，默认 Token 已写入脚本；可用 `--token` 或 `ACCESS_TOKEN` 覆盖。
-
-先检查报文：
-
-```powershell
-python tools/src/main/python/meter-simulator/simulate_meter.py --dry-run
-```
-
-短时发送 3 轮：
-
-```powershell
-python tools/src/main/python/meter-simulator/simulate_meter.py --count 3 --interval 5
-```
-
-持续运行，每 5 秒上报遥测，每 30 秒上报一个事件：
-
-```powershell
-python tools/src/main/python/meter-simulator/simulate_meter.py --interval 5 --event-interval 30
-```
-
-常用参数：
-
-| 参数 | 默认值 | 说明 |
-| --- | --- | --- |
-| `--mqtt-host` | `129.211.241.31` | MQTT 地址 |
-| `--mqtt-port` | `1883` | MQTT 端口 |
-| `--token` | `ACCESS_TOKEN` 或脚本内置 Token | 设备 Access Token |
-| `--client-id` | `meter-YUMRMRPOGPA` | MQTT Client ID |
-| `--tsl` | `meter-thing-model.tsl.json` | 物模型文件 |
-| `--interval` | `5` | 遥测上报周期秒数，最小 5 |
-| `--event-interval` | `30` | 事件上报周期秒数，0 表示关闭 |
-| `--count` | `0` | 遥测轮数，0 表示持续运行 |
-| `--relay-off` | 关闭 | 启动时继电器为断开状态 |
-| `--tls` / `--ca-cert` | 关闭 | 使用 8883 TLS 时启用 |
-| `--dry-run` | 关闭 | 只打印报文，不连接 MQTT |
-
-平台侧验证：
-
-- 设备详情「遥测」页签可看到属性数据；
-- 事件页面可看到 `overVoltage`、`underVoltage` 等事件；
-- 下发 RPC `setRelay`、`applyConfig`、`syncTime` 后，脚本会回复 `{"success": true}` 并立即上报最新状态。
-
-> 脚本内置了真实 Access Token，仅用于本地联调，请勿提交到公开仓库或对外分享。
+示例代码位于 `docs/examples/dlt645-meter-simulator/`，并同时提供 HTTP / CoAP 版本。
 
 ## 注册设备
 
