@@ -24,8 +24,10 @@
 - 保持前端 `POST /chat` 协议不变。
 - 用“一份 API 目录 + 一个通用执行器”接入 ThingsBoard 和 thing-model 的全部 OpenAPI 接口。
 - 新增接口时只更新目录，不修改 DSH 插件代码。
-- 写操作仍然只生成 `PROPOSED` 动作，用户确认后才执行。
-- ThingsBoard JWT 不进入 DSH 进程，也不暴露给模型。
+- 普通写操作仍然只生成 `PROPOSED` 动作，用户确认后才执行。
+- 支持代码生成和沙箱执行；代码写操作走执行级确认。
+- 代码沙箱只能访问 ThingsBoard 和 thing-model，不能访问互联网或宿主机文件。
+- ThingsBoard JWT 不进入 DSH、code-runner、code-api-proxy 或模型上下文。
 
 ## 13.2 已确认的设计决策
 
