@@ -18,14 +18,13 @@
 - 客户用户看不到 AI 助手入口。
 - 查询类操作按当前账号权限执行。
 - 创建类操作必须经过用户确认后才执行。
-- 服务端会再次校验角色、租户和数据范围。
+- 平台会再次校验角色、租户和数据范围。
 
 ### 1.3 前置条件
 
-- AI Agent 服务已启动。
-- 前端已将 `/api/ai-agent/` 转发到 AI Agent 服务。
-- AI Agent 已配置 OpenAI 兼容模型。
-- AI Agent 已配置物联网平台和 `thing-model` 服务地址。
+- AI 助手功能已启用。
+- 平台已完成 AI 助手和模型配置。
+- 平台 API 可用。
 - 当前用户已登录平台。
 
 ### 1.4 相关文档
@@ -46,9 +45,9 @@ AI Agent 是平台内置的 AI 助手，通过对话帮助用户查询和创建�
 
 | 组成 | 说明 |
 | --- | --- |
-| 前端 AI 助手 | 页面右下角的悬浮按钮和对话面板 |
-| AI Agent 服务 | 独立 Python 服务，负责对话、工具规划和动作执行 |
-| 平台接口 | 通过 REST 调用物联网平台和 `thing-model` |
+| 对话入口 | 页面右下角的悬浮按钮和对话面板 |
+| AI 能力 | 平台内置的对话理解、工具规划和动作执行 |
+| 平台 API | 统一的平台接口，用于查询和创建资源 |
 
 ### 2.1 能做什么
 
@@ -192,7 +191,7 @@ AI 助手会把当前账号的对话保存在浏览器本地。
 - 返回消息
 - 返回数据
 
-失败时请根据错误信息检查权限、参数、服务状态和资源是否已存在。
+失败时请根据错误信息检查权限、参数、平台状态和资源是否已存在。
 
 > 截图占位：`images/ai-agent/08-error.png`
 
@@ -358,7 +357,7 @@ AI 助手会把当前账号的对话保存在浏览器本地。
 
 - 写操作只生成待确认动作。
 - 用户确认后才执行。
-- 执行前服务端会重新校验权限和参数。
+- 执行前平台会重新校验权限和参数。
 - 不能信任模型生成的 ID、名称或 TSL。
 
 ### 8.4 敏感信息
@@ -368,14 +367,14 @@ AI 助手不会：
 - 索取密码
 - 索取 JWT
 - 读取数据库密码
-- 读取 `THINGMODEL_SECRET_KEY`
+- 读取平台密钥
 - 在对话中返回设备访问令牌
 
-### 8.5 服务端要求
+### 8.5 安全要求
 
-- `AI_AGENT_OPENAI_API_KEY` 只能保存在后端 Secret 中。
+- `AI_AGENT_OPENAI_API_KEY` 只能保存在平台密钥配置中。
 - 不记录 JWT、密码、API 密钥 和完整敏感参数。
-- 建议为 AI Agent 配置独立服务账号和最小权限。
+- 建议为 AI 助手配置最小权限账号。
 
 ---
 
@@ -386,11 +385,11 @@ AI 助手不会：
 ```text
 AI_AGENT_ENABLED=true
 AI_AGENT_OPENAI_BASE_URL=https://api.deepseek.com/v1
-AI_AGENT_OPENAI_API_KEY=<后端保存的密钥>
+AI_AGENT_OPENAI_API_KEY=<平台保存的密钥>
 AI_AGENT_OPENAI_MODEL=deepseek-chat
-AI_AGENT_THING_MODEL_URL=http://thing-model:8090
-AI_AGENT_THINGSBOARD_URL=http://thingsboard:8080
 ```
+
+> 平台 API 地址由部署配置统一提供，无需在手册中单独配置。
 
 ### 9.2 上下文配置
 
@@ -405,21 +404,6 @@ AI_AGENT_MAX_TSL_BYTES=2000000
 - 超出上限时静默丢弃最早的内容。
 - 系统提示词始终保留。
 
-### 9.3 健康检查
-
-```text
-GET /health
-GET /ready
-```
-
-### 9.4 前端代理
-
-前端需要把 `/api/ai-agent/` 转发到 AI Agent 服务：
-
-```text
-/api/ai-agent/ -> http://ai-agent:8000/
-```
-
 ---
 
 ## 10. 常见问题
@@ -427,8 +411,8 @@ GET /ready
 | 问题 | 排查 |
 | --- | --- |
 | 看不到 AI 助手按钮 | AI 助手仅对系统管理员和租户管理员显示 |
-| AI 助手没有响应 | 检查 AI Agent 服务、模型配置、网络和 API 密钥 |
-| 一直显示正在思考 | 检查模型接口是否超时，稍后重试 |
+| AI 助手没有响应 | 检查 AI 助手配置、模型配置、网络和 API 密钥 |
+| 一直显示正在思考 | 检查模型 API 是否超时，稍后重试 |
 | 没有生成待确认操作 | 可能是查询类操作，或需求不够明确 |
 | 创建操作没有执行 | 需要点击「确认执行」，取消不会调用接口 |
 | 创建租户失败 | 检查租户名称、权限和厂商服务账号初始化 |
@@ -444,7 +428,7 @@ GET /ready
 
 ---
 
-## 11. API 地址
+## 11. 平台 API
 
 ### 11.1 前端调用地址
 
@@ -452,15 +436,7 @@ GET /ready
 POST /api/ai-agent/chat
 ```
 
-### 11.2 AI Agent 服务地址
-
-```text
-POST /chat
-GET  /health
-GET  /ready
-```
-
-### 11.3 请求示例
+### 11.2 请求示例
 
 ```json
 {
@@ -474,7 +450,7 @@ GET  /ready
 }
 ```
 
-### 11.4 确认执行示例
+### 11.3 确认执行示例
 
 ```json
 {
@@ -494,21 +470,7 @@ GET  /ready
 }
 ```
 
-### 11.5 依赖的平台接口
-
-```text
-GET  /api/auth/user
-GET  /api/tenant
-POST /api/tenant
-POST /api/user?sendActivationMail=true
-POST /api/device
-POST /api/plugins/telemetry/DEVICE/{deviceId}/attributes/SERVER_SCOPE
-GET  /api/products
-POST /api/products
-POST /api/admin/tenants/{tenantId}/provision-auto
-```
-
-### 11.6 错误码
+### 11.4 错误码
 
 | HTTP 状态 | 含义 |
 | --- | --- |
@@ -517,8 +479,8 @@ POST /api/admin/tenants/{tenantId}/provision-auto
 | 403 | 当前角色无权限 |
 | 404 | 资源不存在 |
 | 409 | 资源已存在或名称冲突 |
-| 502 | 模型或平台服务不可用 |
-| 500 | AI Agent 内部错误 |
+| 502 | 模型或平台 API 不可用 |
+| 500 | 平台内部错误 |
 
 ---
 
