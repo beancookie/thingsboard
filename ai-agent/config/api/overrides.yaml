@@ -1,0 +1,6 @@
+# 人工覆盖项，以 operation id 为键。
+# 示例：
+# thingsboard.listTenants:
+#   aliases: [租户, 厂商]
+#   code_access: read
+{}

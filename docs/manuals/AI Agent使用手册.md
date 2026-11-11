@@ -35,7 +35,6 @@
 - [客户与用户使用手册](客户与用户使用手册.md)
 - [AI Agent 截图清单](images/ai-agent/README.md)
 - [AI Agent 对话助手方案](../11-AI-Agent对话助手方案.md)
-- [AI Agent 操作演示](../12-AI-Agent操作演示.md)
 
 ---
 

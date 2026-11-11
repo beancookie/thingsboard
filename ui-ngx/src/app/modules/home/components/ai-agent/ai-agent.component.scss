@@ -15,13 +15,18 @@
   z-index: 1001;
   display: flex;
   flex-direction: column;
-  width: min(420px, calc(100vw - 48px));
-  height: min(680px, calc(100vh - 140px));
+  min-width: 320px;
+  min-height: 360px;
   overflow: hidden;
   border: 1px solid rgba(0, 0, 0, 0.12);
   border-radius: 12px;
   background: #fff;
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.22);
+}
+
+.tb-ai-agent-panel.tb-ai-agent-dragging,
+.tb-ai-agent-panel.tb-ai-agent-resizing {
+  user-select: none;
 }
 
 .tb-ai-agent-header {
@@ -30,6 +35,78 @@
   gap: 8px;
   padding: 8px 12px;
   color: #195da2;
+  cursor: move;
+  touch-action: none;
+  user-select: none;
+}
+
+.tb-ai-agent-resize-handle {
+  position: absolute;
+  z-index: 2;
+}
+
+.tb-ai-agent-resize-handle.n {
+  top: -4px;
+  left: 8px;
+  right: 8px;
+  height: 8px;
+  cursor: n-resize;
+}
+
+.tb-ai-agent-resize-handle.s {
+  bottom: -4px;
+  left: 8px;
+  right: 8px;
+  height: 8px;
+  cursor: s-resize;
+}
+
+.tb-ai-agent-resize-handle.e {
+  top: 8px;
+  right: -4px;
+  bottom: 8px;
+  width: 8px;
+  cursor: e-resize;
+}
+
+.tb-ai-agent-resize-handle.w {
+  top: 8px;
+  left: -4px;
+  bottom: 8px;
+  width: 8px;
+  cursor: w-resize;
+}
+
+.tb-ai-agent-resize-handle.ne,
+.tb-ai-agent-resize-handle.nw,
+.tb-ai-agent-resize-handle.se,
+.tb-ai-agent-resize-handle.sw {
+  width: 14px;
+  height: 14px;
+}
+
+.tb-ai-agent-resize-handle.ne {
+  top: -4px;
+  right: -4px;
+  cursor: ne-resize;
+}
+
+.tb-ai-agent-resize-handle.nw {
+  top: -4px;
+  left: -4px;
+  cursor: nw-resize;
+}
+
+.tb-ai-agent-resize-handle.se {
+  right: -4px;
+  bottom: -4px;
+  cursor: se-resize;
+}
+
+.tb-ai-agent-resize-handle.sw {
+  left: -4px;
+  bottom: -4px;
+  cursor: sw-resize;
 }
 
 .tb-ai-agent-title {
@@ -193,6 +270,18 @@
   gap: 8px;
 }
 
+.tb-ai-agent-file-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tb-ai-agent-file-size {
+  margin-left: auto;
+  color: rgba(0, 0, 0, 0.54);
+  font-size: 12px;
+}
+
 .tb-ai-agent-error {
   margin-top: 8px;
   padding: 8px 10px;
@@ -207,11 +296,17 @@
   padding: 8px 12px 12px;
 }
 
-.tb-ai-agent-tsl-chip {
+.tb-ai-agent-attachments {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.tb-ai-agent-file-chip {
   display: flex;
   align-items: center;
   gap: 6px;
-  margin-bottom: 8px;
   padding: 4px 4px 4px 8px;
   border-radius: 6px;
   font-size: 12px;
@@ -219,22 +314,16 @@
   background: #eef4fb;
 }
 
-.tb-ai-agent-tsl-chip span {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.tb-ai-agent-file-chip .tb-ai-agent-file-name {
+  min-width: 0;
 }
 
-.tb-ai-agent-tsl-editor,
+.tb-ai-agent-file-chip .tb-ai-agent-file-size {
+  margin-left: 0;
+}
+
 .tb-ai-agent-input {
   width: 100%;
-}
-
-.tb-ai-agent-tsl-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  margin-bottom: 8px;
 }
 
 .tb-ai-agent-composer-actions {
@@ -252,7 +341,17 @@
     inset: 0 !important;
     width: auto !important;
     height: auto !important;
+    min-width: 0;
+    min-height: 0;
     border: 0;
     border-radius: 0;
+  }
+
+  .tb-ai-agent-header {
+    cursor: default;
+  }
+
+  .tb-ai-agent-resize-handle {
+    display: none;
   }
 }

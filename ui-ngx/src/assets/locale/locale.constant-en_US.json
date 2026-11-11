@@ -3696,6 +3696,9 @@
         "goto-help-page": "Go to help page",
         "show-help": "Show help"
     },
+    "media": {
+        "cameras": "Video Gateway"
+    },
     "manual": {
         "manuals": "User manuals",
         "manuals-docs": "Manuals",
@@ -6596,7 +6599,6 @@
         "open": "Open AI Assistant",
         "close": "Close",
         "clear": "Clear conversation",
-        "clear-tsl": "Remove TSL",
         "welcome-title": "AI Assistant",
         "welcome-text": "Create tenants, products, devices and users. Write operations require confirmation.",
         "you": "You",
@@ -6608,13 +6610,10 @@
         "confirm-first": "Confirm or cancel pending actions first",
         "placeholder": "Enter a request, for example: create a tenant...",
         "send": "Send",
-        "upload-tsl": "Upload thing model TSL",
-        "paste-tsl": "Paste thing model TSL",
-        "tsl-json": "Thing model TSL JSON",
-        "tsl-placeholder": "Paste TSL JSON",
-        "apply-tsl": "Apply TSL",
-        "tsl-too-large": "TSL file must not exceed 2MB",
-        "invalid-json": "Invalid JSON",
+        "upload-file": "Upload file",
+        "remove-file": "Remove file",
+        "file-too-large": "File must not exceed 2MB",
+        "upload-failed": "File upload failed",
         "operation-failed": "Operation failed",
         "execute-success": "Success",
         "execute-failed": "Failed"

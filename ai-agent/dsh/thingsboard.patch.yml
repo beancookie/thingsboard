@@ -1,0 +1,33 @@
+# 专用 ThingsBoard Agent profile 补丁。
+# __THINGSBOARD_PLUGIN_PATH__ 在运行时替换为插件绝对路径。
+- id: tool-fs
+  config:
+    read: false
+    readImage: false
+    write: false
+    edit: false
+
+- id: tool-working-directory
+  disabled: true
+
+- id: persistent-bash
+  disabled: true
+
+- id: persistent-pwsh
+  disabled: true
+
+- id: terminal-bash
+  disabled: true
+
+- id: terminal-pwsh
+  disabled: true
+
+- id: pty
+  disabled: true
+
+- id: mcp-resources
+  disabled: true
+
+- insert:
+    - id: thingsboard-api
+      name: '__THINGSBOARD_PLUGIN_PATH__'

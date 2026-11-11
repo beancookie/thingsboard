@@ -1,0 +1,113 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: media-config
+  namespace: <namespace>
+data:
+  MEDIA_ROOT_PATH: ""
+  MEDIA_DB_PATH: "/data/media.db"
+  MEDIA_MEDIAMTX_RTSP_HOST: "129.211.239.229"
+  MEDIA_MEDIAMTX_RTSP_PORT: "8554"
+  MEDIA_MEDIAMTX_HLS_PUBLIC_URL: "http://129.211.239.229:8888"
+  MEDIA_MEDIAMTX_WEBRTC_PUBLIC_URL: "http://129.211.239.229:8889"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: media-data
+  namespace: <namespace>
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: media
+  namespace: <namespace>
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: media
+  template:
+    metadata:
+      labels:
+        app: media
+    spec:
+      containers:
+        - name: media
+          image: <registry>/tb-media:<tag>
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 4201
+          envFrom:
+            - configMapRef:
+                name: media-config
+          volumeMounts:
+            - name: media-data
+              mountPath: /data
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 4201
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 4201
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+      volumes:
+        - name: media-data
+          persistentVolumeClaim:
+            claimName: media-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: media
+  namespace: <namespace>
+spec:
+  selector:
+    app: media
+  ports:
+    - name: http
+      port: 4201
+      targetPort: 4201
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: media
+  namespace: <namespace>
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: media.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: media
+                port:
+                  number: 4201
+  tls:
+    - hosts:
+        - media.example.com
+      secretName: media-tls

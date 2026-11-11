@@ -1,9 +1,13 @@
 @if (visible) {
   @if (panelOpen()) {
     <div class="tb-ai-agent-panel"
-         [style.left.px]="panelPosition().left"
-         [style.top.px]="panelPosition().top">
-      <div class="tb-ai-agent-header">
+         [class.tb-ai-agent-dragging]="panelDragging()"
+         [class.tb-ai-agent-resizing]="panelResizing()"
+         [style.left.px]="panelRect().left"
+         [style.top.px]="panelRect().top"
+         [style.width.px]="panelRect().width"
+         [style.height.px]="panelRect().height">
+      <div class="tb-ai-agent-header" (pointerdown)="onPanelDragStart($event)">
         <div class="tb-ai-agent-title">
           <mat-icon>auto_awesome</mat-icon>
           <span>{{ 'ai-agent.title' | translate }}</span>
@@ -83,32 +87,19 @@
       <mat-divider></mat-divider>
 
       <div class="tb-ai-agent-composer">
-        @if (tslFileName()) {
-          <div class="tb-ai-agent-tsl-chip">
-            <mat-icon>description</mat-icon>
-            <span>{{ tslFileName() }}</span>
-            <button mat-icon-button type="button" (click)="clearTsl()"
-                    [matTooltip]="'ai-agent.clear-tsl' | translate" matTooltipPosition="above">
-              <mat-icon>close</mat-icon>
-            </button>
-          </div>
-        }
-
-        @if (showTslEditor()) {
-          <mat-form-field appearance="outline" class="tb-ai-agent-tsl-editor">
-            <mat-label>{{ 'ai-agent.tsl-json' | translate }}</mat-label>
-            <textarea matInput rows="6"
-                      [ngModel]="tslText()"
-                      (ngModelChange)="tslText.set($event)"
-                      [placeholder]="'ai-agent.tsl-placeholder' | translate"></textarea>
-          </mat-form-field>
-          <div class="tb-ai-agent-tsl-actions">
-            <button mat-button type="button" (click)="showTslEditor.set(false)">
-              {{ 'ai-agent.cancel' | translate }}
-            </button>
-            <button mat-flat-button color="primary" type="button" (click)="applyPastedTsl()">
-              {{ 'ai-agent.apply-tsl' | translate }}
-            </button>
+        @if (attachments().length) {
+          <div class="tb-ai-agent-attachments">
+            @for (file of attachments(); track file.id) {
+              <div class="tb-ai-agent-file-chip">
+                <mat-icon>description</mat-icon>
+                <span class="tb-ai-agent-file-name">{{ file.name }}</span>
+                <span class="tb-ai-agent-file-size">{{ formatFileSize(file.size) }}</span>
+                <button mat-icon-button type="button" (click)="removeAttachment(file)"
+                        [matTooltip]="'ai-agent.remove-file' | translate" matTooltipPosition="above">
+                  <mat-icon>close</mat-icon>
+                </button>
+              </div>
+            }
           </div>
         }
 
@@ -122,16 +113,16 @@
         </mat-form-field>
 
         <div class="tb-ai-agent-composer-actions">
-          <input #fileInput type="file" accept=".json,application/json" hidden
-                 (change)="onFileSelected($event)">
+          <input #fileInput type="file" multiple hidden
+                 (change)="onFilesSelected($event)">
           <button mat-icon-button type="button" (click)="fileInput.click()"
-                  [matTooltip]="'ai-agent.upload-tsl' | translate" matTooltipPosition="above">
+                  [disabled]="uploading()"
+                  [matTooltip]="'ai-agent.upload-file' | translate" matTooltipPosition="above">
             <mat-icon>attach_file</mat-icon>
           </button>
-          <button mat-icon-button type="button" (click)="showTslEditor.set(!showTslEditor())"
-                  [matTooltip]="'ai-agent.paste-tsl' | translate" matTooltipPosition="above">
-            <mat-icon>data_object</mat-icon>
-          </button>
+          @if (uploading()) {
+            <mat-spinner diameter="18"></mat-spinner>
+          }
           <span class="flex-1"></span>
           <button mat-flat-button color="primary" type="button" (click)="sendMessage()"
                   [disabled]="!canSend()">
@@ -140,6 +131,14 @@
           </button>
         </div>
       </div>
+      <div class="tb-ai-agent-resize-handle n" (pointerdown)="onResizeStart($event, 'n')"></div>
+      <div class="tb-ai-agent-resize-handle s" (pointerdown)="onResizeStart($event, 's')"></div>
+      <div class="tb-ai-agent-resize-handle e" (pointerdown)="onResizeStart($event, 'e')"></div>
+      <div class="tb-ai-agent-resize-handle w" (pointerdown)="onResizeStart($event, 'w')"></div>
+      <div class="tb-ai-agent-resize-handle ne" (pointerdown)="onResizeStart($event, 'ne')"></div>
+      <div class="tb-ai-agent-resize-handle nw" (pointerdown)="onResizeStart($event, 'nw')"></div>
+      <div class="tb-ai-agent-resize-handle se" (pointerdown)="onResizeStart($event, 'se')"></div>
+      <div class="tb-ai-agent-resize-handle sw" (pointerdown)="onResizeStart($event, 'sw')"></div>
     </div>
   }
 

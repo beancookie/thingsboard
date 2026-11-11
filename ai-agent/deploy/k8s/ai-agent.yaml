@@ -6,6 +6,8 @@ metadata:
 type: Opaque
 stringData:
   AI_AGENT_OPENAI_API_KEY: "<openai-api-key>"
+  AI_AGENT_DEEPSEEK_API_KEY: "<deepseek-api-key>"
+  AI_AGENT_INTERNAL_TOOL_TOKEN: "<internal-tool-token>"
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -14,8 +16,18 @@ metadata:
   namespace: <namespace>
 data:
   AI_AGENT_ENABLED: "true"
+  AI_AGENT_ENGINE: "openai"
   AI_AGENT_OPENAI_BASE_URL: "https://api.deepseek.com/v1"
   AI_AGENT_OPENAI_MODEL: "deepseek-chat"
+  AI_AGENT_DSH_HOME: "/data/dsh-home"
+  AI_AGENT_DSH_WORKSPACE: "/data/dsh-workspace"
+  AI_AGENT_DSH_PROFILE: "sdk-minimal"
+  AI_AGENT_DSH_PATCH_TEMPLATE: "dsh/thingsboard.patch.yml"
+  AI_AGENT_DSH_PLUGIN_PATH: "dsh-plugin-thingsboard/index.js"
+  AI_AGENT_DSH_PROVIDER: "deepseek-official"
+  AI_AGENT_DSH_MODEL: "deepseek-v4-flash"
+  AI_AGENT_DSH_TIMEOUT_SECONDS: "60"
+  AI_AGENT_INTERNAL_AGENT_URL: "http://127.0.0.1:8000"
   AI_AGENT_TIMEOUT_SECONDS: "60"
   AI_AGENT_MAX_TOKENS: "2048"
   AI_AGENT_THING_MODEL_URL: "http://thing-model:8090"
@@ -24,6 +36,12 @@ data:
   AI_AGENT_MAX_MESSAGES: "20"
   AI_AGENT_MAX_TSL_BYTES: "2000000"
   AI_AGENT_MAX_ACTIONS: "10"
+  AI_AGENT_MAX_TOOL_ROUNDS: "8"
+  AI_AGENT_API_CATALOG_DIR: "config/api"
+  AI_AGENT_API_MAX_RESPONSE_BYTES: "262144"
+  AI_AGENT_FILE_TTL_SECONDS: "600"
+  AI_AGENT_FILE_MAX_BYTES: "2000000"
+  AI_AGENT_FILE_TEXT_MAX_BYTES: "65536"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -51,6 +69,9 @@ spec:
                 name: ai-agent-config
             - secretRef:
                 name: ai-agent-secret
+          volumeMounts:
+            - name: dsh-data
+              mountPath: /data
           readinessProbe:
             httpGet:
               path: /ready
@@ -68,8 +89,11 @@ spec:
               cpu: "100m"
               memory: "256Mi"
             limits:
-              cpu: "500m"
-              memory: "512Mi"
+              cpu: "1"
+              memory: "1Gi"
+      volumes:
+        - name: dsh-data
+          emptyDir: {}
 ---
 apiVersion: v1
 kind: Service

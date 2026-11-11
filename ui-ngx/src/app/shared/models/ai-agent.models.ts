@@ -4,9 +4,19 @@ export type AgentMode = 'chat' | 'execute';
 
 export type AgentActionStatus = 'PROPOSED' | 'EXECUTED' | 'FAILED';
 
+export type AgentActionRisk = 'low' | 'medium' | 'high';
+
+export interface AgentFile {
+  id: string;
+  name: string;
+  mime_type: string;
+  size: number;
+}
+
 export interface AgentMessage {
   role: 'user' | 'assistant';
   content: string;
+  files?: AgentFile[];
 }
 
 export interface AgentAction {
@@ -15,6 +25,7 @@ export interface AgentAction {
   summary: string;
   params: Record<string, unknown>;
   status: AgentActionStatus;
+  risk?: AgentActionRisk;
 }
 
 export interface AgentContext {
@@ -27,6 +38,7 @@ export interface AgentChatRequest {
   mode: AgentMode;
   messages: AgentMessage[];
   tsl?: unknown;
+  files?: AgentFile[];
   actions?: AgentAction[];
   context?: AgentContext;
 }
@@ -50,6 +62,5 @@ export interface AiAgentStoredSession {
   messages: AgentMessage[];
   pendingActions: AgentAction[];
   tsl: unknown | null;
-  tslFileName: string | null;
   savedAt: string;
 }

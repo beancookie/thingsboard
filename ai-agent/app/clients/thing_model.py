@@ -7,9 +7,26 @@ from app.common.errors import AgentError, AgentUnavailable
 
 
 class ThingModelClient:
-    def __init__(self, client: httpx.AsyncClient, base_url: str):
+    def __init__(
+        self,
+        client: httpx.AsyncClient,
+        base_url: str,
+        max_response_bytes: int | None = None,
+    ):
         self._client = client
         self._base_url = base_url.rstrip("/")
+        self._max_response_bytes = max_response_bytes
+
+    async def request(
+        self,
+        method: str,
+        path: str,
+        token: str,
+        *,
+        params: dict[str, Any] | None = None,
+        json: Any | None = None,
+    ) -> Any:
+        return await self._request(method, path, token, params=params, json=json)
 
     async def list_products(self, token: str, keyword: str | None = None) -> list[dict[str, Any]]:
         params = {"keyword": keyword} if keyword else None
@@ -44,7 +61,7 @@ class ThingModelClient:
         token: str,
         *,
         params: dict[str, Any] | None = None,
-        json: dict[str, Any] | None = None,
+        json: Any | None = None,
     ) -> Any:
         try:
             response = await self._client.request(
@@ -66,4 +83,13 @@ class ThingModelClient:
             )
         if not response.content:
             return {}
+        if (
+            self._max_response_bytes is not None
+            and len(response.content) > self._max_response_bytes
+        ):
+            raise AgentError(
+                "thing-model 响应过大，请缩小查询范围",
+                status_code=502,
+                code="API_RESPONSE_TOO_LARGE",
+            )
         return response.json()

@@ -101,6 +101,49 @@ TOOL_SPECS: list[dict[str, Any]] = [
     ),
 ]
 
+CATALOG_TOOL_SPECS: list[dict[str, Any]] = [
+    _tool(
+        "search_api_operations",
+        "搜索 ThingsBoard 和 thing-model 的 API。调用 call_api_operation 前必须先搜索。",
+        {
+            "query": {
+                "type": "string",
+                "description": "接口名称、业务动作或关键词，例如“遥测”“告警”“创建资产”",
+            },
+            "service": {
+                "type": "string",
+                "enum": ["thingsboard", "thing_model"],
+                "description": "可选，限定服务",
+            },
+            "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 10,
+                "description": "返回条数，默认 5",
+            },
+        },
+        ["query"],
+    ),
+    _tool(
+        "call_api_operation",
+        "调用 search_api_operations 返回的 operation_id。读接口立即执行；写接口返回待确认动作。",
+        {
+            "operation_id": {
+                "type": "string",
+                "description": "search_api_operations 返回的 operation id",
+            },
+            "params": {
+                "type": "object",
+                "description": "接口参数，字段和类型以 search_api_operations 返回的 params 为准",
+                "additionalProperties": True,
+            },
+        },
+        ["operation_id"],
+    ),
+]
+
+CATALOG_TOOLS = {tool["function"]["name"] for tool in CATALOG_TOOL_SPECS}
+
 READ_TOOLS = {"list_tenants", "list_products", "list_devices"}
 WRITE_TOOLS = {
     "create_tenant",

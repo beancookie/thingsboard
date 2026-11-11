@@ -11,6 +11,9 @@ dependencies = [
   "pydantic-settings>=2.4,<3",
   "openai>=1.40,<2",
   "python-dotenv>=1.0,<2",
+  "pyyaml>=6,<7",
+  "deepseek-harness-sdk==0.2.1rc2",
+  "python-multipart>=0.0.9,<1",
 ]
 
 [dependency-groups]

@@ -155,6 +155,123 @@ async def test_chat_executes_read_tool_and_asks_model_again(
 
 
 @pytest.mark.asyncio
+async def test_chat_uses_catalog_search_and_call(settings, tenant_admin) -> None:
+    service = AgentService(settings)
+
+    class FakeGateway:
+        def __init__(self) -> None:
+            self.searches = []
+            self.calls = []
+
+        def search(self, query, *, service=None, limit=5):
+            self.searches.append((query, service, limit))
+            return [
+                {
+                    "id": "thingsboard.get.telemetry",
+                    "summary": "查询遥测",
+                    "mode": "read",
+                    "params": {},
+                }
+            ]
+
+        async def call(self, session_id, operation_id, params):
+            self.calls.append((session_id, operation_id, params))
+            return {"status": "OK", "data": {"temperature": 20}}
+
+    gateway = FakeGateway()
+    service.tool_gateway = gateway
+    service._llm = FakeLlm(
+        [
+            FakeMessage(
+                tool_calls=[
+                    FakeToolCall(
+                        "search_api_operations",
+                        '{"query":"遥测"}',
+                        "c1",
+                    )
+                ]
+            ),
+            FakeMessage(
+                tool_calls=[
+                    FakeToolCall(
+                        "call_api_operation",
+                        '{"operation_id":"thingsboard.get.telemetry","params":{}}',
+                        "c2",
+                    )
+                ]
+            ),
+            FakeMessage("查询完成"),
+        ]
+    )
+    try:
+        response = await service.chat(
+            AgentChatRequest(
+                messages=[AgentMessage(role="user", content="查询遥测")]
+            ),
+            "token",
+            tenant_admin,
+        )
+    finally:
+        await service.close()
+
+    assert response.reply == "查询完成"
+    assert gateway.searches == [("遥测", None, 5)]
+    assert gateway.calls[0][1] == "thingsboard.get.telemetry"
+
+
+@pytest.mark.asyncio
+async def test_allows_multiple_tool_rounds(settings, tenant_admin) -> None:
+    settings.max_tool_rounds = 4
+    service = AgentService(settings)
+    service._executor = FakeExecutor()
+    service._llm = FakeLlm(
+        [
+            FakeMessage(tool_calls=[FakeToolCall("list_products", call_id="c1")]),
+            FakeMessage(tool_calls=[FakeToolCall("list_products", call_id="c2")]),
+            FakeMessage(tool_calls=[FakeToolCall("list_products", call_id="c3")]),
+            FakeMessage("查询完成"),
+        ]
+    )
+    try:
+        response = await service.chat(
+            AgentChatRequest(messages=[AgentMessage(role="user", content="查询")]),
+            "token",
+            tenant_admin,
+        )
+    finally:
+        await service.close()
+
+    assert response.reply == "查询完成"
+    assert len(service._executor.calls) == 3
+
+
+@pytest.mark.asyncio
+async def test_tool_round_limit_returns_planning_error(settings, tenant_admin) -> None:
+    settings.max_tool_rounds = 2
+    service = AgentService(settings)
+    service._executor = FakeExecutor()
+    service._llm = FakeLlm(
+        [
+            FakeMessage(tool_calls=[FakeToolCall("list_products", call_id="c1")]),
+            FakeMessage(tool_calls=[FakeToolCall("list_products", call_id="c2")]),
+        ]
+    )
+    try:
+        with pytest.raises(AgentError) as error:
+            await service.chat(
+                AgentChatRequest(
+                    messages=[AgentMessage(role="user", content="查询")]
+                ),
+                "token",
+                tenant_admin,
+            )
+    finally:
+        await service.close()
+
+    assert error.value.code == "AI_PLANNING_LIMIT"
+
+
+@pytest.mark.asyncio
 async def test_execute_mode_returns_action_results(settings, tenant_admin) -> None:
     service = AgentService(settings)
     executor = FakeExecutor()
@@ -290,3 +407,22 @@ async def test_missing_ai_key_returns_configuration_error(settings, tenant_admin
 
     assert error.value.status_code == 503
     assert error.value.code == "AI_NOT_CONFIGURED"
+
+
+@pytest.mark.asyncio
+async def test_attachment_context_includes_text_file(settings, tenant_admin) -> None:
+    service = AgentService(settings)
+    try:
+        file = service.file_store.create(
+            b"temperature,value\\n1,20",
+            "data.csv",
+            "text/csv",
+            tenant_admin.user_id,
+        )
+        context = service._attachment_context([file], tenant_admin)
+    finally:
+        await service.close()
+
+    assert "data.csv" in context
+    assert "temperature,value" in context
+

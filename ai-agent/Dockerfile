@@ -11,6 +11,9 @@ COPY pyproject.toml uv.lock .python-version ./
 RUN uv sync --frozen --no-dev
 
 COPY app ./app
+COPY config ./config
+COPY dsh ./dsh
+COPY dsh-plugin-thingsboard ./dsh-plugin-thingsboard
 
 ENV PATH="/app/.venv/bin:$PATH"
 

@@ -1,5 +1,10 @@
 from app.agent.models import ACTION_MODELS
-from app.agent.tools import READ_TOOLS, TOOL_SPECS, WRITE_TOOLS
+from app.agent.tools import (
+    CATALOG_TOOL_SPECS,
+    READ_TOOLS,
+    TOOL_SPECS,
+    WRITE_TOOLS,
+)
 
 
 def test_tool_names_are_unique() -> None:
@@ -23,6 +28,12 @@ def test_action_models_cover_all_tools() -> None:
     tool_names = {tool["function"]["name"] for tool in TOOL_SPECS}
 
     assert set(ACTION_MODELS) == tool_names
+
+
+def test_catalog_tool_names_are_declared() -> None:
+    names = [tool["function"]["name"] for tool in CATALOG_TOOL_SPECS]
+
+    assert names == ["search_api_operations", "call_api_operation"]
 
 
 def test_tool_parameters_are_valid_object_schemas() -> None:

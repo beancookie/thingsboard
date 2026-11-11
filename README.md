@@ -40,6 +40,7 @@
 - 新建租户后自动初始化平台服务账号
 - 设备注册与遥测模拟脚本
 - TDengine 数据入湖服务
+- 视频网关：摄像头管理、推流配置、HLS / WebRTC 预览
 - Kubernetes 增量部署说明
 
 当前实现以 [docs/](docs/) 为准。未实现能力集中记录在 [09-测试与路线图](docs/09-测试与路线图.md)，不再混入当前能力说明。
@@ -51,6 +52,7 @@
 | `application/` | 中国中铁物联网平台应用模块 |
 | `ui-ngx/` | Angular 前端，包含产品/物模型定制页面 |
 | `thing-model/` | 产品与物模型模块 |
+| `media/` | 视频网关（摄像头管理、推流配置、HLS / WebRTC 预览） |
 | `docs/` | 架构、物模型、产品发布、设备接入、前端、API、部署与测试文档 |
 | `dao/`、`common/`、`rule-engine/`、`transport/` | 中国中铁物联网平台基础模块 |
 | `packaging/`、`msa/`、`monitoring/` | 打包、微服务与监控配置 |
@@ -75,6 +77,8 @@
 | [10-租户与产品快速使用手册](docs/10-租户与产品快速使用手册.md) | 从新建租户到使用示例 TSL 创建产品 |
 | [11-AI-Agent对话助手方案](docs/11-AI-Agent对话助手方案.md) | 前端对话助手、后端 Agent API、工具权限与确认流程 |
 | [12-AI-Agent操作演示](docs/12-AI-Agent操作演示.md) | AI 助手查询、创建租户/产品/设备/用户及异常演示 |
+| [13-AI-Agent-DSH全接口接入方案](docs/13-AI-Agent-DSH全接口接入方案.md) | DSH 编排层、统一 API 目录与全接口接入 |
+| [14-视频网关](docs/14-视频网关.md) | 摄像头管理、推流配置、HLS / WebRTC 预览与部署 |
 | [用户手册](docs/manuals/README.md) | 面向第三方接入方的网关等功能操作手册 |
 
 ## 5. 环境要求
@@ -88,6 +92,9 @@
 | PostgreSQL | 14+ |
 | 中国中铁物联网平台 | 4.4.x |
 | Kafka | 规则链外发与入湖消费 |
+| Python | 3.12（视频网关） |
+| uv | 视频网关依赖管理 |
+| MediaMTX | 视频网关推流与 HLS / WebRTC 分发 |
 | TDengine | 3.x，仅入湖服务需要 |
 
 ## 6. 快速开始

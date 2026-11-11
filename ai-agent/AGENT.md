@@ -26,7 +26,9 @@
 - FastAPI
 - Pydantic
 - AsyncOpenAI（OpenAI 兼容接口）
+- DeepSeek Harness Python SDK（`AI_AGENT_ENGINE=dsh`）
 - httpx
+- PyYAML
 - pytest / pytest-asyncio / respx
 - uvicorn
 
@@ -60,6 +62,36 @@ uv add --dev <package>
 
 # 刷新锁文件
 uv lock
+
+# 命令行聊天
+uv run python -m app.cli chat "查询租户" --token <TB_JWT>
+AI_AGENT_CLI_TOKEN=<TB_JWT> uv run python -m app.cli chat
+
+# API 目录测试
+uv run python -m app.cli catalog validate
+uv run python -m app.cli catalog search 租户
+
+# DSH runtime smoke test
+uv run python -m app.cli dsh smoke
+
+# 从使用手册生成 API 目录
+uv run python scripts/import_manual_apis.py
+uv run python scripts/import_manual_apis.py --check
+
+# 从 OpenAPI 生成 API 目录
+uv run python scripts/import_openapi.py \
+  --service thingsboard \
+  --spec application/target/openapi.json \
+  --out config/api/thingsboard.yaml \
+  --overrides config/api/overrides.yaml
+
+# 检查 API 目录是否最新
+uv run python scripts/import_openapi.py \
+  --service thingsboard \
+  --spec application/target/openapi.json \
+  --out config/api/thingsboard.yaml \
+  --overrides config/api/overrides.yaml \
+  --check
 ```
 
 本地开发不需要 Docker。Dockerfile 仅用于部署。
@@ -73,33 +105,67 @@ ai-agent/
 │   ├── config.py                AI_AGENT_* 环境变量
 │   ├── api/
 │   │   ├── agent.py             POST /chat
+│   │   ├── files.py             POST /files 上传附件
+│   │   ├── internal.py          DSH 内部工具接口
+│   │   ├── utils.py             请求 token 提取
 │   │   └── health.py            GET /health、/ready
 │   ├── auth/
 │   │   └── thingsboard.py       ThingsBoard JWT 校验与缓存
 │   ├── agent/
 │   │   ├── orchestrator.py      对话、工具规划、确认执行
+│   │   ├── dsh.py               DeepSeek Harness 运行时封装
 │   │   ├── llm.py               AsyncOpenAI 客户端
 │   │   ├── tools.py             工具定义、读写工具集合
 │   │   ├── executor.py          白名单动作执行与权限校验
+│   │   ├── api_catalog.py       API 目录加载、搜索、参数校验
+│   │   ├── api_executor.py      API 目录通用执行入口
+│   │   ├── files.py             上传附件存储
+│   │   ├── sessions.py          DSH 短期会话上下文
+│   │   ├── tool_gateway.py      搜索/调用/写提案工具网关
 │   │   ├── models.py            请求/响应和动作参数模型
 │   │   └── prompts.py           系统提示词
 │   ├── clients/
 │   │   ├── thingsboard.py       ThingsBoard REST 客户端
 │   │   └── thing_model.py       thing-model REST 客户端
-│   └── common/
-│       └── errors.py            统一业务异常
+│   ├── common/
+│   │   └── errors.py            统一业务异常
+│   └── cli.py                   命令行聊天与本地测试工具
 ├── tests/
 │   ├── conftest.py
 │   ├── test_agent_api.py
+│   ├── test_api_catalog.py
+│   ├── test_api_executor.py
 │   ├── test_auth.py
 │   ├── test_clients.py
+│   ├── test_cli.py
+│   ├── test_dsh.py
 │   ├── test_executor.py
+│   ├── test_files.py
+│   ├── test_files_api.py
 │   ├── test_health.py
+│   ├── test_import_openapi.py
+│   ├── test_internal_api.py
+│   ├── test_manual_api_coverage.py
 │   ├── test_orchestrator.py
+│   ├── test_tool_gateway.py
 │   ├── test_tools.py
 │   └── integration/
 │       ├── conftest.py
 │       └── test_thingsboard_integration.py
+├── config/
+│   └── api/
+│       ├── thingsboard.yaml     ThingsBoard 基础 API 目录
+│       ├── thing_model.yaml     thing-model API 目录
+│       ├── manual_apis.yaml     使用手册生成的 API 目录
+│       └── overrides.yaml       人工覆盖项
+├── scripts/
+│   ├── import_openapi.py        OpenAPI 到 API 目录导入工具
+│   └── import_manual_apis.py    使用手册到 API 目录导入工具
+├── dsh/
+│   └── thingsboard.patch.yml    DSH profile 补丁
+├── dsh-plugin-thingsboard/
+│   ├── package.json             DSH 插件清单
+│   └── index.js                 search/call 工具实现
 ├── deploy/
 │   └── k8s/
 │       └── ai-agent.yaml        Secret、ConfigMap、Deployment、Service
@@ -227,9 +293,23 @@ Python Agent 不直接访问数据库，只调用 REST。
 
 ```text
 AI_AGENT_ENABLED=true
+AI_AGENT_ENGINE=openai|dsh
 AI_AGENT_OPENAI_BASE_URL=https://api.deepseek.com/v1
 AI_AGENT_OPENAI_API_KEY=<secret>
 AI_AGENT_OPENAI_MODEL=deepseek-chat
+AI_AGENT_DEEPSEEK_API_KEY=<secret>
+AI_AGENT_DEEPSEEK_BASE_URL=
+AI_AGENT_DSH_HOME=.dsh-home
+AI_AGENT_DSH_WORKSPACE=.dsh-workspace
+AI_AGENT_DSH_PROFILE=sdk-minimal
+AI_AGENT_DSH_PATCH_TEMPLATE=dsh/thingsboard.patch.yml
+AI_AGENT_DSH_PLUGIN_PATH=dsh-plugin-thingsboard/index.js
+AI_AGENT_DSH_PROVIDER=deepseek-official
+AI_AGENT_DSH_MODEL=deepseek-v4-flash
+AI_AGENT_DSH_TIMEOUT_SECONDS=60
+AI_AGENT_INTERNAL_AGENT_URL=http://127.0.0.1:8000
+AI_AGENT_CLI_URL=http://127.0.0.1:8000
+AI_AGENT_CLI_TOKEN=<TB_JWT>
 AI_AGENT_TIMEOUT_SECONDS=60
 AI_AGENT_MAX_TOKENS=2048
 AI_AGENT_THING_MODEL_URL=http://localhost:8090
@@ -238,6 +318,13 @@ AI_AGENT_AUTH_CACHE_SECONDS=60
 AI_AGENT_MAX_MESSAGES=20
 AI_AGENT_MAX_TSL_BYTES=2000000
 AI_AGENT_MAX_ACTIONS=10
+AI_AGENT_MAX_TOOL_ROUNDS=8
+AI_AGENT_API_CATALOG_DIR=config/api
+AI_AGENT_API_MAX_RESPONSE_BYTES=262144
+AI_AGENT_FILE_TTL_SECONDS=600
+AI_AGENT_FILE_MAX_BYTES=2000000
+AI_AGENT_FILE_TEXT_MAX_BYTES=65536
+AI_AGENT_INTERNAL_TOOL_TOKEN=<secret>
 ```
 
 - `AI_AGENT_OPENAI_API_KEY` 只能保存在后端 Secret 中。
@@ -263,6 +350,9 @@ uv run pytest -m "not integration"
 - ThingsBoard / thing-model REST 客户端
 - 工具定义和动作参数模型
 - 动作执行与权限校验
+- API 目录加载、搜索、overrides 合并
+- OpenAPI 导入与目录生成
+- 通用 API 执行器、工具网关、内部接口鉴权
 - 对话规划、读工具、写动作确认
 
 ### 真实集成测试
@@ -290,7 +380,9 @@ uv run pytest -m integration
   - `agent/models.py`
   - `agent/executor.py`
   - 对应测试
+- 新增普通 REST 接口时优先更新 `config/api/*.yaml`，复杂业务再在 `agent/executor.py` 增加 handler。
 - 新增外部 REST 调用时放到 `app/clients/`，不要在业务层直接拼 HTTP。
+- API 目录只允许通过现有 `ThingsBoardClient` / `ThingModelClient` 执行，不要新增第二套 HTTP 调用栈。
 - 新增错误使用 `AgentError` 子类或标准错误码。
 - 写操作必须先返回 `PROPOSED` 动作，不得在 `chat` 模式直接执行。
 - 不在日志中输出 JWT、密码、API Key 或完整 TSL 内容。

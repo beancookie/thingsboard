@@ -1,0 +1,3989 @@
+- id: thing_model.post.admin_tenants_by_tenantid_provision
+  service: thing_model
+  method: POST
+  path: /api/admin/tenants/{tenantId}/provision
+  summary: 创建租户
+  aliases:
+  - 租户
+  - admin
+  - tenants
+  - provision
+  tags:
+  - admin
+  - 租户
+  mode: write
+  code_access: write
+  permission: SYS_ADMIN
+  risk: medium
+  enabled: true
+  params:
+    tenantId:
+      in: path
+      type: string
+      required: true
+    $body:
+      in: body
+      type: object
+  tenant_param: tenantId
+- id: thing_model.put.products_by_productid_thing_model
+  service: thing_model
+  method: PUT
+  path: /api/products/{productId}/thing-model
+  summary: 提交新 TSL 版本
+  aliases:
+  - 产品
+  - products
+  - thing-model
+  tags:
+  - products
+  - 产品
+  mode: write
+  code_access: write
+  permission: TENANT_ADMIN
+  risk: medium
+  enabled: true
+  params:
+    productId:
+      in: path
+      type: string
+      required: true
+    $body:
+      in: body
+      type: object
+- id: thingsboard.delete.alarm_by_alarmid
+  service: thingsboard
+  method: DELETE
+  path: /api/alarm/{alarmId}
+  summary: 删除告警
+  aliases:
+  - 告警
+  - alarm
+  tags:
+  - alarm
+  - 告警
+  mode: write
+  code_access: write
+  permission: ANY
+  risk: high
+  enabled: true
+  params:
+    alarmId:
+      in: path
+      type: string
+      required: true
+    $body:
+      in: body
+      type: object
+- id: thingsboard.delete.alarm_by_alarmid_assign
+  service: thingsboard
+  method: DELETE
+  path: /api/alarm/{alarmId}/assign
+  summary: 分配告警
+  aliases:
+  - 告警
+  - alarm
+  - assign
+  tags:
+  - alarm
+  - 告警
+  mode: write
+  code_access: write
+  permission: ANY
+  risk: high
+  enabled: true
+  params:
+    alarmId:
+      in: path
+      type: string
+      required: true
+    $body:
+      in: body
+      type: object
+- id: thingsboard.delete.alarm_by_alarmid_comment_by_commentid
+  service: thingsboard
+  method: DELETE
+  path: /api/alarm/{alarmId}/comment/{commentId}
+  summary: 删除告警
+  aliases:
+  - 告警
+  - alarm
+  - comment
+  tags:
+  - alarm
+  - 告警
+  mode: write
+  code_access: write
+  permission: ANY
+  risk: high
+  enabled: true
+  params:
+    alarmId:
+      in: path
+      type: string
+      required: true
+    commentId:
+      in: path
+      type: string
+      required: true
+    $body:
+      in: body
+      type: object
+- id: thingsboard.delete.alarm_rule_by_alarmruleid
+  service: thingsboard
+  method: DELETE
+  path: /api/alarm/rule/{alarmRuleId}
+  summary: 删除告警规则
+  aliases:
+  - 告警
+  - alarm
+  - rule
+  tags:
+  - alarm
+  - 告警
+  mode: write
+  code_access: write
+  permission: ANY
+  risk: high
+  enabled: true
+  params:
+    alarmRuleId:
+      in: path
+      type: string
+      required: true
+    $body:
+      in: body
+      type: object
+- id: thingsboard.delete.asset_by_assetid
+  service: thingsboard
+  method: DELETE
+  path: /api/asset/{assetId}
+  summary: 删除资产
+  aliases:
+  - 资产
+  - asset
+  tags:
+  - asset
+  - 资产
+  mode: write
+  code_access: write
+  permission: TENANT_ADMIN
+  risk: high
+  enabled: true
+  params:
+    assetId:
+      in: path
+      type: string
+      required: true
+    $body:
+      in: body
+      type: object
+- id: thingsboard.delete.calculatedfield_by_calculatedfieldid
+  service: thingsboard
+  method: DELETE
+  path: /api/calculatedField/{calculatedFieldId}
+  summary: 删除计算字段
+  aliases:
+  - 计算字段
+  - calculatedField
+  tags:
+  - calculatedField
+  - 计算字段
+  mode: write
+  code_access: write
+  permission: TENANT_ADMIN
+  risk: high
+  enabled: true
+  params:
+    calculatedFieldId:
+      in: path
+      type: string
+      required: true
+    $body:
+      in: body
+      type: object
+- id: thingsboard.delete.customer_asset_by_assetid
+  service: thingsboard
+  method: DELETE
+  path: /api/customer/asset/{assetId}
+  summary: 取消资产分配
+  aliases:
+  - 客户
+  - customer
+  - asset
+  tags:
+  - customer
+  - 客户
+  mode: write
+  code_access: write
+  permission: TENANT_ADMIN
+  risk: high
+  enabled: true
+  params:
+    assetId:
+      in: path
+      type: string
+      required: true
+    $body:
+      in: body
+      type: object
+- id: thingsboard.delete.customer_by_customerid
+  service: thingsboard
+  method: DELETE
+  path: /api/customer/{customerId}
+  summary: 删除客户
+  aliases:
+  - 客户
+  - customer
+  tags:
+  - customer
+  - 客户
+  mode: write
+  code_access: write
+  permission: TENANT_ADMIN
+  risk: high
+  enabled: true
+  params:
+    customerId:
+      in: path
+      type: string
+      required: true
+    $body:
+      in: body
+      type: object
+- id: thingsboard.delete.customer_by_customerid_dashboard_by_dashboardid
+  service: thingsboard
+  method: DELETE
+  path: /api/customer/{customerId}/dashboard/{dashboardId}
+  summary: 取消仪表板分配
+  aliases:
+  - 客户
+  - customer
+  - dashboard
+  tags:
+  - customer
+  - 客户
+  mode: write
+  code_access: write
+  permission: TENANT_ADMIN
+  risk: high
+  enabled: true
+  params:
+    customerId:
+      in: path
+      type: string
+      required: true
+    dashboardId:
+      in: path
+      type: string
+      required: true
+    $body:
+      in: body
+      type: object
+- id: thingsboard.delete.customer_device_by_deviceid
+  service: thingsboard
+  method: DELETE
+  path: /api/customer/device/{deviceId}
+  summary: 取消设备分配
+  aliases:
+  - 客户
+  - customer
+  - device
+  tags:
+  - customer
+  - 客户
+  mode: write
+  code_access: write
+  permission: TENANT_ADMIN
+  risk: high
+  enabled: true
+  params:
+    deviceId:
+      in: path
+      type: string
+      required: true
+    $body:
+      in: body
+      type: object
+- id: thingsboard.delete.customer_edge_by_edgeid
+  service: thingsboard
+  method: DELETE
+  path: /api/customer/edge/{edgeId}
+  summary: 取消边缘分配
+  aliases:
+  - 客户
+  - customer
+  - edge
+  tags:
+  - customer
+  - 客户
+  mode: write
+  code_access: write
+  permission: TENANT_ADMIN
+  risk: high
+  enabled: true
+  params:
+    edgeId:
+      in: path
+      type: string
+      required: true
+    $body:
+      in: body
+      type: object
+- id: thingsboard.delete.notification_by_notificationid
+  service: thingsboard
+  method: DELETE
+  path: /api/notification/{notificationId}
+  summary: 删除通知
+  aliases:
+  - 通知
+  - notification
+  tags:
+  - notification
+  - 通知
+  mode: write
+  code_access: write
+  permission: ANY
+  risk: high
+  enabled: true
+  params:
+    notificationId:
+      in: path
+      type: string
+      required: true
+    $body:
+      in: body
+      type: object
+- id: thingsboard.delete.notification_request_by_requestid
+  service: thingsboard
+  method: DELETE
+  path: /api/notification/request/{requestId}
+  summary: 删除发送请求
+  aliases:
+  - 通知
+  - notification
+  - request
+  tags:
+  - notification
+  - 通知
+  mode: write
+  code_access: write
+  permission: ANY
+  risk: high
+  enabled: true
+  params:
+    requestId:
+      in: path
+      type: string
+      required: true
+    $body:
+      in: body
+      type: object
+- id: thingsboard.delete.notification_rule_by_ruleid
+  service: thingsboard
+  method: DELETE
+  path: /api/notification/rule/{ruleId}
+  summary: 删除通知规则
+  aliases:
+  - 通知
+  - notification
+  - rule
+  tags:
+  - notification
+  - 通知
+  mode: write
+  code_access: write
+  permission: ANY
+  risk: high
+  enabled: true
+  params:
+    ruleId:
+      in: path
+      type: string
+      required: true
+    $body:
+      in: body
+      type: object
+- id: thingsboard.delete.notification_target_by_targetid
+  service: thingsboard
+  method: DELETE
+  path: /api/notification/target/{targetId}
+  summary: 删除收件人组
+  aliases:
+  - 通知
+  - notification
+  - target
+  tags:
+  - notification
+  - 通知
+  mode: write
+  code_access: write
+  permission: ANY
+  risk: high
+  enabled: true
+  params:
+    targetId:
+      in: path
+      type: string
+      required: true
+    $body:
+      in: body
+      type: object
+- id: thingsboard.delete.notification_template_by_templateid
+  service: thingsboard
+  method: DELETE
+  path: /api/notification/template/{templateId}
+  summary: 删除模板
+  aliases:
+  - 通知
+  - notification
+  - template
+  tags:
+  - notification
+  - 通知
+  mode: write
+  code_access: write
+  permission: ANY
+  risk: high
+  enabled: true
+  params:
+    templateId:
+      in: path
+      type: string
+      required: true
+    $body:
+      in: body
+      type: object
+- id: thingsboard.delete.relation
+  service: thingsboard
+  method: DELETE
+  path: /api/relation
+  summary: 删除设备关系
+  aliases:
+  - 实体关系
+  - relation
+  tags:
+  - relation
+  - 实体关系
+  mode: write
+  code_access: write
+  permission: TENANT_ADMIN
+  risk: high
+  enabled: true
+  params:
+    $body:
+      in: body
+      type: object
+- id: thingsboard.delete.rpc_persistent_by_rpcid
+  service: thingsboard
+  method: DELETE
+  path: /api/rpc/persistent/{rpcId}
+  summary: 删除RPC
+  aliases:
+  - RPC
+  - rpc
+  - persistent
+  tags:
+  - rpc
+  - RPC
+  mode: write
+  code_access: none
+  permission: TENANT_ADMIN
+  risk: high
+  enabled: false
+  params:
+    rpcId:
+      in: path
+      type: string
+      required: true
+    $body:
+      in: body
+      type: object
+- id: thingsboard.delete.rulechain_by_rulechainid
+  service: thingsboard
+  method: DELETE
+  path: /api/ruleChain/{ruleChainId}
+  summary: 删除规则链
+  aliases:
+  - 规则链
+  - ruleChain
+  tags:
+  - ruleChain
+  - 规则链
+  mode: write
+  code_access: write
+  permission: TENANT_ADMIN
+  risk: high
+  enabled: true
+  params:
+    ruleChainId:
+      in: path
+      type: string
+      required: true
+    $body:
+      in: body
+      type: object
+- id: thingsboard.delete.tenantprofile_by_tenantprofileid
+  service: thingsboard
+  method: DELETE
+  path: /api/tenantProfile/{tenantProfileId}
+  summary: 删除租户配置
+  aliases:
+  - 租户配置
+  - tenantProfile
+  tags:
+  - tenantProfile
+  - 租户配置
+  mode: write
+  code_access: write
+  permission: SYS_ADMIN
+  risk: high
+  enabled: true
+  params:
+    tenantProfileId:
+      in: path
+      type: string
+      required: true
+    $body:
+      in: body
+      type: object
+- id: thingsboard.get.alarm_by_alarmid
+  service: thingsboard
+  method: GET
+  path: /api/alarm/{alarmId}
+  summary: 查询告警
+  aliases:
+  - 告警
+  - alarm
+  tags:
+  - alarm
+  - 告警
+  mode: read
+  code_access: read
+  permission: ANY
+  risk: low
+  enabled: true
+  params:
+    alarmId:
+      in: path
+      type: string
+      required: true
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+- id: thingsboard.get.alarm_by_alarmid_comment
+  service: thingsboard
+  method: GET
+  path: /api/alarm/{alarmId}/comment
+  summary: 查询告警
+  aliases:
+  - 告警
+  - alarm
+  - comment
+  tags:
+  - alarm
+  - 告警
+  mode: read
+  code_access: read
+  permission: ANY
+  risk: low
+  enabled: true
+  params:
+    alarmId:
+      in: path
+      type: string
+      required: true
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+- id: thingsboard.get.alarm_by_entitytype_by_entityid
+  service: thingsboard
+  method: GET
+  path: /api/alarm/{entityType}/{entityId}
+  summary: 查询设备告警
+  aliases:
+  - 告警
+  - alarm
+  tags:
+  - alarm
+  - 告警
+  mode: read
+  code_access: read
+  permission: ANY
+  risk: low
+  enabled: true
+  params:
+    entityType:
+      in: path
+      type: string
+      required: true
+      default: DEVICE
+      enum:
+      - DEVICE
+      - ASSET
+    entityId:
+      in: path
+      type: string
+      required: true
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+- id: thingsboard.get.alarm_highestseverity_by_entitytype_by_entityid
+  service: thingsboard
+  method: GET
+  path: /api/alarm/highestSeverity/{entityType}/{entityId}
+  summary: 查询告警
+  aliases:
+  - 告警
+  - alarm
+  - highestSeverity
+  tags:
+  - alarm
+  - 告警
+  mode: read
+  code_access: read
+  permission: ANY
+  risk: low
+  enabled: true
+  params:
+    entityType:
+      in: path
+      type: string
+      required: true
+      default: DEVICE
+      enum:
+      - DEVICE
+      - ASSET
+    entityId:
+      in: path
+      type: string
+      required: true
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+- id: thingsboard.get.alarm_info_by_alarmid
+  service: thingsboard
+  method: GET
+  path: /api/alarm/info/{alarmId}
+  summary: 查询告警
+  aliases:
+  - 告警
+  - alarm
+  - info
+  tags:
+  - alarm
+  - 告警
+  mode: read
+  code_access: read
+  permission: ANY
+  risk: low
+  enabled: true
+  params:
+    alarmId:
+      in: path
+      type: string
+      required: true
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+- id: thingsboard.get.alarm_rule_by_alarmruleid
+  service: thingsboard
+  method: GET
+  path: /api/alarm/rule/{alarmRuleId}
+  summary: 查询告警规则详情
+  aliases:
+  - 告警
+  - alarm
+  - rule
+  tags:
+  - alarm
+  - 告警
+  mode: read
+  code_access: read
+  permission: ANY
+  risk: low
+  enabled: true
+  params:
+    alarmRuleId:
+      in: path
+      type: string
+      required: true
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+- id: thingsboard.get.alarm_rule_by_alarmruleid_debug
+  service: thingsboard
+  method: GET
+  path: /api/alarm/rule/{alarmRuleId}/debug
+  summary: 查询最近调试事件
+  aliases:
+  - 告警
+  - alarm
+  - rule
+  - debug
+  tags:
+  - alarm
+  - 告警
+  mode: read
+  code_access: read
+  permission: ANY
+  risk: low
+  enabled: true
+  params:
+    alarmRuleId:
+      in: path
+      type: string
+      required: true
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+- id: thingsboard.get.alarm_rules
+  service: thingsboard
+  method: GET
+  path: /api/alarm/rules
+  summary: 查询告警规则
+  aliases:
+  - 告警
+  - alarm
+  - rules
+  tags:
+  - alarm
+  - 告警
+  mode: read
+  code_access: read
+  permission: ANY
+  risk: low
+  enabled: true
+  params:
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+    textSearch:
+      in: query
+      type: string
+- id: thingsboard.get.alarm_rules_by_entitytype_by_entityid
+  service: thingsboard
+  method: GET
+  path: /api/alarm/rules/{entityType}/{entityId}
+  summary: 查询实体告警规则
+  aliases:
+  - 告警
+  - alarm
+  - rules
+  tags:
+  - alarm
+  - 告警
+  mode: read
+  code_access: read
+  permission: ANY
+  risk: low
+  enabled: true
+  params:
+    entityType:
+      in: path
+      type: string
+      required: true
+      default: DEVICE
+      enum:
+      - DEVICE
+      - ASSET
+    entityId:
+      in: path
+      type: string
+      required: true
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+- id: thingsboard.get.alarm_rules_names
+  service: thingsboard
+  method: GET
+  path: /api/alarm/rules/names
+  summary: 查询告警规则名称
+  aliases:
+  - 告警
+  - alarm
+  - rules
+  - names
+  tags:
+  - alarm
+  - 告警
+  mode: read
+  code_access: read
+  permission: ANY
+  risk: low
+  enabled: true
+  params:
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+    textSearch:
+      in: query
+      type: string
+- id: thingsboard.get.alarm_types
+  service: thingsboard
+  method: GET
+  path: /api/alarm/types
+  summary: 查询告警
+  aliases:
+  - 告警
+  - alarm
+  - types
+  tags:
+  - alarm
+  - 告警
+  mode: read
+  code_access: read
+  permission: ANY
+  risk: low
+  enabled: true
+  params:
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+    textSearch:
+      in: query
+      type: string
+- id: thingsboard.get.alarms
+  service: thingsboard
+  method: GET
+  path: /api/alarms
+  summary: 查询告警
+  aliases:
+  - 告警
+  - alarms
+  tags:
+  - alarms
+  - 告警
+  mode: read
+  code_access: read
+  permission: ANY
+  risk: low
+  enabled: true
+  params:
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+    textSearch:
+      in: query
+      type: string
+- id: thingsboard.get.apikeys_by_userid
+  service: thingsboard
+  method: GET
+  path: /api/apiKeys/{userId}
+  summary: 查询用户 API 密钥
+  aliases:
+  - API 密钥
+  - apiKeys
+  tags:
+  - apiKeys
+  - API 密钥
+  mode: read
+  code_access: none
+  permission: TENANT_ADMIN
+  risk: high
+  enabled: false
+  params:
+    userId:
+      in: path
+      type: string
+      required: true
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+- id: thingsboard.get.asset_by_assetid
+  service: thingsboard
+  method: GET
+  path: /api/asset/{assetId}
+  summary: 查询资产详情
+  aliases:
+  - 资产
+  - asset
+  tags:
+  - asset
+  - 资产
+  mode: read
+  code_access: read
+  permission: TENANT_ADMIN
+  risk: low
+  enabled: true
+  params:
+    assetId:
+      in: path
+      type: string
+      required: true
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+- id: thingsboard.get.assetprofile_by_assetprofileid
+  service: thingsboard
+  method: GET
+  path: /api/assetProfile/{assetProfileId}
+  summary: 查询资产配置详情
+  aliases:
+  - 资产配置
+  - assetProfile
+  tags:
+  - assetProfile
+  - 资产配置
+  mode: read
+  code_access: read
+  permission: TENANT_ADMIN
+  risk: low
+  enabled: true
+  params:
+    assetProfileId:
+      in: path
+      type: string
+      required: true
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+- id: thingsboard.get.assetprofileinfo_default
+  service: thingsboard
+  method: GET
+  path: /api/assetProfileInfo/default
+  summary: 查询默认资产配置
+  aliases:
+  - 资产配置
+  - assetProfileInfo
+  - default
+  tags:
+  - assetProfileInfo
+  - 资产配置
+  mode: read
+  code_access: read
+  permission: TENANT_ADMIN
+  risk: low
+  enabled: true
+  params:
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+    textSearch:
+      in: query
+      type: string
+- id: thingsboard.get.assetprofiles
+  service: thingsboard
+  method: GET
+  path: /api/assetProfiles
+  summary: 查询资产配置列表
+  aliases:
+  - 资产配置
+  - assetProfiles
+  tags:
+  - assetProfiles
+  - 资产配置
+  mode: read
+  code_access: read
+  permission: TENANT_ADMIN
+  risk: low
+  enabled: true
+  params:
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+    textSearch:
+      in: query
+      type: string
+- id: thingsboard.get.auth_user
+  service: thingsboard
+  method: GET
+  path: /api/auth/user
+  summary: 查询用户
+  aliases:
+  - 用户
+  - auth
+  - user
+  tags:
+  - auth
+  - 用户
+  mode: read
+  code_access: read
+  permission: ANY
+  risk: low
+  enabled: true
+  params:
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+    textSearch:
+      in: query
+      type: string
+- id: thingsboard.get.by_entitytype_by_entityid_calculatedfields
+  service: thingsboard
+  method: GET
+  path: /api/{entityType}/{entityId}/calculatedFields
+  summary: 查询计算字段
+  aliases:
+  - 计算字段
+  - calculatedFields
+  tags:
+  - calculatedFields
+  - 计算字段
+  mode: read
+  code_access: read
+  permission: TENANT_ADMIN
+  risk: low
+  enabled: true
+  params:
+    entityType:
+      in: path
+      type: string
+      required: true
+      default: DEVICE
+      enum:
+      - DEVICE
+      - ASSET
+    entityId:
+      in: path
+      type: string
+      required: true
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+- id: thingsboard.get.calculatedfield_by_calculatedfieldid
+  service: thingsboard
+  method: GET
+  path: /api/calculatedField/{calculatedFieldId}
+  summary: 查询计算字段
+  aliases:
+  - 计算字段
+  - calculatedField
+  tags:
+  - calculatedField
+  - 计算字段
+  mode: read
+  code_access: read
+  permission: TENANT_ADMIN
+  risk: low
+  enabled: true
+  params:
+    calculatedFieldId:
+      in: path
+      type: string
+      required: true
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+- id: thingsboard.get.calculatedfield_by_calculatedfieldid_debug
+  service: thingsboard
+  method: GET
+  path: /api/calculatedField/{calculatedFieldId}/debug
+  summary: 查询计算字段
+  aliases:
+  - 计算字段
+  - calculatedField
+  - debug
+  tags:
+  - calculatedField
+  - 计算字段
+  mode: read
+  code_access: read
+  permission: TENANT_ADMIN
+  risk: low
+  enabled: true
+  params:
+    calculatedFieldId:
+      in: path
+      type: string
+      required: true
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+- id: thingsboard.get.calculatedfields
+  service: thingsboard
+  method: GET
+  path: /api/calculatedFields
+  summary: 查询计算字段
+  aliases:
+  - 计算字段
+  - calculatedFields
+  tags:
+  - calculatedFields
+  - 计算字段
+  mode: read
+  code_access: read
+  permission: TENANT_ADMIN
+  risk: low
+  enabled: true
+  params:
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+    textSearch:
+      in: query
+      type: string
+- id: thingsboard.get.calculatedfields_names
+  service: thingsboard
+  method: GET
+  path: /api/calculatedFields/names
+  summary: 查询计算字段
+  aliases:
+  - 计算字段
+  - calculatedFields
+  - names
+  tags:
+  - calculatedFields
+  - 计算字段
+  mode: read
+  code_access: read
+  permission: TENANT_ADMIN
+  risk: low
+  enabled: true
+  params:
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+    textSearch:
+      in: query
+      type: string
+- id: thingsboard.get.customer_by_customerid
+  service: thingsboard
+  method: GET
+  path: /api/customer/{customerId}
+  summary: 查询客户详情
+  aliases:
+  - 客户
+  - customer
+  tags:
+  - customer
+  - 客户
+  mode: read
+  code_access: read
+  permission: TENANT_ADMIN
+  risk: low
+  enabled: true
+  params:
+    customerId:
+      in: path
+      type: string
+      required: true
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+- id: thingsboard.get.customer_by_customerid_users
+  service: thingsboard
+  method: GET
+  path: /api/customer/{customerId}/users
+  summary: 查询客户用户
+  aliases:
+  - 客户
+  - customer
+  - users
+  tags:
+  - customer
+  - 客户
+  mode: read
+  code_access: read
+  permission: TENANT_ADMIN
+  risk: low
+  enabled: true
+  params:
+    customerId:
+      in: path
+      type: string
+      required: true
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+- id: thingsboard.get.customers
+  service: thingsboard
+  method: GET
+  path: /api/customers
+  summary: 查询客户列表
+  aliases:
+  - 客户
+  - customers
+  tags:
+  - customers
+  - 客户
+  mode: read
+  code_access: read
+  permission: TENANT_ADMIN
+  risk: low
+  enabled: true
+  params:
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+    textSearch:
+      in: query
+      type: string
+- id: thingsboard.get.device_bulk_import
+  service: thingsboard
+  method: GET
+  path: /api/device/bulk_import
+  summary: 查询批量导入结果
+  aliases:
+  - 设备
+  - device
+  - bulk_import
+  tags:
+  - device
+  - 设备
+  mode: read
+  code_access: none
+  permission: TENANT_ADMIN
+  risk: high
+  enabled: false
+  params:
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+    textSearch:
+      in: query
+      type: string
+- id: thingsboard.get.device_by_deviceid
+  service: thingsboard
+  method: GET
+  path: /api/device/{deviceId}
+  summary: 查询设备详情
+  aliases:
+  - 设备
+  - device
+  tags:
+  - device
+  - 设备
+  mode: read
+  code_access: read
+  permission: TENANT_ADMIN
+  risk: low
+  enabled: true
+  params:
+    deviceId:
+      in: path
+      type: string
+      required: true
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+- id: thingsboard.get.device_by_deviceid_credentials
+  service: thingsboard
+  method: GET
+  path: /api/device/{deviceId}/credentials
+  summary: 查询网关凭据
+  aliases:
+  - 设备
+  - device
+  - credentials
+  tags:
+  - device
+  - 设备
+  mode: read
+  code_access: none
+  permission: TENANT_ADMIN
+  risk: high
+  enabled: false
+  params:
+    deviceId:
+      in: path
+      type: string
+      required: true
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+- id: thingsboard.get.device_connectivity_device_connectivity_info
+  service: thingsboard
+  method: GET
+  path: /api/device-connectivity/device-connectivity-info
+  summary: 查询连接性信息
+  aliases:
+  - 设备
+  - device-connectivity
+  - device-connectivity-info
+  tags:
+  - device-connectivity
+  - 设备
+  mode: read
+  code_access: read
+  permission: ANY
+  risk: low
+  enabled: true
+  params:
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+    textSearch:
+      in: query
+      type: string
+- id: thingsboard.get.device_info_by_deviceid
+  service: thingsboard
+  method: GET
+  path: /api/device/info/{deviceId}
+  summary: 查询设备信息
+  aliases:
+  - 设备
+  - device
+  - info
+  tags:
+  - device
+  - 设备
+  mode: read
+  code_access: read
+  permission: TENANT_ADMIN
+  risk: low
+  enabled: true
+  params:
+    deviceId:
+      in: path
+      type: string
+      required: true
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+- id: thingsboard.get.deviceprofile_by_deviceprofileid
+  service: thingsboard
+  method: GET
+  path: /api/deviceProfile/{deviceProfileId}
+  summary: 查询产品配置详情
+  aliases:
+  - 设备配置
+  - deviceProfile
+  tags:
+  - deviceProfile
+  - 设备配置
+  mode: read
+  code_access: read
+  permission: TENANT_ADMIN
+  risk: low
+  enabled: true
+  params:
+    deviceProfileId:
+      in: path
+      type: string
+      required: true
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+- id: thingsboard.get.deviceprofiles
+  service: thingsboard
+  method: GET
+  path: /api/deviceProfiles
+  summary: 查询产品配置列表
+  aliases:
+  - 设备配置
+  - deviceProfiles
+  tags:
+  - deviceProfiles
+  - 设备配置
+  mode: read
+  code_access: read
+  permission: TENANT_ADMIN
+  risk: low
+  enabled: true
+  params:
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+    textSearch:
+      in: query
+      type: string
+- id: thingsboard.get.events
+  service: thingsboard
+  method: GET
+  path: /api/events
+  summary: 查询设备事件
+  aliases:
+  - 事件
+  - events
+  tags:
+  - events
+  - 事件
+  mode: read
+  code_access: read
+  permission: ANY
+  risk: low
+  enabled: true
+  params:
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+    textSearch:
+      in: query
+      type: string
+    entityType:
+      in: query
+      type: string
+      default: DEVICE
+    entityId:
+      in: query
+      type: string
+      required: true
+- id: thingsboard.get.notification_deliverymethods
+  service: thingsboard
+  method: GET
+  path: /api/notification/deliveryMethods
+  summary: 查询可用发送方式
+  aliases:
+  - 通知
+  - notification
+  - deliveryMethods
+  tags:
+  - notification
+  - 通知
+  mode: read
+  code_access: read
+  permission: ANY
+  risk: low
+  enabled: true
+  params:
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+    textSearch:
+      in: query
+      type: string
+- id: thingsboard.get.notification_request_by_requestid
+  service: thingsboard
+  method: GET
+  path: /api/notification/request/{requestId}
+  summary: 查询发送请求
+  aliases:
+  - 通知
+  - notification
+  - request
+  tags:
+  - notification
+  - 通知
+  mode: read
+  code_access: read
+  permission: ANY
+  risk: low
+  enabled: true
+  params:
+    requestId:
+      in: path
+      type: string
+      required: true
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+- id: thingsboard.get.notification_requests
+  service: thingsboard
+  method: GET
+  path: /api/notification/requests
+  summary: 查询发送记录
+  aliases:
+  - 通知
+  - notification
+  - requests
+  tags:
+  - notification
+  - 通知
+  mode: read
+  code_access: read
+  permission: ANY
+  risk: low
+  enabled: true
+  params:
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+    textSearch:
+      in: query
+      type: string
+- id: thingsboard.get.notification_rule_by_ruleid
+  service: thingsboard
+  method: GET
+  path: /api/notification/rule/{ruleId}
+  summary: 查询通知规则详情
+  aliases:
+  - 通知
+  - notification
+  - rule
+  tags:
+  - notification
+  - 通知
+  mode: read
+  code_access: read
+  permission: ANY
+  risk: low
+  enabled: true
+  params:
+    ruleId:
+      in: path
+      type: string
+      required: true
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+- id: thingsboard.get.notification_rules
+  service: thingsboard
+  method: GET
+  path: /api/notification/rules
+  summary: 查询通知规则
+  aliases:
+  - 通知
+  - notification
+  - rules
+  tags:
+  - notification
+  - 通知
+  mode: read
+  code_access: read
+  permission: ANY
+  risk: low
+  enabled: true
+  params:
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+    textSearch:
+      in: query
+      type: string
+- id: thingsboard.get.notification_settings
+  service: thingsboard
+  method: GET
+  path: /api/notification/settings
+  summary: 查询系统通知设置
+  aliases:
+  - 通知
+  - notification
+  - settings
+  tags:
+  - notification
+  - 通知
+  mode: read
+  code_access: read
+  permission: ANY
+  risk: low
+  enabled: true
+  params:
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+    textSearch:
+      in: query
+      type: string
+- id: thingsboard.get.notification_settings_user
+  service: thingsboard
+  method: GET
+  path: /api/notification/settings/user
+  summary: 查询个人通知设置
+  aliases:
+  - 通知
+  - notification
+  - settings
+  - user
+  tags:
+  - notification
+  - 通知
+  mode: read
+  code_access: read
+  permission: ANY
+  risk: low
+  enabled: true
+  params:
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+    textSearch:
+      in: query
+      type: string
+- id: thingsboard.get.notification_slack_conversations
+  service: thingsboard
+  method: GET
+  path: /api/notification/slack/conversations
+  summary: 查询 Slack 会话
+  aliases:
+  - 通知
+  - notification
+  - slack
+  - conversations
+  tags:
+  - notification
+  - 通知
+  mode: read
+  code_access: read
+  permission: ANY
+  risk: low
+  enabled: true
+  params:
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+    textSearch:
+      in: query
+      type: string
+- id: thingsboard.get.notification_target_by_targetid
+  service: thingsboard
+  method: GET
+  path: /api/notification/target/{targetId}
+  summary: 查询收件人组详情
+  aliases:
+  - 通知
+  - notification
+  - target
+  tags:
+  - notification
+  - 通知
+  mode: read
+  code_access: read
+  permission: ANY
+  risk: low
+  enabled: true
+  params:
+    targetId:
+      in: path
+      type: string
+      required: true
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+- id: thingsboard.get.notification_targets
+  service: thingsboard
+  method: GET
+  path: /api/notification/targets
+  summary: 查询收件人组
+  aliases:
+  - 通知
+  - notification
+  - targets
+  tags:
+  - notification
+  - 通知
+  mode: read
+  code_access: read
+  permission: ANY
+  risk: low
+  enabled: true
+  params:
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+    textSearch:
+      in: query
+      type: string
+- id: thingsboard.get.notification_template_by_templateid
+  service: thingsboard
+  method: GET
+  path: /api/notification/template/{templateId}
+  summary: 查询模板详情
+  aliases:
+  - 通知
+  - notification
+  - template
+  tags:
+  - notification
+  - 通知
+  mode: read
+  code_access: read
+  permission: ANY
+  risk: low
+  enabled: true
+  params:
+    templateId:
+      in: path
+      type: string
+      required: true
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+- id: thingsboard.get.notification_templates
+  service: thingsboard
+  method: GET
+  path: /api/notification/templates
+  summary: 查询模板
+  aliases:
+  - 通知
+  - notification
+  - templates
+  tags:
+  - notification
+  - 通知
+  mode: read
+  code_access: read
+  permission: ANY
+  risk: low
+  enabled: true
+  params:
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+    textSearch:
+      in: query
+      type: string
+- id: thingsboard.get.notifications
+  service: thingsboard
+  method: GET
+  path: /api/notifications
+  summary: 查询通知
+  aliases:
+  - 通知
+  - notifications
+  tags:
+  - notifications
+  - 通知
+  mode: read
+  code_access: read
+  permission: ANY
+  risk: low
+  enabled: true
+  params:
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+    textSearch:
+      in: query
+      type: string
+- id: thingsboard.get.plugins_telemetry_by_entitytype_by_entityid_keys_timeseries
+  service: thingsboard
+  method: GET
+  path: /api/plugins/telemetry/{entityType}/{entityId}/keys/timeseries
+  summary: 查询遥测键
+  aliases:
+  - 遥测数据
+  - plugins
+  - telemetry
+  - keys
+  - timeseries
+  tags:
+  - plugins
+  - 遥测数据
+  mode: read
+  code_access: read
+  permission: ANY
+  risk: low
+  enabled: true
+  params:
+    entityType:
+      in: path
+      type: string
+      required: true
+      default: DEVICE
+      enum:
+      - DEVICE
+      - ASSET
+    entityId:
+      in: path
+      type: string
+      required: true
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+    keys:
+      in: query
+      type: string
+    startTs:
+      in: query
+      type: integer
+    endTs:
+      in: query
+      type: integer
+    interval:
+      in: query
+      type: integer
+    limit:
+      in: query
+      type: integer
+    agg:
+      in: query
+      type: string
+    useStrictDataTypes:
+      in: query
+      type: boolean
+- id: thingsboard.get.plugins_telemetry_by_entitytype_by_entityid_values_attributes
+  service: thingsboard
+  method: GET
+  path: /api/plugins/telemetry/{entityType}/{entityId}/values/attributes
+  summary: 查询实体属性数据
+  aliases:
+  - 遥测数据
+  - plugins
+  - telemetry
+  - values
+  - attributes
+  tags:
+  - plugins
+  - 遥测数据
+  mode: read
+  code_access: read
+  permission: ANY
+  risk: low
+  enabled: true
+  params:
+    entityType:
+      in: path
+      type: string
+      required: true
+      default: DEVICE
+      enum:
+      - DEVICE
+      - ASSET
+    entityId:
+      in: path
+      type: string
+      required: true
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+    keys:
+      in: query
+      type: string
+    startTs:
+      in: query
+      type: integer
+    endTs:
+      in: query
+      type: integer
+    interval:
+      in: query
+      type: integer
+    limit:
+      in: query
+      type: integer
+    agg:
+      in: query
+      type: string
+    useStrictDataTypes:
+      in: query
+      type: boolean
+- id: thingsboard.get.plugins_telemetry_by_entitytype_by_entityid_values_timeseries
+  service: thingsboard
+  method: GET
+  path: /api/plugins/telemetry/{entityType}/{entityId}/values/timeseries
+  summary: 查询最新或历史遥测数据
+  aliases:
+  - 遥测数据
+  - plugins
+  - telemetry
+  - values
+  - timeseries
+  tags:
+  - plugins
+  - 遥测数据
+  mode: read
+  code_access: read
+  permission: ANY
+  risk: low
+  enabled: true
+  params:
+    entityType:
+      in: path
+      type: string
+      required: true
+      default: DEVICE
+      enum:
+      - DEVICE
+      - ASSET
+    entityId:
+      in: path
+      type: string
+      required: true
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+    keys:
+      in: query
+      type: string
+    startTs:
+      in: query
+      type: integer
+    endTs:
+      in: query
+      type: integer
+    interval:
+      in: query
+      type: integer
+    limit:
+      in: query
+      type: integer
+    agg:
+      in: query
+      type: string
+    useStrictDataTypes:
+      in: query
+      type: boolean
+- id: thingsboard.get.relations
+  service: thingsboard
+  method: GET
+  path: /api/relations
+  summary: 查询设备关系
+  aliases:
+  - 实体关系
+  - relations
+  tags:
+  - relations
+  - 实体关系
+  mode: read
+  code_access: read
+  permission: ANY
+  risk: low
+  enabled: true
+  params:
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+    textSearch:
+      in: query
+      type: string
+    fromId:
+      in: query
+      type: string
+      required: true
+    fromType:
+      in: query
+      type: string
+      required: true
+    relationType:
+      in: query
+      type: string
+    toId:
+      in: query
+      type: string
+    toType:
+      in: query
+      type: string
+- id: thingsboard.get.rpc_persistent_by_rpcid
+  service: thingsboard
+  method: GET
+  path: /api/rpc/persistent/{rpcId}
+  summary: 查询RPC
+  aliases:
+  - RPC
+  - rpc
+  - persistent
+  tags:
+  - rpc
+  - RPC
+  mode: read
+  code_access: none
+  permission: TENANT_ADMIN
+  risk: high
+  enabled: false
+  params:
+    rpcId:
+      in: path
+      type: string
+      required: true
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+- id: thingsboard.get.rpc_persistent_device_by_deviceid
+  service: thingsboard
+  method: GET
+  path: /api/rpc/persistent/device/{deviceId}
+  summary: 查询设备
+  aliases:
+  - 设备
+  - rpc
+  - persistent
+  - device
+  tags:
+  - rpc
+  - 设备
+  mode: read
+  code_access: none
+  permission: TENANT_ADMIN
+  risk: high
+  enabled: false
+  params:
+    deviceId:
+      in: path
+      type: string
+      required: true
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+- id: thingsboard.get.rulechain_by_rulechainid
+  service: thingsboard
+  method: GET
+  path: /api/ruleChain/{ruleChainId}
+  summary: 查询规则链详情
+  aliases:
+  - 规则链
+  - ruleChain
+  tags:
+  - ruleChain
+  - 规则链
+  mode: read
+  code_access: read
+  permission: TENANT_ADMIN
+  risk: low
+  enabled: true
+  params:
+    ruleChainId:
+      in: path
+      type: string
+      required: true
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+- id: thingsboard.get.rulechain_by_rulechainid_metadata
+  service: thingsboard
+  method: GET
+  path: /api/ruleChain/{ruleChainId}/metadata
+  summary: 查询规则链节点和连接
+  aliases:
+  - 规则链
+  - ruleChain
+  - metadata
+  tags:
+  - ruleChain
+  - 规则链
+  mode: read
+  code_access: read
+  permission: TENANT_ADMIN
+  risk: low
+  enabled: true
+  params:
+    ruleChainId:
+      in: path
+      type: string
+      required: true
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+- id: thingsboard.get.rulechain_by_rulechainid_output_labels
+  service: thingsboard
+  method: GET
+  path: /api/ruleChain/{ruleChainId}/output/labels
+  summary: 查询规则链输出标签
+  aliases:
+  - 规则链
+  - ruleChain
+  - output
+  - labels
+  tags:
+  - ruleChain
+  - 规则链
+  mode: read
+  code_access: read
+  permission: TENANT_ADMIN
+  risk: low
+  enabled: true
+  params:
+    ruleChainId:
+      in: path
+      type: string
+      required: true
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+- id: thingsboard.get.rulechains
+  service: thingsboard
+  method: GET
+  path: /api/ruleChains
+  summary: 查询规则链列表
+  aliases:
+  - 规则链
+  - ruleChains
+  tags:
+  - ruleChains
+  - 规则链
+  mode: read
+  code_access: read
+  permission: TENANT_ADMIN
+  risk: low
+  enabled: true
+  params:
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+    textSearch:
+      in: query
+      type: string
+- id: thingsboard.get.rulenode_by_rulenodeid_debugin
+  service: thingsboard
+  method: GET
+  path: /api/ruleNode/{ruleNodeId}/debugIn
+  summary: 查询规则节点
+  aliases:
+  - 规则节点
+  - ruleNode
+  - debugIn
+  tags:
+  - ruleNode
+  - 规则节点
+  mode: read
+  code_access: read
+  permission: TENANT_ADMIN
+  risk: low
+  enabled: true
+  params:
+    ruleNodeId:
+      in: path
+      type: string
+      required: true
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+- id: thingsboard.get.tenant
+  service: thingsboard
+  method: GET
+  path: /api/tenant
+  summary: 查询租户
+  aliases:
+  - 租户
+  - tenant
+  tags:
+  - tenant
+  - 租户
+  mode: read
+  code_access: read
+  permission: SYS_ADMIN
+  risk: low
+  enabled: true
+  params:
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+    textSearch:
+      in: query
+      type: string
+- id: thingsboard.get.tenant_assets
+  service: thingsboard
+  method: GET
+  path: /api/tenant/assets
+  summary: 查询租户资产
+  aliases:
+  - 资产
+  - tenant
+  - assets
+  tags:
+  - tenant
+  - 资产
+  mode: read
+  code_access: read
+  permission: TENANT_ADMIN
+  risk: low
+  enabled: true
+  params:
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+    textSearch:
+      in: query
+      type: string
+    assetName:
+      in: query
+      type: string
+- id: thingsboard.get.tenant_by_tenantid
+  service: thingsboard
+  method: GET
+  path: /api/tenant/{tenantId}
+  summary: 查询租户详情
+  aliases:
+  - 租户
+  - tenant
+  tags:
+  - tenant
+  - 租户
+  mode: read
+  code_access: read
+  permission: SYS_ADMIN
+  risk: low
+  enabled: true
+  params:
+    tenantId:
+      in: path
+      type: string
+      required: true
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+  tenant_param: tenantId
+- id: thingsboard.get.tenant_by_tenantid_users
+  service: thingsboard
+  method: GET
+  path: /api/tenant/{tenantId}/users
+  summary: 查询租户管理员
+  aliases:
+  - 租户
+  - tenant
+  - users
+  tags:
+  - tenant
+  - 租户
+  mode: read
+  code_access: read
+  permission: SYS_ADMIN
+  risk: low
+  enabled: true
+  params:
+    tenantId:
+      in: path
+      type: string
+      required: true
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+  tenant_param: tenantId
+- id: thingsboard.get.tenant_deviceinfos
+  service: thingsboard
+  method: GET
+  path: /api/tenant/deviceInfos
+  summary: 查询设备信息
+  aliases:
+  - 设备
+  - tenant
+  - deviceInfos
+  tags:
+  - tenant
+  - 设备
+  mode: read
+  code_access: read
+  permission: TENANT_ADMIN
+  risk: low
+  enabled: true
+  params:
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+    textSearch:
+      in: query
+      type: string
+- id: thingsboard.get.tenant_info_by_tenantid
+  service: thingsboard
+  method: GET
+  path: /api/tenant/info/{tenantId}
+  summary: 查询租户信息
+  aliases:
+  - 租户
+  - tenant
+  - info
+  tags:
+  - tenant
+  - 租户
+  mode: read
+  code_access: read
+  permission: TENANT_ADMIN
+  risk: low
+  enabled: true
+  params:
+    tenantId:
+      in: path
+      type: string
+      required: true
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+  tenant_param: tenantId
+- id: thingsboard.get.tenantinfos
+  service: thingsboard
+  method: GET
+  path: /api/tenantInfos
+  summary: 查询租户信息列表
+  aliases:
+  - 租户
+  - tenantInfos
+  tags:
+  - tenantInfos
+  - 租户
+  mode: read
+  code_access: read
+  permission: SYS_ADMIN
+  risk: low
+  enabled: true
+  params:
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+    textSearch:
+      in: query
+      type: string
+- id: thingsboard.get.tenantprofile_by_tenantprofileid
+  service: thingsboard
+  method: GET
+  path: /api/tenantProfile/{tenantProfileId}
+  summary: 查询租户配置详情
+  aliases:
+  - 租户配置
+  - tenantProfile
+  tags:
+  - tenantProfile
+  - 租户配置
+  mode: read
+  code_access: read
+  permission: SYS_ADMIN
+  risk: low
+  enabled: true
+  params:
+    tenantProfileId:
+      in: path
+      type: string
+      required: true
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+- id: thingsboard.get.tenantprofileinfo_default
+  service: thingsboard
+  method: GET
+  path: /api/tenantProfileInfo/default
+  summary: 查询默认租户配置
+  aliases:
+  - 租户配置
+  - tenantProfileInfo
+  - default
+  tags:
+  - tenantProfileInfo
+  - 租户配置
+  mode: read
+  code_access: read
+  permission: SYS_ADMIN
+  risk: low
+  enabled: true
+  params:
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+    textSearch:
+      in: query
+      type: string
+- id: thingsboard.get.tenantprofiles
+  service: thingsboard
+  method: GET
+  path: /api/tenantProfiles
+  summary: 查询租户配置
+  aliases:
+  - 租户配置
+  - tenantProfiles
+  tags:
+  - tenantProfiles
+  - 租户配置
+  mode: read
+  code_access: read
+  permission: SYS_ADMIN
+  risk: low
+  enabled: true
+  params:
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+    textSearch:
+      in: query
+      type: string
+- id: thingsboard.get.user_by_userid
+  service: thingsboard
+  method: GET
+  path: /api/user/{userId}
+  summary: 查询用户详情
+  aliases:
+  - 用户
+  - user
+  tags:
+  - user
+  - 用户
+  mode: read
+  code_access: read
+  permission: TENANT_ADMIN
+  risk: low
+  enabled: true
+  params:
+    userId:
+      in: path
+      type: string
+      required: true
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+- id: thingsboard.get.user_by_userid_activationlink
+  service: thingsboard
+  method: GET
+  path: /api/user/{userId}/activationLink
+  summary: 获取激活链接文本
+  aliases:
+  - 用户
+  - user
+  - activationLink
+  tags:
+  - user
+  - 用户
+  mode: read
+  code_access: none
+  permission: TENANT_ADMIN
+  risk: high
+  enabled: false
+  params:
+    userId:
+      in: path
+      type: string
+      required: true
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+- id: thingsboard.get.user_by_userid_activationlinkinfo
+  service: thingsboard
+  method: GET
+  path: /api/user/{userId}/activationLinkInfo
+  summary: 获取激活链接信息
+  aliases:
+  - 用户
+  - user
+  - activationLinkInfo
+  tags:
+  - user
+  - 用户
+  mode: read
+  code_access: none
+  permission: TENANT_ADMIN
+  risk: high
+  enabled: false
+  params:
+    userId:
+      in: path
+      type: string
+      required: true
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+- id: thingsboard.get.users
+  service: thingsboard
+  method: GET
+  path: /api/users
+  summary: 查询用户
+  aliases:
+  - 用户
+  - users
+  tags:
+  - users
+  - 用户
+  mode: read
+  code_access: read
+  permission: TENANT_ADMIN
+  risk: low
+  enabled: true
+  params:
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+    textSearch:
+      in: query
+      type: string
+- id: thingsboard.get.v2_alarms
+  service: thingsboard
+  method: GET
+  path: /api/v2/alarms
+  summary: 查询告警
+  aliases:
+  - 告警
+  - v2
+  - alarms
+  tags:
+  - v2
+  - 告警
+  mode: read
+  code_access: read
+  permission: TENANT_ADMIN
+  risk: low
+  enabled: true
+  params:
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+    textSearch:
+      in: query
+      type: string
+- id: thingsboard.post.alarm_by_alarmid_ack
+  service: thingsboard
+  method: POST
+  path: /api/alarm/{alarmId}/ack
+  summary: 确认告警
+  aliases:
+  - 告警
+  - alarm
+  - ack
+  tags:
+  - alarm
+  - 告警
+  mode: write
+  code_access: write
+  permission: ANY
+  risk: medium
+  enabled: true
+  params:
+    alarmId:
+      in: path
+      type: string
+      required: true
+    $body:
+      in: body
+      type: object
+- id: thingsboard.post.alarm_by_alarmid_assign_by_assigneeid
+  service: thingsboard
+  method: POST
+  path: /api/alarm/{alarmId}/assign/{assigneeId}
+  summary: 创建告警
+  aliases:
+  - 告警
+  - alarm
+  - assign
+  tags:
+  - alarm
+  - 告警
+  mode: write
+  code_access: write
+  permission: ANY
+  risk: medium
+  enabled: true
+  params:
+    alarmId:
+      in: path
+      type: string
+      required: true
+    assigneeId:
+      in: path
+      type: string
+      required: true
+    $body:
+      in: body
+      type: object
+- id: thingsboard.post.alarm_by_alarmid_clear
+  service: thingsboard
+  method: POST
+  path: /api/alarm/{alarmId}/clear
+  summary: 清除告警
+  aliases:
+  - 告警
+  - alarm
+  - clear
+  tags:
+  - alarm
+  - 告警
+  mode: write
+  code_access: write
+  permission: ANY
+  risk: medium
+  enabled: true
+  params:
+    alarmId:
+      in: path
+      type: string
+      required: true
+    $body:
+      in: body
+      type: object
+- id: thingsboard.post.alarm_by_alarmid_comment
+  service: thingsboard
+  method: POST
+  path: /api/alarm/{alarmId}/comment
+  summary: 创建告警
+  aliases:
+  - 告警
+  - alarm
+  - comment
+  tags:
+  - alarm
+  - 告警
+  mode: write
+  code_access: write
+  permission: ANY
+  risk: medium
+  enabled: true
+  params:
+    alarmId:
+      in: path
+      type: string
+      required: true
+    $body:
+      in: body
+      type: object
+- id: thingsboard.post.alarm_rule
+  service: thingsboard
+  method: POST
+  path: /api/alarm/rule
+  summary: 创建或更新告警规则
+  aliases:
+  - 告警
+  - alarm
+  - rule
+  tags:
+  - alarm
+  - 告警
+  mode: write
+  code_access: write
+  permission: ANY
+  risk: medium
+  enabled: true
+  params:
+    $body:
+      in: body
+      type: object
+- id: thingsboard.post.alarm_rule_testscript
+  service: thingsboard
+  method: POST
+  path: /api/alarm/rule/testScript
+  summary: 测试告警规则脚本
+  aliases:
+  - 告警
+  - alarm
+  - rule
+  - testScript
+  tags:
+  - alarm
+  - 告警
+  mode: write
+  code_access: none
+  permission: ANY
+  risk: high
+  enabled: false
+  params:
+    $body:
+      in: body
+      type: object
+- id: thingsboard.post.asset
+  service: thingsboard
+  method: POST
+  path: /api/asset
+  summary: 创建资产
+  aliases:
+  - 资产
+  - asset
+  tags:
+  - asset
+  - 资产
+  mode: write
+  code_access: write
+  permission: TENANT_ADMIN
+  risk: medium
+  enabled: true
+  params:
+    $body:
+      in: body
+      type: object
+- id: thingsboard.post.assetprofile
+  service: thingsboard
+  method: POST
+  path: /api/assetProfile
+  summary: 创建资产配置
+  aliases:
+  - 资产配置
+  - assetProfile
+  tags:
+  - assetProfile
+  - 资产配置
+  mode: write
+  code_access: write
+  permission: TENANT_ADMIN
+  risk: medium
+  enabled: true
+  params:
+    $body:
+      in: body
+      type: object
+- id: thingsboard.post.calculatedfield
+  service: thingsboard
+  method: POST
+  path: /api/calculatedField
+  summary: 创建计算字段
+  aliases:
+  - 计算字段
+  - calculatedField
+  tags:
+  - calculatedField
+  - 计算字段
+  mode: write
+  code_access: write
+  permission: TENANT_ADMIN
+  risk: medium
+  enabled: true
+  params:
+    $body:
+      in: body
+      type: object
+- id: thingsboard.post.calculatedfield_testscript
+  service: thingsboard
+  method: POST
+  path: /api/calculatedField/testScript
+  summary: 测试脚本计算字段
+  aliases:
+  - 计算字段
+  - calculatedField
+  - testScript
+  tags:
+  - calculatedField
+  - 计算字段
+  mode: write
+  code_access: none
+  permission: TENANT_ADMIN
+  risk: high
+  enabled: false
+  params:
+    $body:
+      in: body
+      type: object
+- id: thingsboard.post.customer
+  service: thingsboard
+  method: POST
+  path: /api/customer
+  summary: 创建或更新客户
+  aliases:
+  - 客户
+  - customer
+  tags:
+  - customer
+  - 客户
+  mode: write
+  code_access: write
+  permission: TENANT_ADMIN
+  risk: medium
+  enabled: true
+  params:
+    $body:
+      in: body
+      type: object
+- id: thingsboard.post.customer_by_customerid_asset_by_assetid
+  service: thingsboard
+  method: POST
+  path: /api/customer/{customerId}/asset/{assetId}
+  summary: 分配资产给客户
+  aliases:
+  - 客户
+  - customer
+  - asset
+  tags:
+  - customer
+  - 客户
+  mode: write
+  code_access: write
+  permission: TENANT_ADMIN
+  risk: medium
+  enabled: true
+  params:
+    customerId:
+      in: path
+      type: string
+      required: true
+    assetId:
+      in: path
+      type: string
+      required: true
+    $body:
+      in: body
+      type: object
+- id: thingsboard.post.customer_by_customerid_dashboard_by_dashboardid
+  service: thingsboard
+  method: POST
+  path: /api/customer/{customerId}/dashboard/{dashboardId}
+  summary: 分配仪表板给客户
+  aliases:
+  - 客户
+  - customer
+  - dashboard
+  tags:
+  - customer
+  - 客户
+  mode: write
+  code_access: write
+  permission: TENANT_ADMIN
+  risk: medium
+  enabled: true
+  params:
+    customerId:
+      in: path
+      type: string
+      required: true
+    dashboardId:
+      in: path
+      type: string
+      required: true
+    $body:
+      in: body
+      type: object
+- id: thingsboard.post.customer_by_customerid_device_by_deviceid
+  service: thingsboard
+  method: POST
+  path: /api/customer/{customerId}/device/{deviceId}
+  summary: 分配设备给客户
+  aliases:
+  - 客户
+  - customer
+  - device
+  tags:
+  - customer
+  - 客户
+  mode: write
+  code_access: write
+  permission: TENANT_ADMIN
+  risk: medium
+  enabled: true
+  params:
+    customerId:
+      in: path
+      type: string
+      required: true
+    deviceId:
+      in: path
+      type: string
+      required: true
+    $body:
+      in: body
+      type: object
+- id: thingsboard.post.customer_by_customerid_edge_by_edgeid
+  service: thingsboard
+  method: POST
+  path: /api/customer/{customerId}/edge/{edgeId}
+  summary: 分配边缘给客户
+  aliases:
+  - 客户
+  - customer
+  - edge
+  tags:
+  - customer
+  - 客户
+  mode: write
+  code_access: write
+  permission: TENANT_ADMIN
+  risk: medium
+  enabled: true
+  params:
+    customerId:
+      in: path
+      type: string
+      required: true
+    edgeId:
+      in: path
+      type: string
+      required: true
+    $body:
+      in: body
+      type: object
+- id: thingsboard.post.customer_public_asset_by_assetid
+  service: thingsboard
+  method: POST
+  path: /api/customer/public/asset/{assetId}
+  summary: 设为公开资产
+  aliases:
+  - 客户
+  - customer
+  - public
+  - asset
+  tags:
+  - customer
+  - 客户
+  mode: write
+  code_access: none
+  permission: TENANT_ADMIN
+  risk: high
+  enabled: false
+  params:
+    assetId:
+      in: path
+      type: string
+      required: true
+    $body:
+      in: body
+      type: object
+- id: thingsboard.post.customer_public_dashboard_by_dashboardid
+  service: thingsboard
+  method: POST
+  path: /api/customer/public/dashboard/{dashboardId}
+  summary: 设为公开仪表板
+  aliases:
+  - 客户
+  - customer
+  - public
+  - dashboard
+  tags:
+  - customer
+  - 客户
+  mode: write
+  code_access: none
+  permission: TENANT_ADMIN
+  risk: high
+  enabled: false
+  params:
+    dashboardId:
+      in: path
+      type: string
+      required: true
+    $body:
+      in: body
+      type: object
+- id: thingsboard.post.customer_public_device_by_deviceid
+  service: thingsboard
+  method: POST
+  path: /api/customer/public/device/{deviceId}
+  summary: 设为公开设备
+  aliases:
+  - 客户
+  - customer
+  - public
+  - device
+  tags:
+  - customer
+  - 客户
+  mode: write
+  code_access: none
+  permission: TENANT_ADMIN
+  risk: high
+  enabled: false
+  params:
+    deviceId:
+      in: path
+      type: string
+      required: true
+    $body:
+      in: body
+      type: object
+- id: thingsboard.post.customer_public_edge_by_edgeid
+  service: thingsboard
+  method: POST
+  path: /api/customer/public/edge/{edgeId}
+  summary: 设为公开边缘
+  aliases:
+  - 客户
+  - customer
+  - public
+  - edge
+  tags:
+  - customer
+  - 客户
+  mode: write
+  code_access: none
+  permission: TENANT_ADMIN
+  risk: high
+  enabled: false
+  params:
+    edgeId:
+      in: path
+      type: string
+      required: true
+    $body:
+      in: body
+      type: object
+- id: thingsboard.post.device_bulk_import
+  service: thingsboard
+  method: POST
+  path: /api/device/bulk_import
+  summary: 批量导入设备
+  aliases:
+  - 设备
+  - device
+  - bulk_import
+  tags:
+  - device
+  - 设备
+  mode: write
+  code_access: none
+  permission: TENANT_ADMIN
+  risk: high
+  enabled: false
+  params:
+    $body:
+      in: body
+      type: object
+- id: thingsboard.post.device_credentials
+  service: thingsboard
+  method: POST
+  path: /api/device/credentials
+  summary: 更新设备凭证
+  aliases:
+  - 设备
+  - device
+  - credentials
+  tags:
+  - device
+  - 设备
+  mode: write
+  code_access: none
+  permission: TENANT_ADMIN
+  risk: high
+  enabled: false
+  params:
+    $body:
+      in: body
+      type: object
+- id: thingsboard.post.device_with_credentials
+  service: thingsboard
+  method: POST
+  path: /api/device-with-credentials
+  summary: 创建带凭证的设备
+  aliases:
+  - 设备
+  - device-with-credentials
+  tags:
+  - device-with-credentials
+  - 设备
+  mode: write
+  code_access: none
+  permission: TENANT_ADMIN
+  risk: high
+  enabled: false
+  params:
+    $body:
+      in: body
+      type: object
+- id: thingsboard.post.deviceprofile
+  service: thingsboard
+  method: POST
+  path: /api/deviceProfile
+  summary: 创建产品配置
+  aliases:
+  - 设备配置
+  - deviceProfile
+  tags:
+  - deviceProfile
+  - 设备配置
+  mode: write
+  code_access: write
+  permission: TENANT_ADMIN
+  risk: medium
+  enabled: true
+  params:
+    $body:
+      in: body
+      type: object
+- id: thingsboard.post.notification_request
+  service: thingsboard
+  method: POST
+  path: /api/notification/request
+  summary: 创建或发送通知请求
+  aliases:
+  - 通知
+  - notification
+  - request
+  tags:
+  - notification
+  - 通知
+  mode: write
+  code_access: write
+  permission: ANY
+  risk: medium
+  enabled: true
+  params:
+    $body:
+      in: body
+      type: object
+- id: thingsboard.post.notification_request_preview
+  service: thingsboard
+  method: POST
+  path: /api/notification/request/preview
+  summary: 预览通知请求
+  aliases:
+  - 通知
+  - notification
+  - request
+  - preview
+  tags:
+  - notification
+  - 通知
+  mode: write
+  code_access: write
+  permission: ANY
+  risk: medium
+  enabled: true
+  params:
+    $body:
+      in: body
+      type: object
+- id: thingsboard.post.notification_rule
+  service: thingsboard
+  method: POST
+  path: /api/notification/rule
+  summary: 创建或更新通知规则
+  aliases:
+  - 通知
+  - notification
+  - rule
+  tags:
+  - notification
+  - 通知
+  mode: write
+  code_access: write
+  permission: ANY
+  risk: medium
+  enabled: true
+  params:
+    $body:
+      in: body
+      type: object
+- id: thingsboard.post.notification_settings
+  service: thingsboard
+  method: POST
+  path: /api/notification/settings
+  summary: 保存系统通知设置
+  aliases:
+  - 通知
+  - notification
+  - settings
+  tags:
+  - notification
+  - 通知
+  mode: write
+  code_access: write
+  permission: ANY
+  risk: medium
+  enabled: true
+  params:
+    $body:
+      in: body
+      type: object
+- id: thingsboard.post.notification_settings_user
+  service: thingsboard
+  method: POST
+  path: /api/notification/settings/user
+  summary: 保存个人通知设置
+  aliases:
+  - 通知
+  - notification
+  - settings
+  - user
+  tags:
+  - notification
+  - 通知
+  mode: write
+  code_access: write
+  permission: ANY
+  risk: medium
+  enabled: true
+  params:
+    $body:
+      in: body
+      type: object
+- id: thingsboard.post.notification_target
+  service: thingsboard
+  method: POST
+  path: /api/notification/target
+  summary: 创建或更新收件人组
+  aliases:
+  - 通知
+  - notification
+  - target
+  tags:
+  - notification
+  - 通知
+  mode: write
+  code_access: write
+  permission: ANY
+  risk: medium
+  enabled: true
+  params:
+    $body:
+      in: body
+      type: object
+- id: thingsboard.post.notification_target_recipients
+  service: thingsboard
+  method: POST
+  path: /api/notification/target/recipients
+  summary: 预览收件人
+  aliases:
+  - 通知
+  - notification
+  - target
+  - recipients
+  tags:
+  - notification
+  - 通知
+  mode: write
+  code_access: write
+  permission: ANY
+  risk: medium
+  enabled: true
+  params:
+    $body:
+      in: body
+      type: object
+- id: thingsboard.post.notification_template
+  service: thingsboard
+  method: POST
+  path: /api/notification/template
+  summary: 创建或更新模板
+  aliases:
+  - 通知
+  - notification
+  - template
+  tags:
+  - notification
+  - 通知
+  mode: write
+  code_access: write
+  permission: ANY
+  risk: medium
+  enabled: true
+  params:
+    $body:
+      in: body
+      type: object
+- id: thingsboard.post.plugins_telemetry_by_entitytype_by_entityid_attributes_server_scope
+  service: thingsboard
+  method: POST
+  path: /api/plugins/telemetry/{entityType}/{entityId}/attributes/SERVER_SCOPE
+  summary: 写入实体属性数据
+  aliases:
+  - 遥测数据
+  - plugins
+  - telemetry
+  - attributes
+  - SERVER_SCOPE
+  tags:
+  - plugins
+  - 遥测数据
+  mode: write
+  code_access: write
+  permission: ANY
+  risk: medium
+  enabled: true
+  params:
+    entityType:
+      in: path
+      type: string
+      required: true
+      default: DEVICE
+      enum:
+      - DEVICE
+      - ASSET
+    entityId:
+      in: path
+      type: string
+      required: true
+    keys:
+      in: query
+      type: string
+    startTs:
+      in: query
+      type: integer
+    endTs:
+      in: query
+      type: integer
+    interval:
+      in: query
+      type: integer
+    limit:
+      in: query
+      type: integer
+    agg:
+      in: query
+      type: string
+    useStrictDataTypes:
+      in: query
+      type: boolean
+    $body:
+      in: body
+      type: object
+- id: thingsboard.post.plugins_telemetry_by_entitytype_by_entityid_attributes_shared_scope
+  service: thingsboard
+  method: POST
+  path: /api/plugins/telemetry/{entityType}/{entityId}/attributes/SHARED_SCOPE
+  summary: 写入实体属性数据
+  aliases:
+  - 遥测数据
+  - plugins
+  - telemetry
+  - attributes
+  - SHARED_SCOPE
+  tags:
+  - plugins
+  - 遥测数据
+  mode: write
+  code_access: write
+  permission: ANY
+  risk: medium
+  enabled: true
+  params:
+    entityType:
+      in: path
+      type: string
+      required: true
+      default: DEVICE
+      enum:
+      - DEVICE
+      - ASSET
+    entityId:
+      in: path
+      type: string
+      required: true
+    keys:
+      in: query
+      type: string
+    startTs:
+      in: query
+      type: integer
+    endTs:
+      in: query
+      type: integer
+    interval:
+      in: query
+      type: integer
+    limit:
+      in: query
+      type: integer
+    agg:
+      in: query
+      type: string
+    useStrictDataTypes:
+      in: query
+      type: boolean
+    $body:
+      in: body
+      type: object
+- id: thingsboard.post.relation
+  service: thingsboard
+  method: POST
+  path: /api/relation
+  summary: 创建设备关系
+  aliases:
+  - 实体关系
+  - relation
+  tags:
+  - relation
+  - 实体关系
+  mode: write
+  code_access: write
+  permission: TENANT_ADMIN
+  risk: medium
+  enabled: true
+  params:
+    $body:
+      in: body
+      type: object
+- id: thingsboard.post.rpc_oneway_by_deviceid
+  service: thingsboard
+  method: POST
+  path: /api/rpc/oneway/{deviceId}
+  summary: 创建设备
+  aliases:
+  - 设备
+  - rpc
+  - oneway
+  tags:
+  - rpc
+  - 设备
+  mode: write
+  code_access: none
+  permission: TENANT_ADMIN
+  risk: high
+  enabled: false
+  params:
+    deviceId:
+      in: path
+      type: string
+      required: true
+    $body:
+      in: body
+      type: object
+- id: thingsboard.post.rpc_twoway_by_deviceid
+  service: thingsboard
+  method: POST
+  path: /api/rpc/twoway/{deviceId}
+  summary: 创建设备
+  aliases:
+  - 设备
+  - rpc
+  - twoway
+  tags:
+  - rpc
+  - 设备
+  mode: write
+  code_access: none
+  permission: TENANT_ADMIN
+  risk: high
+  enabled: false
+  params:
+    deviceId:
+      in: path
+      type: string
+      required: true
+    $body:
+      in: body
+      type: object
+- id: thingsboard.post.rulechain
+  service: thingsboard
+  method: POST
+  path: /api/ruleChain
+  summary: 创建或更新规则链
+  aliases:
+  - 规则链
+  - ruleChain
+  tags:
+  - ruleChain
+  - 规则链
+  mode: write
+  code_access: write
+  permission: TENANT_ADMIN
+  risk: medium
+  enabled: true
+  params:
+    $body:
+      in: body
+      type: object
+- id: thingsboard.post.rulechain_by_rulechainid_root
+  service: thingsboard
+  method: POST
+  path: /api/ruleChain/{ruleChainId}/root
+  summary: 设为根规则链
+  aliases:
+  - 规则链
+  - ruleChain
+  - root
+  tags:
+  - ruleChain
+  - 规则链
+  mode: write
+  code_access: write
+  permission: TENANT_ADMIN
+  risk: medium
+  enabled: true
+  params:
+    ruleChainId:
+      in: path
+      type: string
+      required: true
+    $body:
+      in: body
+      type: object
+- id: thingsboard.post.rulechain_device_default
+  service: thingsboard
+  method: POST
+  path: /api/ruleChain/device/default
+  summary: 执行设备
+  aliases:
+  - 设备
+  - ruleChain
+  - device
+  - default
+  tags:
+  - ruleChain
+  - 设备
+  mode: write
+  code_access: write
+  permission: TENANT_ADMIN
+  risk: medium
+  enabled: true
+  params:
+    $body:
+      in: body
+      type: object
+- id: thingsboard.post.rulechain_metadata
+  service: thingsboard
+  method: POST
+  path: /api/ruleChain/metadata
+  summary: 保存规则链节点和连接
+  aliases:
+  - 规则链
+  - ruleChain
+  - metadata
+  tags:
+  - ruleChain
+  - 规则链
+  mode: write
+  code_access: write
+  permission: TENANT_ADMIN
+  risk: medium
+  enabled: true
+  params:
+    $body:
+      in: body
+      type: object
+- id: thingsboard.post.rulechain_testscript
+  service: thingsboard
+  method: POST
+  path: /api/ruleChain/testScript
+  summary: 测试脚本规则链
+  aliases:
+  - 规则链
+  - ruleChain
+  - testScript
+  tags:
+  - ruleChain
+  - 规则链
+  mode: write
+  code_access: none
+  permission: TENANT_ADMIN
+  risk: high
+  enabled: false
+  params:
+    $body:
+      in: body
+      type: object
+- id: thingsboard.post.tenantprofile
+  service: thingsboard
+  method: POST
+  path: /api/tenantProfile
+  summary: 创建或更新租户配置
+  aliases:
+  - 租户配置
+  - tenantProfile
+  tags:
+  - tenantProfile
+  - 租户配置
+  mode: write
+  code_access: write
+  permission: SYS_ADMIN
+  risk: medium
+  enabled: true
+  params:
+    $body:
+      in: body
+      type: object
+- id: thingsboard.post.tenantprofile_by_tenantprofileid_default
+  service: thingsboard
+  method: POST
+  path: /api/tenantProfile/{tenantProfileId}/default
+  summary: 设为默认租户配置
+  aliases:
+  - 租户配置
+  - tenantProfile
+  - default
+  tags:
+  - tenantProfile
+  - 租户配置
+  mode: write
+  code_access: write
+  permission: SYS_ADMIN
+  risk: medium
+  enabled: true
+  params:
+    tenantProfileId:
+      in: path
+      type: string
+      required: true
+    $body:
+      in: body
+      type: object
+- id: thingsboard.post.user_by_userid_usercredentialsenabled
+  service: thingsboard
+  method: POST
+  path: /api/user/{userId}/userCredentialsEnabled
+  summary: false}`
+  aliases:
+  - 用户
+  - user
+  - userCredentialsEnabled
+  tags:
+  - user
+  - 用户
+  mode: write
+  code_access: none
+  permission: TENANT_ADMIN
+  risk: high
+  enabled: false
+  params:
+    userId:
+      in: path
+      type: string
+      required: true
+    $body:
+      in: body
+      type: object
+- id: thingsboard.post.user_sendactivationmail
+  service: thingsboard
+  method: POST
+  path: /api/user/sendActivationMail
+  summary: 重新发送激活邮件
+  aliases:
+  - 用户
+  - user
+  - sendActivationMail
+  tags:
+  - user
+  - 用户
+  mode: write
+  code_access: none
+  permission: TENANT_ADMIN
+  risk: high
+  enabled: false
+  params:
+    $body:
+      in: body
+      type: object
+- id: thingsboard.put.notification_by_notificationid_read
+  service: thingsboard
+  method: PUT
+  path: /api/notification/{notificationId}/read
+  summary: 标记单条已读
+  aliases:
+  - 通知
+  - notification
+  - read
+  tags:
+  - notification
+  - 通知
+  mode: write
+  code_access: write
+  permission: ANY
+  risk: medium
+  enabled: true
+  params:
+    notificationId:
+      in: path
+      type: string
+      required: true
+    $body:
+      in: body
+      type: object
+- id: thingsboard.put.notifications_read
+  service: thingsboard
+  method: PUT
+  path: /api/notifications/read
+  summary: 全部标记已读
+  aliases:
+  - 通知
+  - notifications
+  - read
+  tags:
+  - notifications
+  - 通知
+  mode: write
+  code_access: write
+  permission: ANY
+  risk: medium
+  enabled: true
+  params:
+    $body:
+      in: body
+      type: object

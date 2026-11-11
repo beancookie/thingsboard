@@ -1,0 +1,229 @@
+- id: thingsboard.listTenants
+  service: thingsboard
+  method: GET
+  path: /api/tenants
+  summary: 查询租户列表
+  aliases: [租户, 厂商, tenant, tenants]
+  tags: [tenant]
+  mode: read
+  code_access: read
+  permission: SYS_ADMIN
+  risk: low
+  enabled: true
+  params:
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+
+- id: thingsboard.listTenantDevices
+  service: thingsboard
+  method: GET
+  path: /api/tenant/devices
+  summary: 查询当前租户设备
+  aliases: [设备, 设备列表, 设备名称, 按名称查设备, device, devices]
+  tags: [device, tenant]
+  mode: read
+  code_access: read
+  permission: TENANT_ADMIN
+  risk: low
+  enabled: true
+  params:
+    pageSize:
+      in: query
+      type: integer
+      default: 100
+    page:
+      in: query
+      type: integer
+      default: 0
+    textSearch:
+      in: query
+      type: string
+      description: 按设备名称、标签或客户搜索
+    deviceName:
+      in: query
+      type: string
+      description: 精确设备名称；用于把设备名称解析为设备 UUID
+
+- id: thingsboard.createTenant
+  service: thingsboard
+  method: POST
+  path: /api/tenant
+  summary: 创建租户
+  aliases: [创建租户, 新建厂商, create tenant]
+  tags: [tenant, create]
+  mode: write
+  code_access: write
+  permission: SYS_ADMIN
+  risk: medium
+  enabled: true
+  handler: create_tenant
+  params:
+    title:
+      in: body
+      type: string
+      required: true
+      description: 租户名称
+    description:
+      in: body
+      type: string
+      description: 租户说明
+
+- id: thingsboard.createTenantAdmin
+  service: thingsboard
+  method: POST
+  path: /api/user
+  summary: 创建租户管理员
+  aliases: [创建租户管理员, 管理员, tenant admin]
+  tags: [user, tenant, create]
+  mode: write
+  code_access: write
+  permission: SYS_ADMIN
+  risk: medium
+  enabled: true
+  handler: create_tenant_admin
+  params:
+    tenant_id:
+      in: body
+      type: string
+      required: true
+      description: 租户 UUID
+    email:
+      in: body
+      type: string
+      required: true
+      description: 管理员邮箱
+    first_name:
+      in: body
+      type: string
+    last_name:
+      in: body
+      type: string
+
+- id: thingsboard.createDevice
+  service: thingsboard
+  method: POST
+  path: /api/device
+  summary: 创建设备
+  aliases: [创建设备, 新建设备, create device]
+  tags: [device, create]
+  mode: write
+  code_access: write
+  permission: TENANT_ADMIN
+  risk: medium
+  enabled: true
+  handler: create_device
+  params:
+    product_id:
+      in: body
+      type: string
+      required: true
+      description: 产品 ID
+    device_name:
+      in: body
+      type: string
+      required: true
+      description: 设备名称
+    label:
+      in: body
+      type: string
+      description: 设备中文别名
+    site_code:
+      in: body
+      type: string
+      description: 工点编码
+
+- id: thingsboard.createUser
+  service: thingsboard
+  method: POST
+  path: /api/user
+  summary: 创建用户
+  aliases: [创建用户, 新建用户, create user]
+  tags: [user, create]
+  mode: write
+  code_access: write
+  permission: ANY
+  tenant_param: tenant_id
+  risk: medium
+  enabled: true
+  handler: create_user
+  params:
+    tenant_id:
+      in: body
+      type: string
+      description: 租户 UUID；租户管理员可省略
+    email:
+      in: body
+      type: string
+      required: true
+      description: 用户邮箱
+    authority:
+      in: body
+      type: string
+      enum: [TENANT_ADMIN, CUSTOMER_USER]
+      default: CUSTOMER_USER
+    first_name:
+      in: body
+      type: string
+    last_name:
+      in: body
+      type: string
+
+- id: thingsboard.deleteTenant
+  service: thingsboard
+  method: DELETE
+  path: /api/tenant/{tenantId}
+  summary: 删除租户（高危）
+  aliases: [删除租户, 移除厂商, delete tenant]
+  tags: [tenant, delete]
+  mode: write
+  code_access: write
+  permission: SYS_ADMIN
+  risk: high
+  enabled: true
+  params:
+    tenantId:
+      in: path
+      type: string
+      required: true
+
+- id: thingsboard.deleteDevice
+  service: thingsboard
+  method: DELETE
+  path: /api/device/{deviceId}
+  summary: 删除设备（高危）
+  aliases: [删除设备, delete device]
+  tags: [device, delete]
+  mode: write
+  code_access: write
+  permission: TENANT_ADMIN
+  risk: high
+  enabled: true
+  params:
+    deviceId:
+      in: path
+      type: string
+      required: true
+
+- id: thingsboard.deleteUser
+  service: thingsboard
+  method: DELETE
+  path: /api/user/{userId}
+  summary: 删除用户（高危）
+  aliases: [删除用户, delete user]
+  tags: [user, delete]
+  mode: write
+  code_access: write
+  permission: SYS_ADMIN
+  risk: high
+  enabled: true
+  params:
+    userId:
+      in: path
+      type: string
+      required: true

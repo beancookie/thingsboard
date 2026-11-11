@@ -2,6 +2,8 @@ from typing import Any
 
 import pytest
 
+from app.agent.api_catalog import ApiCatalog, ApiOperation
+from app.agent.api_executor import ApiExecutor
 from app.agent.executor import AgentActionExecutor
 from app.agent.models import AgentAction
 
@@ -37,6 +39,9 @@ class FakeThingsBoard:
 
     async def list_tenant_devices(self, token: str, page_size: int, page: int):
         return {"data": [{"id": {"id": "device-1"}}]}
+
+    async def request(self, method: str, path: str, token: str, **kwargs):
+        return {"method": method, "path": path}
 
 
 class FakeThingModel:
@@ -191,3 +196,73 @@ async def test_tenant_admin_cannot_create_user_in_other_tenant(
 
     assert result.success is False
     assert "其他租户" in result.message
+
+
+@pytest.mark.asyncio
+async def test_catalog_handler_action_is_executed(clients, sys_admin) -> None:
+    catalog = ApiCatalog(
+        [
+            ApiOperation.model_validate(
+                {
+                    "id": "thingsboard.createTenant",
+                    "service": "thingsboard",
+                    "method": "POST",
+                    "path": "/api/tenant",
+                    "summary": "创建租户",
+                    "mode": "write",
+                    "handler": "create_tenant",
+                    "permission": "SYS_ADMIN",
+                    "params": {
+                        "title": {"in": "body", "type": "string", "required": True}
+                    },
+                }
+            )
+        ]
+    )
+    executor = AgentActionExecutor(*clients, catalog, ApiExecutor(*clients))
+    action = AgentAction(
+        id="a1",
+        type="thingsboard.createTenant",
+        params={"title": "Test Tenant"},
+    )
+
+    result = await executor.execute(action, sys_admin, "token", None)
+
+    assert result.success is True
+    assert result.data == {"tenantId": "tenant-1", "provisioned": True}
+
+
+@pytest.mark.asyncio
+async def test_catalog_generic_action_is_executed(clients, sys_admin) -> None:
+    catalog = ApiCatalog(
+        [
+            ApiOperation.model_validate(
+                {
+                    "id": "thingsboard.deleteTenant",
+                    "service": "thingsboard",
+                    "method": "DELETE",
+                    "path": "/api/tenant/{tenantId}",
+                    "summary": "删除租户",
+                    "mode": "write",
+                    "permission": "SYS_ADMIN",
+                    "risk": "high",
+                    "params": {
+                        "tenantId": {"in": "path", "type": "string", "required": True}
+                    },
+                }
+            )
+        ]
+    )
+    executor = AgentActionExecutor(*clients, catalog, ApiExecutor(*clients))
+    action = AgentAction(
+        id="a1",
+        type="thingsboard.deleteTenant",
+        params={"tenantId": "tenant-1"},
+        risk="high",
+    )
+
+    result = await executor.execute(action, sys_admin, "token", None)
+
+    assert result.success is True
+    assert result.data == {"method": "DELETE", "path": "/api/tenant/tenant-1"}
+

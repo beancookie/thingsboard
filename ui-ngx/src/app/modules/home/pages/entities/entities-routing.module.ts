@@ -7,6 +7,7 @@ import { deviceRoutes } from '@home/pages/device/device-routing.module';
 import { assetRoutes } from '@home/pages/asset/asset-routing.module';
 import { entityViewRoutes } from '@home/pages/entity-view/entity-view-routing.module';
 import { gatewaysRoutes } from '@home/pages/gateways/gateways-routing.module';
+import { mediaRoutes } from '@home/pages/media/media-routing.module';
 import { productRoutes } from '@home/pages/product/product-routing.module';
 
 const routes: Routes = [
@@ -31,7 +32,8 @@ const routes: Routes = [
       ...deviceRoutes,
       ...assetRoutes,
       ...entityViewRoutes,
-      ...gatewaysRoutes
+      ...gatewaysRoutes,
+      ...mediaRoutes
     ]
   }
 ];

@@ -1,0 +1,268 @@
+{% extends "base.html" %}
+{% block title %}视频网关{% endblock %}
+{% block content %}
+{% if error %}
+<div class="alert err">{{ error }}</div>
+{% endif %}
+
+<div class="tb-product-card">
+  <div class="mat-mdc-table-toolbar">
+    <div class="mat-toolbar-tools" id="toolbar-normal">
+      <span class="tb-product-title">视频网关</span>
+      <span class="flex-1"></span>
+      <button type="button" class="tb-icon-btn" id="refresh-btn" title="刷新">
+        <span class="material-icons">refresh</span>
+      </button>
+      <button type="button" class="tb-icon-btn" id="search-btn" title="搜索">
+        <span class="material-icons">search</span>
+      </button>
+      <button type="button" class="btn primary" id="add-camera-btn">
+        <span class="material-icons">add</span>
+        新增
+      </button>
+    </div>
+    <div class="mat-toolbar-tools hidden" id="toolbar-search">
+      <button type="button" class="tb-icon-btn">
+        <span class="material-icons">search</span>
+      </button>
+      <input type="text" id="search-input" class="tb-product-search-field" placeholder="搜索">
+      <button type="button" class="tb-icon-btn" id="search-close-btn" title="关闭">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="tb-product-table-container">
+    <table class="table" id="media-table">
+      <thead>
+        <tr>
+          <th data-sort="path">路径<span class="tb-sort-icon material-icons">arrow_upward</span></th>
+          <th data-sort="name">名称<span class="tb-sort-icon material-icons">arrow_upward</span></th>
+          <th data-sort="location">位置<span class="tb-sort-icon material-icons">arrow_upward</span></th>
+          <th data-sort="enabled">启用<span class="tb-sort-icon material-icons">arrow_upward</span></th>
+          <th>推流地址</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="camera-tbody">
+        {% for camera in cameras %}
+        <tr class="tb-product-row"
+            data-id="{{ camera.id }}"
+            data-path="{{ camera.path }}"
+            data-name="{{ camera.display_name or '' }}"
+            data-location="{{ camera.location or '' }}"
+            data-enabled="{{ 'true' if camera.enabled else 'false' }}"
+            data-hls-url="{{ camera.hls_preview_url }}"
+            data-webrtc-url="{{ camera.webrtc_preview_url }}">
+          <td><code>{{ camera.path }}</code></td>
+          <td>{{ camera.display_name or '-' }}</td>
+          <td>{{ camera.location or '-' }}</td>
+          <td>
+            {% if camera.enabled %}
+            <span class="tb-product-status tb-product-status-published">已启用</span>
+            {% else %}
+            <span class="tb-product-status tb-product-status-deprecated">已停用</span>
+            {% endif %}
+          </td>
+          <td class="cell-copy">
+            <span class="mono copy-text">{{ camera.push_url_masked }}</span>
+            <button type="button" class="tb-icon-btn small" title="复制推流地址"
+                    data-copy="{{ camera.push_url }}">
+              <span class="material-icons">content_copy</span>
+            </button>
+          </td>
+          <td class="col-actions">
+            <button type="button" class="tb-icon-btn" title="预览" data-action="preview">
+              <span class="material-icons">visibility</span>
+            </button>
+            <button type="button" class="tb-icon-btn danger" title="删除" data-action="delete">
+              <span class="material-icons">delete</span>
+            </button>
+          </td>
+        </tr>
+        {% endfor %}
+        <tr id="camera-empty-row" style="display: none;">
+          <td colspan="6"><div class="tb-product-empty">暂无摄像头</div></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="mat-mdc-paginator">
+      <div class="mat-mdc-paginator-outer-container">
+        <div class="mat-mdc-paginator-container">
+          <div class="mat-mdc-paginator-page-size">
+            <div class="mat-mdc-paginator-page-size-label">每页条目数：</div>
+            <div class="mat-mdc-paginator-page-size-select">
+              <select id="page-size">
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="50" selected>50</option>
+              </select>
+              <span class="material-icons mat-mdc-paginator-arrow">arrow_drop_down</span>
+            </div>
+          </div>
+          <div class="mat-mdc-paginator-range-actions">
+            <div class="mat-mdc-paginator-range-label" id="page-range"></div>
+            <button type="button" class="tb-icon-btn" id="page-first" title="第一页">
+              <span class="material-icons mat-mdc-paginator-icon">first_page</span>
+            </button>
+            <button type="button" class="tb-icon-btn" id="page-prev" title="上一页">
+              <span class="material-icons mat-mdc-paginator-icon">chevron_left</span>
+            </button>
+            <button type="button" class="tb-icon-btn" id="page-next" title="下一页">
+              <span class="material-icons mat-mdc-paginator-icon">chevron_right</span>
+            </button>
+            <button type="button" class="tb-icon-btn" id="page-last" title="最后一页">
+              <span class="material-icons mat-mdc-paginator-icon">last_page</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<dialog id="add-dialog" class="tb-dialog">
+  <form method="post" action="{{ app_path('/cameras') }}" id="add-form">
+    <div class="tb-dialog-header">
+      <h2>新增摄像头</h2>
+      <button type="button" class="tb-icon-btn" data-close="add-dialog" title="关闭">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    <div class="tb-dialog-content">
+      <label class="tb-field">
+        <span>路径 (path)</span>
+        <input type="text" name="path" value="{{ values.path if values else '' }}"
+               placeholder="例如 lzzz001" pattern="[A-Za-z0-9_-]+" required>
+        <small>创建后不可修改，仅支持字母、数字、下划线和短横线。</small>
+      </label>
+      <label class="tb-field">
+        <span>名称</span>
+        <input type="text" name="display_name" value="{{ values.display_name if values else '' }}">
+      </label>
+      <label class="tb-field">
+        <span>位置</span>
+        <input type="text" name="location" value="{{ values.location if values else '' }}">
+      </label>
+      <label class="tb-field">
+        <span>描述</span>
+        <textarea name="description" rows="2">{{ values.description if values else '' }}</textarea>
+      </label>
+      <label class="tb-checkbox">
+        <input type="checkbox" name="enabled" {% if not values or values.enabled %}checked{% endif %}>
+        <span>启用</span>
+      </label>
+      <div class="tb-field-group-title">推流配置</div>
+      <label class="tb-field">
+        <span>推流用户名</span>
+        <input type="text" name="push_username" value="{{ values.push_username if values else '' }}"
+               autocomplete="off">
+      </label>
+      <label class="tb-field">
+        <span>推流密码</span>
+        <input type="password" name="push_password" value="{{ values.push_password if values else '' }}"
+               autocomplete="new-password">
+      </label>
+    </div>
+    <div class="tb-dialog-actions">
+      <button type="button" class="btn" data-close="add-dialog">取消</button>
+      <button type="submit" class="btn primary">新增</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="edit-drawer" class="tb-drawer">
+  <form method="post" id="edit-form">
+    <div class="tb-dialog-header">
+      <h2>编辑摄像头</h2>
+      <button type="button" class="tb-icon-btn" data-close="edit-drawer" title="关闭">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    <div class="tb-dialog-content">
+      <label class="tb-field">
+        <span>路径 (path)</span>
+        <input type="text" id="edit-path" readonly>
+        <small>路径创建后不可修改。</small>
+      </label>
+      <label class="tb-field">
+        <span>名称</span>
+        <input type="text" name="display_name" id="edit-name">
+      </label>
+      <label class="tb-field">
+        <span>位置</span>
+        <input type="text" name="location" id="edit-location">
+      </label>
+      <label class="tb-field">
+        <span>描述</span>
+        <textarea name="description" id="edit-description" rows="2"></textarea>
+      </label>
+      <label class="tb-checkbox">
+        <input type="checkbox" name="enabled" id="edit-enabled">
+        <span>启用</span>
+      </label>
+      <div class="tb-field-group-title">推流配置</div>
+      <label class="tb-field">
+        <span>推流用户名</span>
+        <input type="text" name="push_username" id="edit-push-username" autocomplete="off">
+      </label>
+      <label class="tb-field">
+        <span>推流密码</span>
+        <input type="password" name="push_password" id="edit-push-password"
+               autocomplete="new-password">
+      </label>
+    </div>
+    <div class="tb-dialog-actions">
+      <button type="button" class="btn" data-close="edit-drawer">取消</button>
+      <button type="submit" class="btn primary">保存</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="confirm-dialog" class="tb-dialog tb-dialog-small">
+  <form method="post" id="delete-form">
+    <div class="tb-dialog-header">
+      <h2>删除摄像头</h2>
+      <button type="button" class="tb-icon-btn" data-close="confirm-dialog" title="关闭">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    <div class="tb-dialog-content">
+      <p>确定删除 <strong id="delete-name"></strong>？该操作不可恢复。</p>
+    </div>
+    <div class="tb-dialog-actions">
+      <button type="button" class="btn" data-close="confirm-dialog">取消</button>
+      <button type="submit" class="btn danger">删除</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="preview-dialog" class="tb-dialog tb-preview-dialog">
+  <div class="tb-dialog-header">
+    <h2 id="preview-title">画面预览</h2>
+    <button type="button" class="tb-icon-btn" data-close="preview-dialog" title="关闭">
+      <span class="material-icons">close</span>
+    </button>
+  </div>
+  <div class="tb-preview-toolbar">
+    <div class="tb-preview-protocols">
+      <button type="button" class="tb-protocol-btn active" data-protocol="hls">HLS</button>
+      <button type="button" class="tb-protocol-btn" data-protocol="webrtc">WebRTC</button>
+    </div>
+    <div class="tb-preview-address">
+      <input type="text" id="preview-address" readonly>
+      <button type="button" class="tb-icon-btn small" id="preview-copy" title="复制地址">
+        <span class="material-icons">content_copy</span>
+      </button>
+    </div>
+  </div>
+  <div class="tb-preview-body">
+    <iframe id="preview-iframe" title="preview" allow="autoplay; fullscreen"></iframe>
+  </div>
+</dialog>
+
+{% if open_dialog %}
+<script>window.__tbOpenDialog = "{{ open_dialog }}";</script>
+{% endif %}
+{% endblock %}

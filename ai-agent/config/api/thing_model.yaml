@@ -1,0 +1,226 @@
+- id: thing_model.listProducts
+  service: thing_model
+  method: GET
+  path: /api/products
+  summary: 查询当前租户产品
+  aliases: [产品, 产品列表, product, products]
+  tags: [product]
+  mode: read
+  code_access: read
+  permission: TENANT_ADMIN
+  risk: low
+  enabled: true
+  params:
+    keyword:
+      in: query
+      type: string
+      description: 产品 ID 或名称关键字
+
+- id: thing_model.getProduct
+  service: thing_model
+  method: GET
+  path: /api/products/{productId}
+  summary: 查询产品详情
+  aliases: [产品详情, 产品, product detail]
+  tags: [product]
+  mode: read
+  code_access: read
+  permission: TENANT_ADMIN
+  risk: low
+  enabled: true
+  params:
+    productId:
+      in: path
+      type: string
+      required: true
+
+- id: thing_model.getThingModel
+  service: thing_model
+  method: GET
+  path: /api/products/{productId}/thing-model
+  summary: 查询最新物模型
+  aliases: [物模型, TSL, thing model]
+  tags: [product, tsl]
+  mode: read
+  code_access: read
+  permission: TENANT_ADMIN
+  risk: low
+  enabled: true
+  params:
+    productId:
+      in: path
+      type: string
+      required: true
+
+- id: thing_model.getCatalog
+  service: thing_model
+  method: GET
+  path: /api/products/{productId}/catalog
+  summary: 查询物模型目录
+  aliases: [物模型目录, catalog]
+  tags: [product, tsl]
+  mode: read
+  code_access: read
+  permission: TENANT_ADMIN
+  risk: low
+  enabled: true
+  params:
+    productId:
+      in: path
+      type: string
+      required: true
+
+- id: thing_model.createProduct
+  service: thing_model
+  method: POST
+  path: /api/products
+  summary: 创建产品并发布物模型
+  aliases: [创建产品, 新建产品, create product]
+  tags: [product, create, tsl]
+  mode: write
+  code_access: write
+  permission: TENANT_ADMIN
+  risk: medium
+  enabled: true
+  handler: create_product
+  params:
+    product_id:
+      in: body
+      type: string
+      required: true
+      description: 产品 ID，租户内唯一
+    name:
+      in: body
+      type: string
+      required: true
+      description: 产品名称
+    model:
+      in: body
+      type: string
+      description: 产品型号
+    category_id:
+      in: body
+      type: string
+      description: 产品分类
+    tsl_version:
+      in: body
+      type: string
+      description: TSL 版本
+    strict_unknown:
+      in: body
+      type: boolean
+      default: false
+      description: 是否拒绝未知字段
+
+- id: thing_model.validateThingModel
+  service: thing_model
+  method: POST
+  path: /api/products/{productId}/thing-model/validate
+  summary: 校验物模型
+  aliases: [校验物模型, 校验 TSL, validate tsl]
+  tags: [product, tsl]
+  mode: read
+  code_access: read
+  permission: TENANT_ADMIN
+  risk: low
+  enabled: true
+  params:
+    productId:
+      in: path
+      type: string
+      required: true
+    $body:
+      in: body
+      type: object
+      required: true
+      description: 待校验的 TSL JSON
+
+- id: thing_model.syncProduct
+  service: thing_model
+  method: POST
+  path: /api/products/{productId}/sync
+  summary: 重新同步产品到 ThingsBoard
+  aliases: [同步产品, 同步, sync product]
+  tags: [product, sync]
+  mode: write
+  code_access: write
+  permission: TENANT_ADMIN
+  risk: medium
+  enabled: true
+  params:
+    productId:
+      in: path
+      type: string
+      required: true
+
+- id: thing_model.deleteProduct
+  service: thing_model
+  method: DELETE
+  path: /api/products/{productId}
+  summary: 删除产品（高危）
+  aliases: [删除产品, delete product]
+  tags: [product, delete]
+  mode: write
+  code_access: write
+  permission: TENANT_ADMIN
+  risk: high
+  enabled: true
+  params:
+    productId:
+      in: path
+      type: string
+      required: true
+
+- id: thing_model.provisionTenantAccount
+  service: thing_model
+  method: POST
+  path: /api/admin/tenants/{tenantId}/provision-auto
+  summary: 自动初始化租户服务账号
+  aliases: [初始化租户, 服务账号, provision tenant]
+  tags: [tenant, admin]
+  mode: write
+  code_access: write
+  permission: SYS_ADMIN
+  risk: medium
+  enabled: true
+  params:
+    tenantId:
+      in: path
+      type: string
+      required: true
+    force:
+      in: query
+      type: boolean
+      default: false
+
+- id: thing_model.getTenantAccount
+  service: thing_model
+  method: GET
+  path: /api/admin/tenants/{tenantId}/account
+  summary: 查询租户服务账号
+  aliases: [租户账号, 服务账号, tenant account]
+  tags: [tenant, admin]
+  mode: read
+  code_access: read
+  permission: SYS_ADMIN
+  risk: low
+  enabled: true
+  params:
+    tenantId:
+      in: path
+      type: string
+      required: true
+
+- id: thing_model.currentUser
+  service: thing_model
+  method: GET
+  path: /api/auth/me
+  summary: 查询当前用户
+  aliases: [当前用户, 我的信息, current user]
+  tags: [auth]
+  mode: read
+  code_access: read
+  permission: ANY
+  risk: low
+  enabled: true
+  params: {}

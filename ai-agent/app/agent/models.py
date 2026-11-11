@@ -5,12 +5,21 @@ from pydantic import BaseModel, ConfigDict, Field
 
 AgentMode = Literal["chat", "execute"]
 AgentActionStatus = Literal["PROPOSED", "EXECUTED", "FAILED"]
+AgentActionRisk = Literal["low", "medium", "high"]
 AgentAuthority = Literal["TENANT_ADMIN", "CUSTOMER_USER"]
+
+
+class AgentFile(BaseModel):
+    id: str
+    name: str
+    mime_type: str
+    size: int
 
 
 class AgentMessage(BaseModel):
     role: Literal["user", "assistant"]
     content: str = Field(min_length=1, max_length=20000)
+    files: list[AgentFile] = Field(default_factory=list)
 
 
 class AgentContext(BaseModel):
@@ -27,12 +36,14 @@ class AgentAction(BaseModel):
     summary: str = ""
     params: dict[str, Any] = Field(default_factory=dict)
     status: AgentActionStatus = "PROPOSED"
+    risk: AgentActionRisk = "low"
 
 
 class AgentChatRequest(BaseModel):
     mode: AgentMode = "chat"
     messages: list[AgentMessage] = Field(default_factory=list)
     tsl: Any | None = None
+    files: list[AgentFile] = Field(default_factory=list)
     actions: list[AgentAction] = Field(default_factory=list)
     context: AgentContext | None = None
 

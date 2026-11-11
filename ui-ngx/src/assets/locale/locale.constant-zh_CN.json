@@ -3810,6 +3810,9 @@
     "goto-help-page": "前往帮助页面",
     "show-help": "显示帮助"
   },
+  "media": {
+    "cameras": "视频网关"
+  },
   "manual": {
     "manuals": "用户手册",
     "manuals-docs": "使用手册",
@@ -6444,7 +6447,6 @@
     "open": "打开 AI 助手",
     "close": "关闭",
     "clear": "清空对话",
-    "clear-tsl": "移除 TSL",
     "welcome-title": "AI 助手",
     "welcome-text": "可以帮你创建租户、产品、设备和用户。写操作需要确认后执行。",
     "you": "你",
@@ -6456,13 +6458,10 @@
     "confirm-first": "请先确认或取消待执行操作",
     "placeholder": "输入需求，例如：创建一个租户...",
     "send": "发送",
-    "upload-tsl": "上传物模型 TSL",
-    "paste-tsl": "粘贴物模型 TSL",
-    "tsl-json": "物模型 TSL JSON",
-    "tsl-placeholder": "粘贴 TSL JSON",
-    "apply-tsl": "应用 TSL",
-    "tsl-too-large": "TSL 文件不能超过 2MB",
-    "invalid-json": "JSON 格式不正确",
+    "upload-file": "上传文件",
+    "remove-file": "移除文件",
+    "file-too-large": "文件不能超过 2MB",
+    "upload-failed": "文件上传失败",
     "operation-failed": "操作失败",
     "execute-success": "成功",
     "execute-failed": "失败"

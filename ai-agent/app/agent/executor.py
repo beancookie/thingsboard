@@ -4,6 +4,8 @@ from typing import Any
 
 from pydantic import ValidationError
 
+from app.agent.api_catalog import ApiCatalog, ApiOperation
+from app.agent.api_executor import ApiExecutor
 from app.agent.models import (
     ACTION_MODELS,
     AgentAction,
@@ -26,9 +28,17 @@ DEVICE_NAME_PATTERN = re.compile(r"^[A-Za-z0-9_]{1,48}$")
 
 
 class AgentActionExecutor:
-    def __init__(self, thingsboard: ThingsBoardClient, thing_model: ThingModelClient):
+    def __init__(
+        self,
+        thingsboard: ThingsBoardClient,
+        thing_model: ThingModelClient,
+        catalog: ApiCatalog | None = None,
+        api_executor: ApiExecutor | None = None,
+    ):
         self._thingsboard = thingsboard
         self._thing_model = thing_model
+        self._catalog = catalog
+        self._api_executor = api_executor
 
     async def execute(
         self,
@@ -37,6 +47,10 @@ class AgentActionExecutor:
         token: str,
         tsl: Any | None,
     ) -> AgentActionResult:
+        operation = self._catalog.get(action.type) if self._catalog else None
+        if operation is not None:
+            return await self._execute_operation(action, operation, user, token, tsl)
+
         model = ACTION_MODELS.get(action.type)
         if model is None:
             return _failed(action, f"不支持的动作: {action.type}")
@@ -56,6 +70,47 @@ class AgentActionExecutor:
             return _failed(action, exc.message)
         except Exception:
             logger.exception("Agent action failed: type=%s", action.type)
+            return _failed(action, "执行失败，请查看服务日志")
+
+    async def _execute_operation(
+        self,
+        action: AgentAction,
+        operation: ApiOperation,
+        user: CurrentUser,
+        token: str,
+        tsl: Any | None,
+    ) -> AgentActionResult:
+        if not operation.enabled:
+            return _failed(action, f"接口未启用: {operation.id}")
+
+        try:
+            if operation.handler:
+                model = ACTION_MODELS.get(operation.handler)
+                if model is None:
+                    return _failed(action, f"不支持的动作: {operation.handler}")
+                params = model.model_validate(action.params)
+                data = await self._dispatch(
+                    operation.handler, params, user, token, tsl
+                )
+            else:
+                if self._api_executor is None:
+                    return _failed(action, "通用 API 执行器未初始化")
+                data = await self._api_executor.execute(
+                    operation, token, user, action.params
+                )
+            return AgentActionResult(
+                action_id=action.id,
+                type=action.type,
+                success=True,
+                message="执行成功",
+                data=data,
+            )
+        except ValidationError as exc:
+            return _failed(action, f"动作参数不合法: {exc.errors()}")
+        except AgentError as exc:
+            return _failed(action, exc.message)
+        except Exception:
+            logger.exception("Agent operation failed: type=%s", action.type)
             return _failed(action, "执行失败，请查看服务日志")
 
     async def _dispatch(

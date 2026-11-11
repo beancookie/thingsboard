@@ -86,6 +86,7 @@ export enum MenuId {
   assets = 'assets',
   entity_views = 'entity_views',
   gateways = 'gateways',
+  media = 'media',
   profiles = 'profiles',
   device_profiles = 'device_profiles',
   asset_profiles = 'asset_profiles',
@@ -674,6 +675,16 @@ export const menuSectionMap = new Map<MenuId, MenuSection>([
     }
   ],
   [
+    MenuId.media,
+    {
+      id: MenuId.media,
+      name: 'media.cameras',
+      type: 'link',
+      path: '/entities/media',
+      icon: 'mdi:cctv'
+    }
+  ],
+  [
     MenuId.profiles,
     {
       id: MenuId.profiles,
@@ -974,6 +985,7 @@ const defaultUserMenuMap = new Map<Authority, MenuReference[]>([
           {id: MenuId.products},
           {id: MenuId.devices},
           {id: MenuId.gateways},
+          {id: MenuId.media},
           {id: MenuId.assets},
           {id: MenuId.device_profiles},
           {id: MenuId.asset_profiles},

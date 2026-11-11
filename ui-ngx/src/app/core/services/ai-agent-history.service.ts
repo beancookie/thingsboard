@@ -3,12 +3,14 @@
 import { Injectable } from '@angular/core';
 import {
   AgentAction,
+  AgentFile,
   AgentMessage,
   AiAgentStoredSession
 } from '@shared/models/ai-agent.models';
 
 const STORAGE_PREFIX = 'AI_AGENT_CHAT_V1';
 const POSITION_PREFIX = 'AI_AGENT_FAB_POSITION_V1';
+const PANEL_PREFIX = 'AI_AGENT_PANEL_V1';
 const SESSION_VERSION = 1;
 const MAX_MESSAGES = 100;
 const MAX_STORAGE_CHARS = 3_500_000;
@@ -16,6 +18,13 @@ const MAX_STORAGE_CHARS = 3_500_000;
 export interface AiAgentFabPosition {
   left: number;
   top: number;
+}
+
+export interface AiAgentPanelState {
+  left: number;
+  top: number;
+  width: number;
+  height: number;
 }
 
 @Injectable({
@@ -37,6 +46,13 @@ export class AiAgentHistoryService {
     return `${POSITION_PREFIX}_${tenantId || 'sys'}_${userId}`;
   }
 
+  static buildPanelKey(tenantId: string | null | undefined, userId: string | null | undefined): string | null {
+    if (!userId) {
+      return null;
+    }
+    return `${PANEL_PREFIX}_${tenantId || 'sys'}_${userId}`;
+  }
+
   load(key: string | null): AiAgentStoredSession | null {
     if (!key || typeof localStorage === 'undefined') {
       return null;
@@ -55,7 +71,6 @@ export class AiAgentHistoryService {
         messages: this.normalizeMessages(parsed.messages),
         pendingActions: this.normalizeActions(parsed.pendingActions),
         tsl: parsed.tsl ?? null,
-        tslFileName: typeof parsed.tslFileName === 'string' ? parsed.tslFileName : null,
         savedAt: typeof parsed.savedAt === 'string' ? parsed.savedAt : new Date().toISOString()
       };
     } catch {
@@ -118,6 +133,50 @@ export class AiAgentHistoryService {
     }
   }
 
+  loadPanelState(key: string | null): AiAgentPanelState | null {
+    if (!key || typeof localStorage === 'undefined') {
+      return null;
+    }
+    try {
+      const raw = localStorage.getItem(key);
+      if (!raw) {
+        return null;
+      }
+      const parsed = JSON.parse(raw);
+      if (
+        typeof parsed?.left !== 'number'
+        || typeof parsed?.top !== 'number'
+        || typeof parsed?.width !== 'number'
+        || typeof parsed?.height !== 'number'
+        || !Number.isFinite(parsed.left)
+        || !Number.isFinite(parsed.top)
+        || !Number.isFinite(parsed.width)
+        || !Number.isFinite(parsed.height)
+      ) {
+        return null;
+      }
+      return {
+        left: parsed.left,
+        top: parsed.top,
+        width: parsed.width,
+        height: parsed.height
+      };
+    } catch {
+      return null;
+    }
+  }
+
+  savePanelState(key: string | null, state: AiAgentPanelState): void {
+    if (!key || typeof localStorage === 'undefined') {
+      return;
+    }
+    try {
+      localStorage.setItem(key, JSON.stringify(state));
+    } catch (error) {
+      console.warn('Failed to persist AI agent panel state', error);
+    }
+  }
+
   clear(key: string | null): void {
     if (!key || typeof localStorage === 'undefined') {
       return;
@@ -133,10 +192,28 @@ export class AiAgentHistoryService {
     if (!Array.isArray(value)) {
       return [];
     }
-    return value.filter((item): item is AgentMessage =>
+    return value
+      .filter((item): item is AgentMessage =>
+        item
+        && (item.role === 'user' || item.role === 'assistant')
+        && typeof item.content === 'string'
+      )
+      .map((item) => {
+        const files = this.normalizeFiles(item.files);
+        return files.length ? {...item, files} : {role: item.role, content: item.content};
+      });
+  }
+
+  private normalizeFiles(value: unknown): AgentFile[] {
+    if (!Array.isArray(value)) {
+      return [];
+    }
+    return value.filter((item): item is AgentFile =>
       item
-      && (item.role === 'user' || item.role === 'assistant')
-      && typeof item.content === 'string'
+      && typeof item.id === 'string'
+      && typeof item.name === 'string'
+      && typeof item.mime_type === 'string'
+      && typeof item.size === 'number'
     );
   }
 

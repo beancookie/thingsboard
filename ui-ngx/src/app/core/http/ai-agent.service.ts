@@ -3,8 +3,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { AgentChatRequest, AgentChatResponse } from '@shared/models/ai-agent.models';
-import { defaultHttpOptionsFromConfig, RequestConfig } from './http-utils';
+import { AgentChatRequest, AgentChatResponse, AgentFile } from '@shared/models/ai-agent.models';
+import {
+  defaultHttpOptionsFromConfig,
+  defaultHttpUploadOptions,
+  RequestConfig
+} from './http-utils';
 
 @Injectable({
   providedIn: 'root'
@@ -19,6 +23,16 @@ export class AiAgentService {
       '/api/ai-agent/chat',
       request,
       defaultHttpOptionsFromConfig(config)
+    );
+  }
+
+  uploadFile(file: File): Observable<AgentFile> {
+    const formData = new FormData();
+    formData.append('file', file, file.name);
+    return this.http.post<AgentFile>(
+      '/api/ai-agent/files',
+      formData,
+      defaultHttpUploadOptions()
     );
   }
 }

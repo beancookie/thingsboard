@@ -6,7 +6,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
 from app.agent.orchestrator import AgentService
-from app.api import agent, health
+from app.api import agent, files, health, internal
 from app.common.errors import AgentError
 from app.config import get_settings
 
@@ -22,7 +22,12 @@ async def lifespan(app: FastAPI):
     settings = get_settings()
     app.state.settings = settings
     app.state.agent = AgentService(settings)
-    logger.info("AI Agent started: enabled=%s model=%s", settings.enabled, settings.openai_model)
+    logger.info(
+        "AI Agent started: enabled=%s engine=%s model=%s",
+        settings.enabled,
+        settings.engine,
+        settings.dsh_model if settings.engine == "dsh" else settings.openai_model,
+    )
     try:
         yield
     finally:
@@ -38,6 +43,8 @@ app = FastAPI(
 )
 app.include_router(health.router)
 app.include_router(agent.router)
+app.include_router(files.router)
+app.include_router(internal.router)
 
 
 @app.exception_handler(AgentError)

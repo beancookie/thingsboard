@@ -54,6 +54,62 @@ async def test_thingsboard_error_is_mapped() -> None:
 
 
 @pytest.mark.asyncio
+async def test_thingsboard_rejects_oversized_response() -> None:
+    async def handler(_: httpx.Request) -> httpx.Response:
+        return httpx.Response(200, content=b"x" * 11, headers={"content-type": "text/plain"})
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+        with pytest.raises(AgentError) as error:
+            await ThingsBoardClient(client, "http://tb.local", max_response_bytes=10).request(
+                "GET",
+                "/api/tenants",
+                "tb-token",
+            )
+
+    assert error.value.code == "API_RESPONSE_TOO_LARGE"
+
+
+@pytest.mark.asyncio
+async def test_thingsboard_generic_request() -> None:
+    async def handler(request: httpx.Request) -> httpx.Response:
+        assert request.method == "GET"
+        assert request.url.path == "/api/tenants"
+        assert request.url.params["pageSize"] == "10"
+        assert request.headers["X-Authorization"] == "Bearer tb-token"
+        return httpx.Response(200, json={"data": []})
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+        result = await ThingsBoardClient(client, "http://tb.local").request(
+            "GET",
+            "/api/tenants",
+            "tb-token",
+            params={"pageSize": 10},
+        )
+
+    assert result == {"data": []}
+
+
+@pytest.mark.asyncio
+async def test_thing_model_generic_request() -> None:
+    async def handler(request: httpx.Request) -> httpx.Response:
+        assert request.method == "POST"
+        assert request.url.path == "/api/products"
+        assert request.content == b'{"productId":"P1"}'
+        assert request.headers["X-Authorization"] == "Bearer tb-token"
+        return httpx.Response(200, json={"productId": "P1"})
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+        result = await ThingModelClient(client, "http://tm.local").request(
+            "POST",
+            "/api/products",
+            "tb-token",
+            json={"productId": "P1"},
+        )
+
+    assert result == {"productId": "P1"}
+
+
+@pytest.mark.asyncio
 async def test_thing_model_create_product_and_provision() -> None:
     calls: list[str] = []
 
