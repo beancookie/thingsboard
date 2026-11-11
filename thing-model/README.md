@@ -333,6 +333,7 @@ curl -X POST "http://localhost:8090/api/products" \
 - `404`：产品/物模型不存在
 - `409`：ProductId 冲突、同版本 TSL 内容冲突
 - `502`：ThingsBoard 调用失败
+- `500` + `TENANT_CREDENTIAL_DECRYPT_FAILED`：服务账号密文无法用当前 `THINGMODEL_SECRET_KEY` 解密，需重新执行 `provision-auto?force=true` 或重新注册服务账号
 
 ## 当前范围
 

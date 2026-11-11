@@ -4,11 +4,15 @@ import com.iot.thingmodel.common.ApiException;
 import com.iot.thingmodel.common.Constants;
 import java.util.Optional;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
 public class TenantAccountService {
+
+    private static final Logger log = LoggerFactory.getLogger(TenantAccountService.class);
 
     private final TenantAccountRepository repository;
     private final CredentialCipher cipher;
@@ -66,7 +70,19 @@ public class TenantAccountService {
                     Constants.ErrorCode.TENANT_ACCOUNT_DISABLED,
                     "厂商租户服务账号已停用");
         }
-        return new TenantCredentials(row.username(), cipher.decrypt(row.passwordCipher()));
+        String password;
+        try {
+            password = cipher.decrypt(row.passwordCipher());
+        } catch (IllegalStateException ex) {
+            log.warn("Tenant {} service account credentials cannot be decrypted: {}",
+                    tenantId, ex.getMessage());
+            throw new ApiException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    Constants.ErrorCode.TENANT_CREDENTIAL_DECRYPT_FAILED,
+                    "厂商租户服务账号凭据无法解密，可能是 THINGMODEL_SECRET_KEY 已变更。"
+                            + "请重新执行 provision-auto 或重新注册服务账号");
+        }
+        return new TenantCredentials(row.username(), password);
     }
 
     public Optional<MaskedAccount> findMasked(UUID tenantId) {

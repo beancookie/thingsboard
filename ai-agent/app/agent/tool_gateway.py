@@ -59,21 +59,29 @@ class AgentToolGateway:
             return _error("OPERATION_NOT_FOUND", "未找到或未启用该接口")
 
         try:
+            values = dict(params or {})
+            if (
+                session.tsl is not None
+                and "tsl" in operation.params
+                and values.get("tsl") is None
+            ):
+                values["tsl"] = session.tsl
+
             if operation.mode == "read":
                 data = await self._executor.execute(
                     operation,
                     session.token,
                     session.user,
-                    params or {},
+                    values,
                 )
                 return {"status": "OK", "data": data}
 
-            self._executor.prepare(operation, params or {}, session.user)
+            self._executor.prepare(operation, values, session.user)
             action = AgentAction(
                 id=uuid4().hex,
                 type=operation.id,
                 summary=operation.summary,
-                params=params or {},
+                params=values,
                 status="PROPOSED",
                 risk=operation.risk,
             )

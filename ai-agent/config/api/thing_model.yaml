@@ -111,6 +111,43 @@
       type: boolean
       default: false
       description: 是否拒绝未知字段
+    tsl:
+      in: body
+      type: object
+      description: 物模型 TSL JSON；用户未提供时由模型生成
+
+- id: thing_model.updateThingModel
+  service: thing_model
+  method: PUT
+  path: /api/products/{productId}/thing-model
+  summary: 更新产品物模型
+  aliases: [更新物模型, 修改物模型, 提交新 TSL 版本, update thing model, update tsl]
+  tags: [product, tsl, update]
+  mode: write
+  code_access: write
+  permission: TENANT_ADMIN
+  risk: medium
+  enabled: true
+  handler: update_thing_model
+  params:
+    productId:
+      in: path
+      type: string
+      required: true
+    tslVersion:
+      in: body
+      type: string
+      description: 新 TSL 版本
+    tsl:
+      in: body
+      type: object
+      required: true
+      description: 完整物模型 TSL；只传 tslVersion 或 tsl=null 会失败
+    strictUnknown:
+      in: body
+      type: boolean
+      default: false
+      description: 是否拒绝未知字段
 
 - id: thing_model.validateThingModel
   service: thing_model

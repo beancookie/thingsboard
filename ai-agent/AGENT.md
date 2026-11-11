@@ -123,6 +123,7 @@ ai-agent/
 │   │   ├── sessions.py          DSH 短期会话上下文
 │   │   ├── tool_gateway.py      搜索/调用/写提案工具网关
 │   │   ├── models.py            请求/响应和动作参数模型
+│   │   ├── tsl_prompt.py        物模型 TSL 生成规则和示例
 │   │   └── prompts.py           系统提示词
 │   ├── clients/
 │   │   ├── thingsboard.py       ThingsBoard REST 客户端

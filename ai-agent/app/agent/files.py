@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import re
 import time
+import unicodedata
 from dataclasses import dataclass
 from threading import Lock
 from uuid import uuid4
@@ -9,7 +10,8 @@ from uuid import uuid4
 from app.agent.models import AgentFile
 from app.common.errors import AgentError
 
-_INVALID_FILENAME = re.compile(r"[^A-Za-z0-9_.\-]+")
+_INVALID_FILENAME = re.compile(r"[^\w.\- ]+", re.UNICODE)
+_MAX_FILENAME_LENGTH = 255
 
 
 @dataclass
@@ -92,6 +94,17 @@ class FileStore:
 
     @staticmethod
     def _safe_name(name: str) -> str:
-        value = (name or "").strip().replace("\\", "/").rsplit("/", 1)[-1]
+        value = unicodedata.normalize("NFC", name or "")
+        value = value.replace("\\", "/").rsplit("/", 1)[-1]
+        value = "".join(ch for ch in value if unicodedata.category(ch)[0] != "C")
         value = _INVALID_FILENAME.sub("_", value).strip(" .")
-        return value or "download.bin"
+        if not value:
+            return "upload.bin"
+        if len(value) <= _MAX_FILENAME_LENGTH:
+            return value
+        stem, dot, suffix = value.rpartition(".")
+        if dot and stem and len(suffix) <= 16:
+            keep = _MAX_FILENAME_LENGTH - len(suffix) - 1
+            stem = stem[:keep].rstrip(" ._") or "file"
+            return f"{stem}.{suffix}"
+        return value[:_MAX_FILENAME_LENGTH].rstrip(" ._") or "upload.bin"

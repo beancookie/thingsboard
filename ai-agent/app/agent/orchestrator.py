@@ -93,6 +93,7 @@ class AgentService:
             thing_model,
             self.api_catalog,
             self._api_executor,
+            settings.max_tsl_bytes,
         )
         self._llm = OpenAiChatClient(settings)
         self._sessions = SessionStore(settings.max_actions)

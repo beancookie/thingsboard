@@ -82,6 +82,21 @@ class TenantAccountServiceTest {
     }
 
     @Test
+    void rejectsUndecryptableCredentialsWithActionableError() {
+        when(repository.find(tenantId)).thenReturn(Optional.of(
+                new TenantAccountRepository.TenantAccountRow(
+                        tenantId, "user", "cipher", true, Instant.now(), Instant.now())));
+        when(cipher.decrypt("cipher")).thenThrow(new IllegalStateException("Tag mismatch"));
+
+        ApiException ex = assertThrows(ApiException.class,
+                () -> service.credentials(tenantId));
+
+        assertEquals(Constants.ErrorCode.TENANT_CREDENTIAL_DECRYPT_FAILED, ex.getCode());
+        assertTrue(ex.getMessage().contains("THINGMODEL_SECRET_KEY"));
+        assertTrue(ex.getMessage().contains("provision-auto"));
+    }
+
+    @Test
     void decryptsCredentials() {
         when(repository.find(tenantId)).thenReturn(Optional.of(
                 new TenantAccountRepository.TenantAccountRow(

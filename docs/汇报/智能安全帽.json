@@ -1,0 +1,111 @@
+{
+  "version": "1.0",
+  "profile": {
+    "ProductId": "BDSM4K7T2Q"
+  },
+  "properties": [
+    {
+      "id": "longitude",
+      "name": "经度",
+      "desc": "设备当前经度",
+      "mode": "r",
+      "required": true,
+      "define": {
+        "type": "float",
+        "min": -180,
+        "max": 180,
+        "step": 0.000001,
+        "unit": "°"
+      }
+    },
+    {
+      "id": "latitude",
+      "name": "纬度",
+      "desc": "设备当前纬度",
+      "mode": "r",
+      "required": true,
+      "define": {
+        "type": "float",
+        "min": -90,
+        "max": 90,
+        "step": 0.000001,
+        "unit": "°"
+      }
+    },
+    {
+      "id": "fence_id",
+      "name": "当前围栏ID",
+      "desc": "设备当前所处围栏标识，最长 64 字符",
+      "mode": "r",
+      "define": {
+        "type": "string"
+      }
+    },
+    {
+      "id": "in_fence",
+      "name": "是否在围栏内",
+      "desc": "设备当前是否位于电子围栏内",
+      "mode": "r",
+      "required": true,
+      "define": {
+        "type": "bool"
+      }
+    }
+  ],
+  "events": [
+    {
+      "id": "fence_event",
+      "name": "进出围栏事件",
+      "desc": "设备进入或离开电子围栏时触发",
+      "type": "info",
+      "params": [
+        {
+          "id": "fence_id",
+          "name": "围栏ID",
+          "define": {
+            "type": "string"
+          }
+        },
+        {
+          "id": "direction",
+          "name": "进出方向",
+          "define": {
+            "type": "enum",
+            "mapping": {
+              "0": "进入",
+              "1": "离开"
+            }
+          }
+        },
+        {
+          "id": "longitude",
+          "name": "经度",
+          "define": {
+            "type": "float",
+            "min": -180,
+            "max": 180,
+            "unit": "°"
+          }
+        },
+        {
+          "id": "latitude",
+          "name": "纬度",
+          "define": {
+            "type": "float",
+            "min": -90,
+            "max": 90,
+            "unit": "°"
+          }
+        },
+        {
+          "id": "event_time",
+          "name": "事件时间",
+          "desc": "毫秒时间戳",
+          "define": {
+            "type": "timestamp"
+          }
+        }
+      ]
+    }
+  ]
+}

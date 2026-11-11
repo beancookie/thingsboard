@@ -73,6 +73,33 @@ def _catalog() -> ApiCatalog:
                     },
                 }
             ),
+            ApiOperation.model_validate(
+                {
+                    "id": "thing_model.updateThingModel",
+                    "service": "thing_model",
+                    "method": "PUT",
+                    "path": "/api/products/{productId}/thing-model",
+                    "summary": "更新产品物模型",
+                    "aliases": ["更新物模型"],
+                    "mode": "write",
+                    "code_access": "write",
+                    "permission": "TENANT_ADMIN",
+                    "risk": "medium",
+                    "handler": "update_thing_model",
+                    "params": {
+                        "productId": {
+                            "in": "path",
+                            "type": "string",
+                            "required": True,
+                        },
+                        "tsl": {
+                            "in": "body",
+                            "type": "object",
+                            "required": True,
+                        },
+                    },
+                }
+            ),
         ]
     )
 
@@ -137,6 +164,56 @@ async def test_write_only_creates_proposal(gateway, sys_admin) -> None:
     assert proposals[0].type == "thingsboard.createTenant"
     assert proposals[0].params == {"title": "测试厂商"}
     assert proposals[0].risk == "medium"
+
+
+@pytest.mark.asyncio
+async def test_write_injects_session_tsl_when_missing(gateway, tenant_admin) -> None:
+    tool_gateway, _, sessions = gateway
+    tsl = {"profile": {"ProductId": "P1"}, "properties": []}
+    session = sessions.create("tb-token", tenant_admin, tsl=tsl)
+
+    result = await tool_gateway.call(
+        session.session_id,
+        "thing_model.updateThingModel",
+        {"productId": "P1"},
+    )
+
+    assert result["status"] == "PROPOSED"
+    proposals = sessions.drain_proposals(session.session_id)
+    assert proposals[0].params["tsl"] == tsl
+
+
+@pytest.mark.asyncio
+async def test_write_replaces_null_tsl_with_session_tsl(gateway, tenant_admin) -> None:
+    tool_gateway, _, sessions = gateway
+    tsl = {"profile": {"ProductId": "P1"}, "properties": []}
+    session = sessions.create("tb-token", tenant_admin, tsl=tsl)
+
+    result = await tool_gateway.call(
+        session.session_id,
+        "thing_model.updateThingModel",
+        {"productId": "P1", "tsl": None},
+    )
+
+    assert result["status"] == "PROPOSED"
+    proposals = sessions.drain_proposals(session.session_id)
+    assert proposals[0].params["tsl"] == tsl
+
+
+@pytest.mark.asyncio
+async def test_write_requires_tsl_when_no_attachment(gateway, tenant_admin) -> None:
+    tool_gateway, _, sessions = gateway
+    session = sessions.create("tb-token", tenant_admin)
+
+    result = await tool_gateway.call(
+        session.session_id,
+        "thing_model.updateThingModel",
+        {"productId": "P1"},
+    )
+
+    assert result["status"] == "ERROR"
+    assert result["code"] == "API_PARAMETER_REQUIRED"
+    assert sessions.drain_proposals(session.session_id) == []
 
 
 @pytest.mark.asyncio

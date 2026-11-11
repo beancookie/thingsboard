@@ -282,6 +282,12 @@ X-Authorization: Bearer <TB_JWT>
 
 写操作只生成待确认动作，用户确认后才执行。
 
+`create_product` 支持三种 TSL 来源：
+
+1. AI 在动作 `params.tsl` 中生成的 TSL
+2. 本次请求附带的 `tsl`
+3. 两者都没有时，自动生成 `properties: []` 的最小合法 TSL
+
 ## 测试
 
 单元测试和接口测试：

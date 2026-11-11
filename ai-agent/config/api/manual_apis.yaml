@@ -25,31 +25,6 @@
       in: body
       type: object
   tenant_param: tenantId
-- id: thing_model.put.products_by_productid_thing_model
-  service: thing_model
-  method: PUT
-  path: /api/products/{productId}/thing-model
-  summary: 提交新 TSL 版本
-  aliases:
-  - 产品
-  - products
-  - thing-model
-  tags:
-  - products
-  - 产品
-  mode: write
-  code_access: write
-  permission: TENANT_ADMIN
-  risk: medium
-  enabled: true
-  params:
-    productId:
-      in: path
-      type: string
-      required: true
-    $body:
-      in: body
-      type: object
 - id: thingsboard.delete.alarm_by_alarmid
   service: thingsboard
   method: DELETE
@@ -1055,35 +1030,6 @@
   mode: read
   code_access: read
   permission: TENANT_ADMIN
-  risk: low
-  enabled: true
-  params:
-    pageSize:
-      in: query
-      type: integer
-      default: 100
-    page:
-      in: query
-      type: integer
-      default: 0
-    textSearch:
-      in: query
-      type: string
-- id: thingsboard.get.auth_user
-  service: thingsboard
-  method: GET
-  path: /api/auth/user
-  summary: 查询用户
-  aliases:
-  - 用户
-  - auth
-  - user
-  tags:
-  - auth
-  - 用户
-  mode: read
-  code_access: read
-  permission: ANY
   risk: low
   enabled: true
   params:
@@ -2397,34 +2343,6 @@
       in: query
       type: integer
       default: 0
-- id: thingsboard.get.tenant
-  service: thingsboard
-  method: GET
-  path: /api/tenant
-  summary: 查询租户
-  aliases:
-  - 租户
-  - tenant
-  tags:
-  - tenant
-  - 租户
-  mode: read
-  code_access: read
-  permission: SYS_ADMIN
-  risk: low
-  enabled: true
-  params:
-    pageSize:
-      in: query
-      type: integer
-      default: 100
-    page:
-      in: query
-      type: integer
-      default: 0
-    textSearch:
-      in: query
-      type: string
 - id: thingsboard.get.tenant_assets
   service: thingsboard
   method: GET

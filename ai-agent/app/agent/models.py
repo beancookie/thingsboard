@@ -1,6 +1,6 @@
 from typing import Any, Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import AliasChoices, BaseModel, ConfigDict, Field
 
 
 AgentMode = Literal["chat", "execute"]
@@ -81,6 +81,27 @@ class CreateProductArgs(BaseModel):
     category_id: str | None = Field(default=None, max_length=64)
     tsl_version: str | None = Field(default=None, max_length=32)
     strict_unknown: bool = False
+    tsl: dict[str, Any] | None = None
+
+
+class UpdateThingModelArgs(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    product_id: str = Field(
+        min_length=1,
+        max_length=64,
+        validation_alias=AliasChoices("product_id", "productId"),
+    )
+    tsl: dict[str, Any] | None = None
+    tsl_version: str | None = Field(
+        default=None,
+        max_length=32,
+        validation_alias=AliasChoices("tsl_version", "tslVersion"),
+    )
+    strict_unknown: bool = Field(
+        default=False,
+        validation_alias=AliasChoices("strict_unknown", "strictUnknown"),
+    )
 
 
 class CreateDeviceArgs(BaseModel):
@@ -116,6 +137,7 @@ ACTION_MODELS = {
     "create_tenant": CreateTenantArgs,
     "create_tenant_admin": CreateTenantAdminArgs,
     "create_product": CreateProductArgs,
+    "update_thing_model": UpdateThingModelArgs,
     "create_device": CreateDeviceArgs,
     "create_user": CreateUserArgs,
     "list_products": ListProductsArgs,

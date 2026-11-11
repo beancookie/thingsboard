@@ -92,7 +92,7 @@
             @for (file of attachments(); track file.id) {
               <div class="tb-ai-agent-file-chip">
                 <mat-icon>description</mat-icon>
-                <span class="tb-ai-agent-file-name">{{ file.name }}</span>
+                <span class="tb-ai-agent-file-name" [title]="file.name">{{ file.name }}</span>
                 <span class="tb-ai-agent-file-size">{{ formatFileSize(file.size) }}</span>
                 <button mat-icon-button type="button" (click)="removeAttachment(file)"
                         [matTooltip]="'ai-agent.remove-file' | translate" matTooltipPosition="above">

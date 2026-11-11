@@ -426,6 +426,7 @@ public final class Constants {
         public static final String TENANT_ACCOUNT_MISSING = "TENANT_ACCOUNT_MISSING";
         public static final String TENANT_ACCOUNT_DISABLED = "TENANT_ACCOUNT_DISABLED";
         public static final String TENANT_ACCOUNT_CONFLICT = "TENANT_ACCOUNT_CONFLICT";
+        public static final String TENANT_CREDENTIAL_DECRYPT_FAILED = "TENANT_CREDENTIAL_DECRYPT_FAILED";
         public static final String TENANT_NOT_FOUND = "TENANT_NOT_FOUND";
         public static final String PRODUCT_NOT_FOUND = "PRODUCT_NOT_FOUND";
         public static final String PRODUCT_ID_CONFLICT = "PRODUCT_ID_CONFLICT";

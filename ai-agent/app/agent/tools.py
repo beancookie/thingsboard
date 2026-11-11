@@ -61,7 +61,7 @@ TOOL_SPECS: list[dict[str, Any]] = [
     ),
     _tool(
         "create_product",
-        "使用本次请求附带的 TSL 创建产品，并自动同步 ThingsBoard。TENANT_ADMIN 只能操作本租户。",
+        "创建产品并自动同步 ThingsBoard。优先使用用户提供的 TSL；未提供时由模型生成合法 TSL 并放入 tsl 参数。",
         {
             "product_id": {"type": "string", "description": "产品 ID，租户内唯一"},
             "name": {"type": "string", "description": "产品名称"},
@@ -69,8 +69,28 @@ TOOL_SPECS: list[dict[str, Any]] = [
             "category_id": {"type": "string", "description": "产品分类"},
             "tsl_version": {"type": "string", "description": "TSL 版本"},
             "strict_unknown": {"type": "boolean", "description": "是否拒绝未知字段"},
+            "tsl": {
+                "type": "object",
+                "description": "物模型 TSL JSON；用户未提供时由模型根据产品信息生成",
+                "additionalProperties": True,
+            },
         },
         ["product_id", "name"],
+    ),
+    _tool(
+        "update_thing_model",
+        "更新已有产品的物模型。必须提供完整 TSL；用户已上传 TSL 时可省略 tsl 参数。",
+        {
+            "product_id": {"type": "string", "description": "产品 ID"},
+            "tsl": {
+                "type": "object",
+                "description": "完整物模型 TSL JSON；不能为空，不能只传版本",
+                "additionalProperties": True,
+            },
+            "tsl_version": {"type": "string", "description": "新 TSL 版本"},
+            "strict_unknown": {"type": "boolean", "description": "是否拒绝未知字段"},
+        },
+        ["product_id"],
     ),
     _tool(
         "create_device",
@@ -149,6 +169,7 @@ WRITE_TOOLS = {
     "create_tenant",
     "create_tenant_admin",
     "create_product",
+    "update_thing_model",
     "create_device",
     "create_user",
 }
@@ -157,6 +178,7 @@ TOOL_SUMMARIES = {
     "create_tenant": "创建租户",
     "create_tenant_admin": "创建租户管理员",
     "create_product": "创建产品",
+    "update_thing_model": "更新物模型",
     "create_device": "创建设备",
     "create_user": "创建用户",
     "list_tenants": "查询租户",

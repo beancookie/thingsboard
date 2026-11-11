@@ -164,7 +164,6 @@ export interface AgentChatResponse {
   reply: string;
   actions: AgentAction[];
   executed: AgentActionResult[];
-  files?: AgentFile[];
 }
 ```
 
@@ -435,7 +434,7 @@ ai-agent/config/api/
 
 - 现有操作继续复用原显式方法和 handler。
 - 新增接口默认走 `ApiExecutor` 通用执行。
-- 复杂业务保留 handler，例如创建租户后初始化服务账号、创建产品时使用会话 TSL、创建设备后写服务端属性。
+- 复杂业务保留 handler，例如创建租户后初始化服务账号、创建产品时优先使用 `params.tsl`、其次会话 TSL、创建设备后写服务端属性。
 - `ApiExecutor` 只负责按目录选择客户端、组装参数、调用 `request`，不新建第二套 HTTP 栈。
 
 ### OpenAPI 导入与 overrides
@@ -856,21 +855,33 @@ thing-model/migrate/4DZDCQUA2D.tsl.json
 
 预期：DSH 搜索到 `thing_model.listProducts` 和 `thingsboard.listTenantDevices`，只返回当前租户数据。
 
-### 11.15.7 上传 TSL 并创建产品
+### 11.15.7 创建产品
 
-上传 `4DZDCQUA2D.tencent.json`，输入：
+有 TSL 附件时：
 
 ```text
 使用附件中的 TSL 创建产品，产品 ID 为 4DZDCQUA2D，名称是挖掘机物模型，型号 4DZDCQUA2D，分类 1
 ```
 
+没有 TSL 时：
+
+```text
+创建一个温度湿度传感器产品，产品 ID 为 ENV_SENSOR_001
+```
+
 预期：
 
-- DSH 搜索到 `thing_model.createProduct`，handler 读取会话附件中的 TSL。
+- DSH 搜索到 `thing_model.createProduct`。
+- 有附件时优先使用附件 TSL。
+- 无附件时模型根据产品名称和型号生成合法 TSL，并放入 `params.tsl`。
 - 生成 `PROPOSED` 动作；确认后创建产品并自动生效。
 - 返回产品配置、产品资产和规则链信息。
 
-注意：产品 ID 全系统唯一；TSL 中的 `profile.ProductId` 必须与请求一致。
+注意：
+
+- 产品 ID 全系统唯一。
+- TSL 中的 `profile.ProductId` 必须与产品 ID 一致。
+- 模型无法判断属性时，生成 `properties: []` 的最小合法 TSL，不阻塞创建。
 
 ### 11.15.8 创建设备
 
@@ -937,7 +948,7 @@ thing-model/migrate/4DZDCQUA2D.tsl.json
 | 取消待确认动作 | 不调用平台，不产生数据 |
 | 租户管理员查询所有租户 | 返回权限不足 |
 | 调用未知或未启用接口 | 返回 `OPERATION_NOT_FOUND`，不调用后端 |
-| 缺少 TSL 创建产品 | 提示先上传 TSL，不生成可执行动作 |
+| 缺少 TSL 创建产品 | 自动生成最小 TSL（`properties: []`）后生成待确认动作 |
 | 产品 ID 重复 | 返回全系统唯一冲突 |
 | 超过消息/动作上限 | 静默丢弃最早内容，不报错 |
 | AI 服务或 DSH 不可用 | 返回失败提示，不执行动作；可回滚 `AI_AGENT_ENGINE=openai` |
@@ -952,7 +963,7 @@ thing-model/migrate/4DZDCQUA2D.tsl.json
 | 创建租户 | 确认后创建成功，服务账号自动初始化 |
 | 创建租户管理员 | 确认后创建用户，触发激活邮件 |
 | 查询产品/设备 | 只返回当前租户数据 |
-| 上传 TSL 创建产品 | TSL 自动识别，校验通过并自动生效 |
+| 创建产品 | 有 TSL 时优先使用；无 TSL 时自动生成合法 TSL，校验通过并自动生效 |
 | 创建设备 | 绑定正确产品配置和产品属性 |
 | 创建用户 | 角色正确，触发激活邮件 |
 | 通用接口 | 新增目录后无需改插件即可调用 |

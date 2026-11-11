@@ -19,6 +19,7 @@ def test_read_and_write_tools_are_declared() -> None:
         "create_tenant",
         "create_tenant_admin",
         "create_product",
+        "update_thing_model",
         "create_device",
         "create_user",
     }
@@ -34,6 +35,15 @@ def test_catalog_tool_names_are_declared() -> None:
     names = [tool["function"]["name"] for tool in CATALOG_TOOL_SPECS]
 
     assert names == ["search_api_operations", "call_api_operation"]
+
+
+def test_create_product_tool_accepts_tsl() -> None:
+    tool = next(
+        item for item in TOOL_SPECS
+        if item["function"]["name"] == "create_product"
+    )
+
+    assert tool["function"]["parameters"]["properties"]["tsl"]["type"] == "object"
 
 
 def test_tool_parameters_are_valid_object_schemas() -> None:

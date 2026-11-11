@@ -1,3 +1,4 @@
+import json
 import logging
 import re
 from typing import Any
@@ -17,6 +18,7 @@ from app.agent.models import (
     CreateUserArgs,
     ListDevicesArgs,
     ListProductsArgs,
+    UpdateThingModelArgs,
 )
 from app.auth.thingsboard import CurrentUser
 from app.clients.thing_model import ThingModelClient
@@ -34,11 +36,13 @@ class AgentActionExecutor:
         thing_model: ThingModelClient,
         catalog: ApiCatalog | None = None,
         api_executor: ApiExecutor | None = None,
+        max_tsl_bytes: int = 2_000_000,
     ):
         self._thingsboard = thingsboard
         self._thing_model = thing_model
         self._catalog = catalog
         self._api_executor = api_executor
+        self._max_tsl_bytes = max(1, max_tsl_bytes)
 
     async def execute(
         self,
@@ -133,6 +137,8 @@ class AgentActionExecutor:
             return await self._create_tenant_admin(params, user, token)
         if action_type == "create_product":
             return await self._create_product(params, user, token, tsl)
+        if action_type == "update_thing_model":
+            return await self._update_thing_model(params, user, token, tsl)
         if action_type == "create_device":
             return await self._create_device(params, user, token)
         if action_type == "create_user":
@@ -199,12 +205,40 @@ class AgentActionExecutor:
         tsl: Any | None,
     ) -> dict[str, Any]:
         _require_tenant_admin(user)
-        if tsl is None:
-            raise AgentError("缺少物模型 TSL，请先上传或粘贴 TSL JSON")
+        tsl_source: Any = params.tsl if params.tsl is not None else tsl
+        if tsl_source is None:
+            tsl_source = {
+                "version": "1.0",
+                "profile": {"ProductId": params.product_id},
+                "properties": [],
+            }
+        if not isinstance(tsl_source, dict):
+            raise AgentError("物模型 TSL 必须是 JSON 对象")
+
+        tsl_source = dict(tsl_source)
+        tsl_source.setdefault("version", "1.0")
+        profile = tsl_source.get("profile")
+        profile = dict(profile) if isinstance(profile, dict) else {}
+        product_id = profile.get("ProductId", profile.get("productId"))
+        if product_id is None:
+            profile["ProductId"] = params.product_id
+        elif str(product_id) != params.product_id:
+            raise AgentError("物模型 TSL 的 ProductId 与产品 ID 不一致")
+        tsl_source["profile"] = profile
+        tsl_source.setdefault("properties", [])
+        if not isinstance(tsl_source["properties"], list):
+            raise AgentError("物模型 TSL 的 properties 必须是数组")
+
+        size = len(json.dumps(tsl_source, ensure_ascii=False).encode("utf-8"))
+        if size > self._max_tsl_bytes:
+            raise AgentError(
+                f"物模型 TSL 不能超过 {self._max_tsl_bytes} 字节"
+            )
+
         body: dict[str, Any] = {
             "productId": params.product_id,
             "name": params.name,
-            "tsl": tsl,
+            "tsl": tsl_source,
             "strictUnknown": params.strict_unknown,
         }
         if params.model is not None:
@@ -216,6 +250,61 @@ class AgentActionExecutor:
         result = await self._thing_model.create_product(token, body)
         return {
             "productId": result.get("productId", params.product_id),
+            "tbProfileId": result.get("tbProfileId"),
+            "tbAssetId": result.get("tbAssetId"),
+            "tbRuleChainId": result.get("tbRuleChainId"),
+            "status": result.get("status"),
+        }
+
+    async def _update_thing_model(
+        self,
+        params: UpdateThingModelArgs,
+        user: CurrentUser,
+        token: str,
+        tsl: Any | None,
+    ) -> dict[str, Any]:
+        _require_tenant_admin(user)
+        tsl_source: Any = params.tsl if params.tsl is not None else tsl
+        if tsl_source is None:
+            raise AgentError("缺少物模型 TSL：请生成完整 TSL 后传入 tsl 参数")
+        if not isinstance(tsl_source, dict):
+            raise AgentError("物模型 TSL 必须是 JSON 对象")
+
+        tsl_source = dict(tsl_source)
+        if params.tsl_version is not None:
+            tsl_source.setdefault("version", params.tsl_version)
+        else:
+            tsl_source.setdefault("version", "1.0")
+
+        profile = tsl_source.get("profile")
+        profile = dict(profile) if isinstance(profile, dict) else {}
+        product_id = profile.get("ProductId", profile.get("productId"))
+        if product_id is None:
+            profile["ProductId"] = params.product_id
+        elif str(product_id) != params.product_id:
+            raise AgentError("物模型 TSL 的 ProductId 与产品 ID 不一致")
+        tsl_source["profile"] = profile
+
+        properties = tsl_source.setdefault("properties", [])
+        if not isinstance(properties, list):
+            raise AgentError("物模型 TSL 的 properties 必须是数组")
+
+        size = len(json.dumps(tsl_source, ensure_ascii=False).encode("utf-8"))
+        if size > self._max_tsl_bytes:
+            raise AgentError(f"物模型 TSL 不能超过 {self._max_tsl_bytes} 字节")
+
+        body: dict[str, Any] = {
+            "tsl": tsl_source,
+            "strictUnknown": params.strict_unknown,
+        }
+        if params.tsl_version is not None:
+            body["tslVersion"] = params.tsl_version
+        result = await self._thing_model.update_thing_model(
+            token, params.product_id, body
+        )
+        return {
+            "productId": result.get("productId", params.product_id),
+            "tslVersion": result.get("tslVersion", params.tsl_version),
             "tbProfileId": result.get("tbProfileId"),
             "tbAssetId": result.get("tbAssetId"),
             "tbRuleChainId": result.get("tbRuleChainId"),

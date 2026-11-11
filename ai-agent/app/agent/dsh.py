@@ -8,6 +8,7 @@ from typing import Any
 from deepseek_harness import DeepSeekHarness, DeepSeekHarnessConfig, RunResult
 
 from app.agent.models import AgentMessage
+from app.agent.tsl_prompt import tsl_generation_rules
 from app.auth.thingsboard import CurrentUser
 from app.common.errors import AgentError, AgentUnavailable
 from app.config import Settings
@@ -23,11 +24,16 @@ DSH_SYSTEM_PROMPT = """你是中国中铁物联网平台的 AI 助手。
 - 普通写操作只生成待确认动作，不要声称已经执行。
 - 查询遥测时，先通过设备名称查询设备 UUID，再调用 telemetry 接口。
 - 没有遥测键时，先查询遥测键；最新值不带 startTs/endTs，历史值带毫秒时间戳。
+- 用户提供 TSL 时优先使用；未提供时根据产品名称、型号和描述生成合法 TSL，并放入 create_product 或 update_thing_model 的 tsl 参数。
+- 更新已有产品物模型时，必须先搜索“更新物模型”接口，并把完整 TSL 放入 tsl 参数；不能只传 tslVersion，也不能传 tsl=null。
+- 无法判断具体属性时，生成 properties 为空的最小合法 TSL，不要拒绝创建产品。
 - 所有操作结果只以文本形式回复，不生成或返回文件。
 - 只使用当前提供的工具，不要尝试 shell、文件、网络或未提供的工具。
 - 不输出 JWT、密码、API Key、完整 TSL。
 - 使用简体中文回复。
 """
+
+DSH_SYSTEM_PROMPT = f"{DSH_SYSTEM_PROMPT}\n\n{tsl_generation_rules()}"
 
 
 class DshAgentClient:

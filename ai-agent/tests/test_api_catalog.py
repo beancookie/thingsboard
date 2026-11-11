@@ -92,7 +92,10 @@ def test_real_catalog_loads() -> None:
     assert catalog.get("thingsboard.listTenants") is not None
     assert catalog.get("thing_model.listProducts") is not None
     assert catalog.get("thing_model.createProduct").handler == "create_product"
-    assert (
-        catalog.get("thing_model.updateThingModel") is None
-        or catalog.get("thing_model.updateThingModel").enabled is False
-    )
+    update = catalog.require("thing_model.updateThingModel")
+    assert update.handler == "update_thing_model"
+    assert update.enabled is True
+    assert update.params["tsl"].required is True
+
+    assert catalog.get("thing_model.put.products_by_productid_thing_model") is None
+    assert catalog.search("更新物模型")[0].id == "thing_model.updateThingModel"

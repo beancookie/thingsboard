@@ -48,6 +48,7 @@ class FakeThingModel:
     def __init__(self) -> None:
         self.provisioned_tenant: str | None = None
         self.created_product_payload: dict[str, Any] | None = None
+        self.updated_thing_model: dict[str, Any] | None = None
 
     async def provision_auto(self, token: str, tenant_id: str, force: bool = False):
         self.provisioned_tenant = tenant_id
@@ -69,6 +70,19 @@ class FakeThingModel:
         self.created_product_payload = payload
         return {
             "productId": payload["productId"],
+            "tbProfileId": "profile-1",
+            "tbAssetId": "asset-1",
+            "tbRuleChainId": "chain-1",
+            "status": "PUBLISHED",
+        }
+
+    async def update_thing_model(
+        self, token: str, product_id: str, payload: dict[str, Any]
+    ):
+        self.updated_thing_model = {"productId": product_id, "payload": payload}
+        return {
+            "productId": product_id,
+            "tslVersion": payload.get("tslVersion", "1.0"),
             "tbProfileId": "profile-1",
             "tbAssetId": "asset-1",
             "tbRuleChainId": "chain-1",
@@ -136,12 +150,46 @@ async def test_create_product_requires_tsl_and_uses_tenant_admin(clients, tenant
     assert result.success is True
     assert result.data["productId"] == "P1"
     assert thing_model.created_product_payload["tsl"] == {
-        "profile": {"ProductId": "P1"}
+        "version": "1.0",
+        "profile": {"ProductId": "P1"},
+        "properties": [],
     }
 
 
 @pytest.mark.asyncio
-async def test_create_product_without_tsl_fails(clients, tenant_admin) -> None:
+async def test_create_product_uses_ai_generated_tsl(clients, tenant_admin) -> None:
+    _, thing_model = clients
+    executor = AgentActionExecutor(*clients)
+    action = AgentAction(
+        id="a1",
+        type="create_product",
+        params={
+            "product_id": "P1",
+            "name": "Product",
+            "tsl": {
+                "version": "1.0",
+                "profile": {"ProductId": "P1"},
+                "properties": [
+                    {
+                        "id": "temperature",
+                        "name": "温度",
+                        "mode": "r",
+                        "define": {"type": "float", "unit": "℃"},
+                    }
+                ],
+            },
+        },
+    )
+
+    result = await executor.execute(action, tenant_admin, "token", None)
+
+    assert result.success is True
+    assert thing_model.created_product_payload["tsl"]["properties"][0]["id"] == "temperature"
+
+
+@pytest.mark.asyncio
+async def test_create_product_without_tsl_uses_minimal_tsl(clients, tenant_admin) -> None:
+    _, thing_model = clients
     executor = AgentActionExecutor(*clients)
     action = AgentAction(
         id="a1",
@@ -151,8 +199,120 @@ async def test_create_product_without_tsl_fails(clients, tenant_admin) -> None:
 
     result = await executor.execute(action, tenant_admin, "token", None)
 
+    assert result.success is True
+    assert thing_model.created_product_payload["tsl"] == {
+        "version": "1.0",
+        "profile": {"ProductId": "P1"},
+        "properties": [],
+    }
+
+
+@pytest.mark.asyncio
+async def test_update_thing_model_uses_action_tsl(clients, tenant_admin) -> None:
+    _, thing_model = clients
+    executor = AgentActionExecutor(*clients)
+    action = AgentAction(
+        id="a1",
+        type="update_thing_model",
+        params={
+            "productId": "P1",
+            "tslVersion": "1.1",
+            "tsl": {
+                "version": "1.1",
+                "profile": {"ProductId": "P1"},
+                "properties": [
+                    {
+                        "id": "temperature",
+                        "name": "温度",
+                        "mode": "r",
+                        "define": {"type": "float"},
+                    }
+                ],
+            },
+        },
+    )
+
+    result = await executor.execute(action, tenant_admin, "token", None)
+
+    assert result.success is True
+    assert result.data["tslVersion"] == "1.1"
+    assert thing_model.updated_thing_model["productId"] == "P1"
+    assert thing_model.updated_thing_model["payload"]["tsl"]["properties"][0]["id"] == "temperature"
+
+
+@pytest.mark.asyncio
+async def test_update_thing_model_uses_attached_tsl(clients, tenant_admin) -> None:
+    _, thing_model = clients
+    executor = AgentActionExecutor(*clients)
+    action = AgentAction(
+        id="a1",
+        type="update_thing_model",
+        params={"productId": "P1"},
+    )
+
+    result = await executor.execute(
+        action,
+        tenant_admin,
+        "token",
+        {"profile": {"ProductId": "P1"}, "properties": []},
+    )
+
+    assert result.success is True
+    assert thing_model.updated_thing_model["payload"]["tsl"]["profile"]["ProductId"] == "P1"
+
+
+@pytest.mark.asyncio
+async def test_update_thing_model_requires_tsl(clients, tenant_admin) -> None:
+    _, thing_model = clients
+    executor = AgentActionExecutor(*clients)
+    action = AgentAction(
+        id="a1",
+        type="update_thing_model",
+        params={"productId": "P1"},
+    )
+
+    result = await executor.execute(action, tenant_admin, "token", None)
+
     assert result.success is False
-    assert "TSL" in result.message
+    assert "缺少物模型 TSL" in result.message
+    assert thing_model.updated_thing_model is None
+
+
+@pytest.mark.asyncio
+async def test_update_thing_model_rejects_product_id_mismatch(clients, tenant_admin) -> None:
+    _, thing_model = clients
+    executor = AgentActionExecutor(*clients)
+    action = AgentAction(
+        id="a1",
+        type="update_thing_model",
+        params={
+            "productId": "P1",
+            "tsl": {"profile": {"ProductId": "P2"}, "properties": []},
+        },
+    )
+
+    result = await executor.execute(action, tenant_admin, "token", None)
+
+    assert result.success is False
+    assert "ProductId" in result.message
+    assert thing_model.updated_thing_model is None
+
+
+@pytest.mark.asyncio
+async def test_update_thing_model_enforces_size_limit(clients, tenant_admin) -> None:
+    _, thing_model = clients
+    executor = AgentActionExecutor(*clients, max_tsl_bytes=10)
+    action = AgentAction(
+        id="a1",
+        type="update_thing_model",
+        params={"productId": "P1", "tsl": {"profile": {"ProductId": "P1"}}},
+    )
+
+    result = await executor.execute(action, tenant_admin, "token", None)
+
+    assert result.success is False
+    assert "不能超过" in result.message
+    assert thing_model.updated_thing_model is None
 
 
 @pytest.mark.asyncio
@@ -265,4 +425,51 @@ async def test_catalog_generic_action_is_executed(clients, sys_admin) -> None:
 
     assert result.success is True
     assert result.data == {"method": "DELETE", "path": "/api/tenant/tenant-1"}
+
+
+
+@pytest.mark.asyncio
+async def test_create_product_rejects_mismatched_tsl_product_id(clients, tenant_admin) -> None:
+    executor = AgentActionExecutor(*clients)
+    action = AgentAction(
+        id='a1',
+        type='create_product',
+        params={
+            'product_id': 'P1',
+            'name': 'Product',
+            'tsl': {
+                'version': '1.0',
+                'profile': {'ProductId': 'P2'},
+                'properties': [],
+            },
+        },
+    )
+
+    result = await executor.execute(action, tenant_admin, 'token', None)
+
+    assert result.success is False
+    assert 'ProductId' in result.message
+
+
+@pytest.mark.asyncio
+async def test_create_product_rejects_oversized_tsl(clients, tenant_admin) -> None:
+    executor = AgentActionExecutor(*clients, max_tsl_bytes=20)
+    action = AgentAction(
+        id='a1',
+        type='create_product',
+        params={
+            'product_id': 'P1',
+            'name': 'Product',
+            'tsl': {
+                'version': '1.0',
+                'profile': {'ProductId': 'P1'},
+                'properties': [{'id': 'temperature'}],
+            },
+        },
+    )
+
+    result = await executor.execute(action, tenant_admin, 'token', None)
+
+    assert result.success is False
+    assert 'TSL' in result.message
 

@@ -35,3 +35,18 @@ def test_upload_file() -> None:
     assert data["name"] == "test.txt"
     assert data["size"] == 5
     assert fake.file_store.get(data["id"], "user-1") is not None
+
+
+def test_upload_file_preserves_chinese_name() -> None:
+    fake = FakeAgent()
+    with TestClient(app) as client:
+        app.state.agent = fake
+        upload = client.post(
+            "/files",
+            headers={"X-Authorization": "Bearer token"},
+            files={"file": ("温度传感器.json", b"{}", "application/json")},
+        )
+
+    assert upload.status_code == 200
+    data = upload.json()
+    assert data["name"] == "温度传感器.json"

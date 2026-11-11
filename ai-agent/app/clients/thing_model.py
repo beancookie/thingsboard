@@ -38,6 +38,16 @@ class ThingModelClient:
     async def create_product(self, token: str, payload: dict[str, Any]) -> dict[str, Any]:
         return await self._request("POST", "/api/products", token, json=payload)
 
+    async def update_thing_model(
+        self, token: str, product_id: str, payload: dict[str, Any]
+    ) -> dict[str, Any]:
+        return await self._request(
+            "PUT",
+            f"/api/products/{product_id}/thing-model",
+            token,
+            json=payload,
+        )
+
     async def delete_product(self, token: str, product_id: str) -> None:
         await self._request("DELETE", f"/api/products/{product_id}", token)
 
