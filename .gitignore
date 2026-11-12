@@ -48,3 +48,7 @@ import-output/
 product-export/
 **/product-export-tool/export_products.py
 product-import-report*.csv
+build_ppt/
+render_pdf/
+__pycache__/
+*.pyc
