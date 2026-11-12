@@ -8,11 +8,12 @@ import java.util.Set;
 import java.util.UUID;
 import org.springframework.stereotype.Component;
 import org.thingsboard.client.ThingsboardClient;
-import org.thingsboard.client.model.Device;
 import org.thingsboard.client.model.PageDataDevice;
 
 @Component
 public class TbProductResourceDeleter {
+
+    private static final int COUNT_PAGE_SIZE = 1;
 
     private final ThingsboardClientProvider clientProvider;
 
@@ -26,33 +27,27 @@ public class TbProductResourceDeleter {
         }
         ThingsboardClient client = clientProvider.get(tenantId);
         long count = Constants.Db.ZERO_COUNT;
-        int page = Constants.ThingsBoard.FIRST_PAGE;
-        while (true) {
-            PageDataDevice result;
+        for (UUID profileId : profileIds) {
             try {
-                result = client.getTenantDevices(
-                        Constants.ThingsBoard.PAGE_SIZE,
-                        page,
-                        null,
+                String profileName = client
+                        .getDeviceProfileById(profileId.toString(), false)
+                        .getName();
+                PageDataDevice result = client.getTenantDevices(
+                        COUNT_PAGE_SIZE,
+                        Constants.ThingsBoard.FIRST_PAGE,
+                        profileName,
                         null,
                         Constants.ThingsBoard.SORT_PROPERTY_NAME,
                         Constants.ThingsBoard.SORT_ORDER_ASC);
+                if (result != null && result.getTotalElements() != null) {
+                    count += result.getTotalElements();
+                }
             } catch (org.thingsboard.client.ApiException ex) {
+                if (ex.getCode() == 404) {
+                    continue;
+                }
                 throw TbExceptionTranslator.translate("检查产品设备", ex);
             }
-            if (result == null || result.getData() == null || result.getData().isEmpty()) {
-                break;
-            }
-            for (Device device : result.getData()) {
-                if (device.getDeviceProfileId() != null
-                        && profileIds.contains(device.getDeviceProfileId().getId())) {
-                    count++;
-                }
-            }
-            if (!Boolean.TRUE.equals(result.getHasNext())) {
-                break;
-            }
-            page++;
         }
         return count;
     }

@@ -3,20 +3,16 @@ package com.iot.thingmodel.sync;
 import com.iot.thingmodel.common.Constants;
 import com.iot.thingmodel.tb.TbSyncException;
 import com.iot.thingmodel.tb.ThingsboardClientProvider;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.thingsboard.client.ThingsboardClient;
-import org.thingsboard.client.model.Device;
-import org.thingsboard.client.model.DeviceProfileId;
+import org.thingsboard.client.model.DeviceProfile;
 import org.thingsboard.client.model.PageDataDevice;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -30,21 +26,19 @@ class TbProductResourceDeleterTest {
     private final TbProductResourceDeleter deleter = new TbProductResourceDeleter(provider);
 
     @Test
-    void countsDevicesMatchingProfile() throws Exception {
+    void countsDevicesByDeviceProfile() throws Exception {
         UUID profileId = UUID.randomUUID();
-        Device device = new Device();
-        device.setDeviceProfileId(new DeviceProfileId().id(profileId));
-        PageDataDevice page = new PageDataDevice(1, 1L, false);
-        page.setData(List.of(device));
         when(provider.get(tenantId)).thenReturn(client);
+        when(client.getDeviceProfileById(profileId.toString(), false))
+                .thenReturn(deviceProfile("helmet"));
         when(client.getTenantDevices(
-                Constants.ThingsBoard.PAGE_SIZE,
+                1,
                 Constants.ThingsBoard.FIRST_PAGE,
-                null,
+                "helmet",
                 null,
                 Constants.ThingsBoard.SORT_PROPERTY_NAME,
                 Constants.ThingsBoard.SORT_ORDER_ASC))
-                .thenReturn(page);
+                .thenReturn(new PageDataDevice(1, 1L, false));
 
         long count = deleter.countDevices(tenantId, Set.of(profileId));
 
@@ -52,23 +46,61 @@ class TbProductResourceDeleterTest {
     }
 
     @Test
-    void ignoresDevicesFromOtherProfiles() throws Exception {
-        UUID profileId = UUID.randomUUID();
-        Device device = new Device();
-        device.setDeviceProfileId(new DeviceProfileId().id(UUID.randomUUID()));
-        PageDataDevice page = new PageDataDevice(1, 1L, false);
-        page.setData(List.of(device));
+    void sumsDeviceCountsAcrossProfiles() throws Exception {
+        UUID profileA = UUID.randomUUID();
+        UUID profileB = UUID.randomUUID();
         when(provider.get(tenantId)).thenReturn(client);
+        when(client.getDeviceProfileById(profileA.toString(), false))
+                .thenReturn(deviceProfile("helmet-a"));
+        when(client.getDeviceProfileById(profileB.toString(), false))
+                .thenReturn(deviceProfile("helmet-b"));
         when(client.getTenantDevices(
-                eq(Constants.ThingsBoard.PAGE_SIZE),
-                eq(Constants.ThingsBoard.FIRST_PAGE),
-                isNull(),
-                isNull(),
-                eq(Constants.ThingsBoard.SORT_PROPERTY_NAME),
-                eq(Constants.ThingsBoard.SORT_ORDER_ASC)))
-                .thenReturn(page);
+                1,
+                Constants.ThingsBoard.FIRST_PAGE,
+                "helmet-a",
+                null,
+                Constants.ThingsBoard.SORT_PROPERTY_NAME,
+                Constants.ThingsBoard.SORT_ORDER_ASC))
+                .thenReturn(new PageDataDevice(1, 2L, false));
+        when(client.getTenantDevices(
+                1,
+                Constants.ThingsBoard.FIRST_PAGE,
+                "helmet-b",
+                null,
+                Constants.ThingsBoard.SORT_PROPERTY_NAME,
+                Constants.ThingsBoard.SORT_ORDER_ASC))
+                .thenReturn(new PageDataDevice(1, 3L, false));
+
+        long count = deleter.countDevices(tenantId, Set.of(profileA, profileB));
+
+        assertEquals(5L, count);
+    }
+
+    @Test
+    void ignoresMissingDeviceProfile() throws Exception {
+        UUID profileId = UUID.randomUUID();
+        when(provider.get(tenantId)).thenReturn(client);
+        when(client.getDeviceProfileById(profileId.toString(), false))
+                .thenThrow(new org.thingsboard.client.ApiException(404, "not found"));
 
         assertEquals(0L, deleter.countDevices(tenantId, Set.of(profileId)));
+    }
+
+    @Test
+    void translatesCountFailures() throws Exception {
+        UUID profileId = UUID.randomUUID();
+        when(provider.get(tenantId)).thenReturn(client);
+        when(client.getDeviceProfileById(profileId.toString(), false))
+                .thenThrow(new org.thingsboard.client.ApiException(0, "io failure"));
+
+        assertThrows(TbSyncException.class,
+                () -> deleter.countDevices(tenantId, Set.of(profileId)));
+    }
+
+    private static DeviceProfile deviceProfile(String name) {
+        DeviceProfile profile = new DeviceProfile();
+        profile.setName(name);
+        return profile;
     }
 
     @Test
